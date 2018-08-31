@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { FlatList, View, StyleSheet, Text, ScrollView } from 'react-native';
+import { api } from '../../services/api/api';
 
 export default class TimelineScreen extends Component {
   static navigationOptions = {
@@ -10,6 +11,20 @@ export default class TimelineScreen extends Component {
     super(props);
 
     this.state = { posts: [] };
+  }
+
+  componentWillMount() {
+    navigator.geolocation.getCurrentPosition(async(position) => {
+      let posts = await api.get('posts', { 
+        params: {
+          lat: position.coords.latitude,
+          lon: position.coords.longitude,
+          maxDistance: 200*1000 // 1000km
+        }
+      });
+  
+      this.setState({ posts: posts.data });
+    });
   }
 
   render() {
