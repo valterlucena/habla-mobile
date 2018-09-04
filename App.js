@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 import TimelineScreen from './screens/timeline/timeline';
-import { StackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 
-const Navigator = StackNavigator({
+const Navigator = createStackNavigator({
   Timeline: TimelineScreen
 });
 
