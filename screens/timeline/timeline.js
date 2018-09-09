@@ -6,7 +6,14 @@ import moment from 'moment';
 
 export default class TimelineScreen extends Component {
   static navigationOptions = {
-    title: 'Habla!'
+    title: 'Habla!', 
+    headerStyle: {
+      backgroundColor: 'white',
+      borderBottomWidth: 0,
+    },
+    headerTitleStyle: {
+      color: '#161616'
+    }
   };
 
   constructor(props) {
@@ -75,7 +82,7 @@ export default class TimelineScreen extends Component {
           <TextInput style={styles.newPost.input}
                      onChangeText={this.handlePostInput}
                      value={this.state.post.body}
-                     placeholderTextColor="white"
+                     placeholderTextColor="black"
                      placeholder="What's up?"
                      editable={!this.state.posting}
                      underlineColorAndroid="rgba(0,0,0,0)"></TextInput>
@@ -115,28 +122,26 @@ const styles = {
   }),
   newPost: StyleSheet.create({
     container: {
-      padding: 12,
-      backgroundColor: '#1769aa',
       flexDirection: 'row',
     },
     input: {
-      padding: 12,
-      borderRadius: 5,
-      backgroundColor: '#2196f3',
-      color: 'white',
+      padding: 16,
+      backgroundColor: 'white',
+      color: 'black',
       flex: 1,
-      marginRight: 5
+      fontSize: 16,
+      marginBottom: 2
     },
     sendButton: {
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: '#4dabf5',
       padding: 5,
-      borderRadius: 5,
       width: 50
     },
     sendButtonText: {
-      color: 'white'
+      color: 'white',
+      fontWeight: 'bold',
     }
   }),
   post: StyleSheet.create({
