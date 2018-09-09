@@ -87,12 +87,12 @@ export default class TimelineScreen extends Component {
                      editable={!this.state.posting}
                      underlineColorAndroid="rgba(0,0,0,0)"
                      multiline={true}></TextInput>
-          <TouchableOpacity style={styles.newPost.sendButton}
+          {(this.state.post.body && this.state.post.body.trim() !== '')? <TouchableOpacity style={styles.newPost.sendButton}
                             onPress={this.sendPost}
                             disabled={this.state.posting}
                             activeOpacity={1}>
             {this.state.posting? <ActivityIndicator color="white"/>: <Text style={styles.newPost.sendButtonText}>Send</Text>}
-          </TouchableOpacity>
+          </TouchableOpacity>: null}
         </View>
         <FlatList data={this.state.posts}
                   keyExtractor={(item) => item.id.toString()}
@@ -161,8 +161,9 @@ const styles = {
       fontWeight: 'bold'
     },
     body: {
-      fontSize: 16,
-      color: '#000'
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#181818'
     },
     timeAgo: {
       fontSize: 10, 
