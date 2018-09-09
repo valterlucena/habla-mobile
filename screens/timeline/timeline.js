@@ -1,41 +1,104 @@
 import React, { Component } from 'react';
-import { FlatList, View, StyleSheet, Text, ScrollView } from 'react-native';
+import { FlatList, View, StyleSheet, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
 import { api } from '../../services/api/api';
+import { TextInput } from 'react-native-gesture-handler';
+import moment from 'moment';
 
 export default class TimelineScreen extends Component {
   static navigationOptions = {
-    title: 'Timeline'
+    title: 'Habla!'
   };
 
   constructor(props) {
     super(props);
 
-    this.state = { posts: [] };
+    this.state = { posts: [], post: { }, refreshing: false, editable: false };
   }
 
   componentWillMount() {
-    navigator.geolocation.getCurrentPosition(async(position) => {
-      let posts = await api.get('posts', { 
-        params: {
-          lat: position.coords.latitude,
-          lon: position.coords.longitude,
-          maxDistance: 200*1000 // 1000km
+    this.refresh();
+  }
+
+  refresh = async() => {
+    this.setState({ refreshing: true });
+    
+    try {
+      await this.fetchPosts();
+    } catch (error) {
+      console.log(error);
+    }
+      
+    this.setState({ refreshing: false });
+  }
+
+  fetchPosts = () => {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(async(position) => {
+        try {
+          let posts = await api.get('posts');
+      
+          this.setState({ posts: posts.data });
+
+          resolve(posts);
+        } catch (error) {
+          reject(error);
         }
+      }, (error) => {
+        reject(error);
       });
-  
-      this.setState({ posts: posts.data });
     });
+  }
+
+  sendPost = async() => {
+    this.setState({ posting: true });
+
+    try {
+      await api.post('posts', this.state.post);
+      await this.fetchPosts();
+
+    } catch (error) {
+      console.log(error);
+    } 
+
+    this.setState({ post: { }, posting: false });
+  }
+
+  handlePostInput = (text) => {
+    this.setState({ post: { body: text }});
   }
 
   render() {
     return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.page.container}
+                  bounces={false}>
+        <View style={styles.newPost.container}>
+          <TextInput style={styles.newPost.input}
+                     onChangeText={this.handlePostInput}
+                     value={this.state.post.body}
+                     placeholderTextColor="white"
+                     placeholder="What's up?"
+                     editable={!this.state.posting}
+                     underlineColorAndroid="rgba(0,0,0,0)"></TextInput>
+          <TouchableOpacity style={styles.newPost.sendButton}
+                            onPress={this.sendPost}
+                            disabled={this.state.posting}
+                            activeOpacity={1}>
+            {this.state.posting? <ActivityIndicator color="white"/>: <Text style={styles.newPost.sendButtonText}>Send</Text>}
+          </TouchableOpacity>
+        </View>
         <FlatList data={this.state.posts}
-                  keyExtractor={(item) => item._id.toString()}
+                  keyExtractor={(item) => item.id.toString()}
+                  onScroll={this.handleScroll}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={this.state.refreshing}
+                      onRefresh={this.refresh}
+                    />
+                  }
                   renderItem={({item}) =>(
-                    <View style={styles.post}>
-                      <Text style={styles.postTitle}>{ item.title }</Text>
-                      <Text style={styles.postBody}>{ item.body }</Text>
+                    <View style={styles.post.container}>
+                      <Text style={styles.post.body}>{ item.body }</Text>
+                      <Text style={styles.post.timeAgo}>{ moment(item.createdAt).fromNow(true) }</Text>
                     </View>
         )}/>
       </ScrollView>
@@ -43,22 +106,52 @@ export default class TimelineScreen extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#eee",
-  },
-  post: {
-    backgroundColor: "#fff",
-    padding: 12,
-    marginBottom: 2,
-  },
-  postTitle: {
-    fontSize: 16,
-    color: "#000"
-  },
-  postBody: {
-    fontSize: 12,
-    color: "#000"
-  }
-});
+const styles = {
+  page: StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#eee'
+    }
+  }),
+  newPost: StyleSheet.create({
+    container: {
+      padding: 12,
+      backgroundColor: '#1769aa',
+      flexDirection: 'row',
+    },
+    input: {
+      padding: 12,
+      borderRadius: 5,
+      backgroundColor: '#2196f3',
+      color: 'white',
+      flex: 1,
+      marginRight: 5
+    },
+    sendButton: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#4dabf5',
+      padding: 5,
+      borderRadius: 5,
+      width: 50
+    },
+    sendButtonText: {
+      color: 'white'
+    }
+  }),
+  post: StyleSheet.create({
+    container: { 
+      backgroundColor: '#fff',
+      padding: 12,
+      marginBottom: 2
+    }, 
+    body: {
+      fontSize: 16,
+      color: '#000'
+    },
+    timeAgo: {
+      fontSize: 10, 
+      color: '#000'
+    }
+  })
+};
