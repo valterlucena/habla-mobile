@@ -104,6 +104,7 @@ export default class TimelineScreen extends Component {
                   }
                   renderItem={({item}) =>(
                     <View style={styles.post.container}>
+                      {item.channel? <Text style={styles.post.channelTitle}>@{ item.channel.title }</Text>: null}
                       <Text style={styles.post.body}>{ item.body }</Text>
                       <Text style={styles.post.timeAgo}>{ moment(item.createdAt).fromNow(true) }</Text>
                     </View>
@@ -137,7 +138,7 @@ const styles = {
       alignItems: 'center',
       backgroundColor: '#4dabf5',
       padding: 5,
-      width: 50
+      width: 50,
     },
     sendButtonText: {
       color: 'white',
@@ -150,6 +151,10 @@ const styles = {
       padding: 12,
       marginBottom: 2
     }, 
+    channelTitle: {
+      fontSize: 12,
+      fontWeight: 'bold'
+    },
     body: {
       fontSize: 16,
       color: '#000'
