@@ -85,7 +85,8 @@ export default class TimelineScreen extends Component {
                      placeholderTextColor="black"
                      placeholder="What's up?"
                      editable={!this.state.posting}
-                     underlineColorAndroid="rgba(0,0,0,0)"></TextInput>
+                     underlineColorAndroid="rgba(0,0,0,0)"
+                     multiline={true}></TextInput>
           <TouchableOpacity style={styles.newPost.sendButton}
                             onPress={this.sendPost}
                             disabled={this.state.posting}
@@ -124,21 +125,25 @@ const styles = {
   newPost: StyleSheet.create({
     container: {
       flexDirection: 'row',
+      backgroundColor: 'white',
+      marginBottom: 2,
     },
     input: {
       padding: 16,
       backgroundColor: 'white',
       color: 'black',
       flex: 1,
-      fontSize: 16,
-      marginBottom: 2
+      fontSize: 18
     },
     sendButton: {
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: '#4dabf5',
-      padding: 5,
+      padding: 8,
       width: 50,
+      height: 35,
+      borderRadius: 100,
+      margin: 5
     },
     sendButtonText: {
       color: 'white',
