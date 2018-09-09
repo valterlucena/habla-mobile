@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { FlatList, View, StyleSheet, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
 import { api } from '../../services/api/api';
 import { TextInput } from 'react-native-gesture-handler';
 import moment from 'moment';
 
-export default class TimelineScreen extends Component {
+export default class TimelineScreen extends React.Component<{}, TimelineState> {
   static navigationOptions = {
     title: 'Habla!', 
     headerStyle: {
@@ -16,10 +16,10 @@ export default class TimelineScreen extends Component {
     }
   };
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
 
-    this.state = { posts: [], post: { }, refreshing: false, editable: false };
+    this.state = { posts: [], post: { }, refreshing: false, editable: false, posting: false };
   }
 
   componentWillMount() {
@@ -38,22 +38,15 @@ export default class TimelineScreen extends Component {
     this.setState({ refreshing: false });
   }
 
-  fetchPosts = () => {
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(async(position) => {
-        try {
-          let posts = await api.get('posts');
-      
-          this.setState({ posts: posts.data });
+  fetchPosts = async() => {
+    try {
+      let posts = await api.get('posts');
 
-          resolve(posts);
-        } catch (error) {
-          reject(error);
-        }
-      }, (error) => {
-        reject(error);
-      });
-    });
+      this.setState({ posts: posts.data });
+
+    } catch (error) {
+     console.log(error);
+    }
   }
 
   sendPost = async() => {
@@ -70,7 +63,7 @@ export default class TimelineScreen extends Component {
     this.setState({ post: { }, posting: false });
   }
 
-  handlePostInput = (text) => {
+  handlePostInput = (text: string) => {
     this.setState({ post: { body: text }});
   }
 
@@ -96,7 +89,6 @@ export default class TimelineScreen extends Component {
         </View>
         <FlatList data={this.state.posts}
                   keyExtractor={(item) => item.id.toString()}
-                  onScroll={this.handleScroll}
                   refreshControl={
                     <RefreshControl
                       refreshing={this.state.refreshing}
@@ -171,3 +163,11 @@ const styles = {
     }
   })
 };
+
+interface TimelineState {
+    posts: any[];
+    post: any;
+    refreshing: boolean;
+    editable: boolean;
+    posting: boolean;
+}
