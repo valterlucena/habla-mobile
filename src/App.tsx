@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, StatusBar, Platform } from 'react-native';
+import { StyleSheet, View, StatusBar, Platform, Text } from 'react-native';
 import TimelineScreen from './screens/timeline/timeline';
 import ChannelsScreen from './screens/channels/channels';
 import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
 import { FontAwesome } from '@expo/vector-icons';
+import firebase from 'firebase';
+import LoginScreen from './screens/login/login';
 
 const Navigator = createBottomTabNavigator({
   TimelineStack: createStackNavigator({
@@ -33,14 +35,37 @@ const Navigator = createBottomTabNavigator({
   })
 });
 
-export default class App extends Component {
+export default class App extends Component<any, any> {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      user: null,
+      ready: false
+    };
+
+    firebase.auth().onAuthStateChanged(user => {
+      this.setState({
+        ready: true,
+        user: user
+      });
+    
+      console.log(user);
+    });
+
+    console.disableYellowBox = true;
+  }
+
   render() {
-    return (
-      <View style={styles.container}>
+    if (this.state.ready) {
+      return this.state.user?
+      (<View style={styles.container}>
         <StatusBar barStyle="dark-content"/>
         <Navigator/>
-      </View>
-    );
+      </View>): <LoginScreen></LoginScreen>;
+    } else {
+      return null;
+    }
   }
 }
 

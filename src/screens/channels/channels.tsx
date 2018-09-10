@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, ScrollView, FlatList, RefreshControl, View, TouchableOpacity } from 'react-native';
-import { api } from '../../services/api/api';
+import { api } from '../../services/api';
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
   static navigationOptions = {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FlatList, View, StyleSheet, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
-import { api } from '../../services/api/api';
+import { api } from '../../services/api';
 import { TextInput } from 'react-native-gesture-handler';
 import moment from 'moment';
 
@@ -124,10 +124,17 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                   renderItem={({item}) =>(
                     <View style={styles.post.container}>
 
-                      {item.channel?
-                      <TouchableOpacity onPress={() => this.openChannel(item.channel)}>
-                        <Text style={styles.post.channelTitle}>#{ item.channel.title }</Text>
-                      </TouchableOpacity>: (null)}
+                      <View style={styles.post.header}>
+                        {item.owner?
+                        <TouchableOpacity>
+                          <Text style={styles.post.username}>@{ item.owner.username }</Text>
+                        </TouchableOpacity>: (null)}
+
+                        {item.channel?
+                        <TouchableOpacity onPress={() => this.openChannel(item.channel)}>
+                          <Text style={styles.post.channelTitle}>#{ item.channel.title }</Text>
+                        </TouchableOpacity>: (null)}
+                      </View>
                         
                       <Text style={styles.post.body}>{ item.body }</Text>
                       <Text style={styles.post.timeAgo}>{ moment(item.createdAt).fromNow(true) }</Text>
@@ -179,6 +186,15 @@ const styles = {
       padding: 12,
       marginBottom: 2
     }, 
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 2
+    },
+    username: {
+      fontSize: 12, 
+      fontWeight: 'bold'
+    },
     channelTitle: {
       fontSize: 12,
       fontWeight: 'bold'
