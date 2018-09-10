@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "@types/expo": "^27.0.8",
+    "@types/expo__vector-icons": "^6.2.3",
     "@types/jest": "^23.3.2",
     "@types/react": "^16.4.13",
     "@types/react-native": "^0.56.17",
     "@types/react-navigation": "^2.0.19",
     "@types/react-redux": "^6.0.7",
     "@types/react-test-renderer": "^16.0.2",
-    "@types/expo": "^27.0.8",
     "jest-expo": "~27.0.0",
     "react-native-scripts": "1.14.0",
     "react-test-renderer": "16.3.1",
@@ -40,6 +41,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo/vector-icons": "^6.3.1",
     "axios": "^0.18.0",
     "expo": "^27.0.1",
     "moment": "^2.0.0",

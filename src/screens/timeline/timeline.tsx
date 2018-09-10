@@ -4,26 +4,45 @@ import { api } from '../../services/api/api';
 import { TextInput } from 'react-native-gesture-handler';
 import moment from 'moment';
 
-export default class TimelineScreen extends React.Component<{}, TimelineState> {
-  static navigationOptions = {
-    title: 'Habla!', 
-    headerStyle: {
-      backgroundColor: 'white',
-      borderBottomWidth: 0,
-    },
-    headerTitleStyle: {
-      color: '#161616'
+export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
+  static navigationOptions = (navigation) => {
+    let params = navigation.navigation.state.params;
+
+    return {
+      title: params && params.channel? `#${params.channel.title}`: 'Habla!', 
+      headerStyle: {
+        backgroundColor: 'white',
+        borderBottomWidth: 0,
+      },
+      headerTitleStyle: {
+        color: '#161616'
+      }
     }
   };
 
-  constructor(props: any) {
+  constructor(props: TimelineProps) {
     super(props);
 
-    this.state = { posts: [], post: { }, refreshing: false, editable: false, posting: false };
+    this.state = { 
+      posts: [], 
+      post: {}, 
+      refreshing: false, 
+      editable: false, 
+      posting: false 
+    };
+  }
+
+  resetPost() {
+    this.setState({
+      post: {
+        channelId: this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null
+      }
+    });
   }
 
   componentWillMount() {
     this.refresh();
+    this.resetPost();
   }
 
   refresh = async() => {
@@ -40,7 +59,7 @@ export default class TimelineScreen extends React.Component<{}, TimelineState> {
 
   fetchPosts = async() => {
     try {
-      let posts = await api.get('posts');
+      let posts = await api.get('posts', { params: { channelId: this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null }});
 
       this.setState({ posts: posts.data });
 
@@ -60,11 +79,12 @@ export default class TimelineScreen extends React.Component<{}, TimelineState> {
       console.log(error);
     } 
 
-    this.setState({ post: { }, posting: false });
+    this.resetPost();
+    this.setState({ posting: false });
   }
 
   handlePostInput = (text: string) => {
-    this.setState({ post: { body: text }});
+    this.setState({ post: { ...this.state.post, body: text }});
   }
 
   render() {
@@ -97,7 +117,7 @@ export default class TimelineScreen extends React.Component<{}, TimelineState> {
                   }
                   renderItem={({item}) =>(
                     <View style={styles.post.container}>
-                      {item.channel? <Text style={styles.post.channelTitle}>@{ item.channel.title }</Text>: null}
+                      {item.channel? <Text style={styles.post.channelTitle}>#{ item.channel.title }</Text>: null}
                       <Text style={styles.post.body}>{ item.body }</Text>
                       <Text style={styles.post.timeAgo}>{ moment(item.createdAt).fromNow(true) }</Text>
                     </View>
@@ -170,4 +190,8 @@ interface TimelineState {
     refreshing: boolean;
     editable: boolean;
     posting: boolean;
+}
+
+interface TimelineProps {
+  navigation: any;
 }

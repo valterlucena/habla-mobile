@@ -1,5 +1,5 @@
 import axios from 'axios';
 
 export const api = axios.create({
-    baseURL: 'http://api.habla.online/',
+    baseURL: 'http://192.168.0.110:3000/',
 });
