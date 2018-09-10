@@ -6,14 +6,20 @@ import { createBottomTabNavigator, createStackNavigator } from 'react-navigation
 import { FontAwesome } from '@expo/vector-icons';
 import firebase from 'firebase';
 import LoginScreen from './screens/login/login';
+import ProfileScreen from './screens/profile/profile';
 
 const Navigator = createBottomTabNavigator({
   TimelineStack: createStackNavigator({
-    TimelineScreen
+    TimelineScreen,
+    ProfileScreen
   }),
   ChannelsStack: createStackNavigator({
     ChannelsScreen,
-    TimelineScreen
+    TimelineScreen,
+    ProfileScreen
+  }),
+  ProfileStack: createStackNavigator({
+    ProfileScreen
   })
 }, 
 {
@@ -30,6 +36,8 @@ const Navigator = createBottomTabNavigator({
         return <FontAwesome name="home" size={25} color={tintColor}/>;
       } else if (routeName === 'ChannelsStack') {
         return <FontAwesome name="weixin" size={25} color={tintColor}/>;
+      } else if (routeName === 'ProfileStack') {
+        return <FontAwesome name="user" size={25} color={tintColor}/>;
       }
     },
   })
@@ -49,8 +57,6 @@ export default class App extends Component<any, any> {
         ready: true,
         user: user
       });
-    
-      console.log(user);
     });
 
     console.disableYellowBox = true;

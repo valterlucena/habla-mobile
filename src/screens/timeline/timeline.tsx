@@ -93,10 +93,19 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     this.props.navigation.push('TimelineScreen', { channel: channel });
   }
 
+  openProfile = (profile) => {
+    this.props.navigation.push('ProfileScreen', { profile: profile });
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
-                  bounces={false}>
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={this.state.refreshing}
+                      onRefresh={this.refresh}
+                    />
+                  }>
         <View style={styles.newPost.container}>
           <TextInput style={styles.newPost.input}
                      onChangeText={this.handlePostInput}
@@ -104,8 +113,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                      placeholderTextColor="black"
                      placeholder="What's up?"
                      editable={!this.state.posting}
-                     underlineColorAndroid="rgba(0,0,0,0)"
-                     multiline={true}></TextInput>
+                     underlineColorAndroid="rgba(0,0,0,0)"/>
           {(this.state.post.body && this.state.post.body.trim() !== '')? <TouchableOpacity style={styles.newPost.sendButton}
                             onPress={this.sendPost}
                             disabled={this.state.posting}
@@ -115,18 +123,12 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
         </View>
         <FlatList data={this.state.posts}
                   keyExtractor={(item) => item.id.toString()}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={this.state.refreshing}
-                      onRefresh={this.refresh}
-                    />
-                  }
                   renderItem={({item}) =>(
                     <View style={styles.post.container}>
 
                       <View style={styles.post.header}>
                         {item.owner?
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => this.openProfile(item.owner)}>
                           <Text style={styles.post.username}>@{ item.owner.username }</Text>
                         </TouchableOpacity>: (null)}
 
@@ -156,7 +158,7 @@ const styles = {
     container: {
       flexDirection: 'row',
       backgroundColor: 'white',
-      marginBottom: 2,
+      marginVertical: 2,
     },
     input: {
       padding: 16,
