@@ -9,7 +9,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     let params = navigation.navigation.state.params;
 
     return {
-      title: params && params.channel? `#${params.channel.title}`: 'Habla!', 
+      title: params && params.channel? `#${params.channel.title}`: 'Timeline', 
       headerStyle: {
         backgroundColor: 'white',
         borderBottomWidth: 0,
@@ -87,6 +87,12 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     this.setState({ post: { ...this.state.post, body: text }});
   }
 
+  openChannel = (channel) => {
+    if (this.props.navigation.state.params && this.props.navigation.state.params.channel) return;
+    
+    this.props.navigation.push('TimelineScreen', { channel: channel });
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
@@ -117,7 +123,12 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                   }
                   renderItem={({item}) =>(
                     <View style={styles.post.container}>
-                      {item.channel? <Text style={styles.post.channelTitle}>#{ item.channel.title }</Text>: null}
+
+                      {item.channel?
+                      <TouchableOpacity onPress={() => this.openChannel(item.channel)}>
+                        <Text style={styles.post.channelTitle}>#{ item.channel.title }</Text>
+                      </TouchableOpacity>: (null)}
+                        
                       <Text style={styles.post.body}>{ item.body }</Text>
                       <Text style={styles.post.timeAgo}>{ moment(item.createdAt).fromNow(true) }</Text>
                     </View>
