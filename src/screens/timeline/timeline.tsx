@@ -3,6 +3,7 @@ import { FlatList, View, StyleSheet, Text, ScrollView, TouchableOpacity, Refresh
 import { api } from '../../services/api';
 import { TextInput } from 'react-native-gesture-handler';
 import moment from 'moment';
+import PostComponent from '../../components/post/post';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
   static navigationOptions = (navigation) => {
@@ -97,6 +98,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     this.props.navigation.push('ProfileScreen', { profile: profile });
   }
 
+  openPost = (post) => {
+    this.props.navigation.push('PostScreen', { post: post });
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
@@ -125,23 +130,12 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                   bounces={false}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({item}) =>(
-                    <View style={styles.post.container}>
-
-                      <View style={styles.post.header}>
-                        {item.owner?
-                        <TouchableOpacity onPress={() => this.openProfile(item.owner)}>
-                          <Text style={styles.post.username}>@{ item.owner.username }</Text>
-                        </TouchableOpacity>: (null)}
-
-                        {item.channel?
-                        <TouchableOpacity onPress={() => this.openChannel(item.channel)}>
-                          <Text style={styles.post.channelTitle}>#{ item.channel.title }</Text>
-                        </TouchableOpacity>: (null)}
-                      </View>
-                        
-                      <Text style={styles.post.body}>{ item.body }</Text>
-                      <Text style={styles.post.timeAgo}>{ moment(item.createdAt).fromNow(true) }</Text>
-                    </View>
+                  <TouchableOpacity onPress={() => this.openPost(item)}>
+                    <PostComponent post={item}
+                                   showPostHeader={true}
+                                   onOpenProfile={this.openProfile}
+                                   onOpenChannel={this.openChannel}/>
+                  </TouchableOpacity>
         )}/>
       </ScrollView>
     );
@@ -181,35 +175,6 @@ const styles = {
     sendButtonText: {
       color: 'white',
       fontWeight: 'bold',
-    }
-  }),
-  post: StyleSheet.create({
-    container: { 
-      backgroundColor: '#fff',
-      padding: 12,
-      marginBottom: 2
-    }, 
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 2
-    },
-    username: {
-      fontSize: 12, 
-      fontWeight: 'bold'
-    },
-    channelTitle: {
-      fontSize: 12,
-      fontWeight: 'bold'
-    },
-    body: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: '#181818'
-    },
-    timeAgo: {
-      fontSize: 10, 
-      color: '#000'
     }
   })
 };

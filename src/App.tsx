@@ -7,19 +7,23 @@ import { FontAwesome } from '@expo/vector-icons';
 import firebase from 'firebase';
 import LoginScreen from './screens/login/login';
 import ProfileScreen from './screens/profile/profile';
+import PostScreen from './screens/post/post';
 
 const Navigator = createBottomTabNavigator({
   TimelineStack: createStackNavigator({
     TimelineScreen,
-    ProfileScreen
+    ProfileScreen,
+    PostScreen
   }),
   ChannelsStack: createStackNavigator({
     ChannelsScreen,
     TimelineScreen,
-    ProfileScreen
+    ProfileScreen,
+    PostScreen
   }),
   ProfileStack: createStackNavigator({
-    ProfileScreen
+    ProfileScreen,
+    PostScreen
   })
 }, 
 {
