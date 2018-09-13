@@ -122,6 +122,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
           </TouchableOpacity>: null}
         </View>
         <FlatList data={this.state.posts}
+                  bounces={false}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({item}) =>(
                     <View style={styles.post.container}>
