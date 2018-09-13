@@ -123,7 +123,6 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
           </TouchableOpacity>: null}
         </View>
         <FlatList data={this.state.comments}
-                  bounces={false}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({item}) =>(
             <View style={styles.comment.view}>
