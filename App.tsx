@@ -1,13 +1,17 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, StatusBar, Platform, Text } from 'react-native';
-import TimelineScreen from './screens/timeline/timeline';
-import ChannelsScreen from './screens/channels/channels';
+import TimelineScreen from './src/screens/timeline/timeline';
+import ChannelsScreen from './src/screens/channels/channels';
 import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
 import { FontAwesome } from '@expo/vector-icons';
 import firebase from 'firebase';
-import LoginScreen from './screens/login/login';
-import ProfileScreen from './screens/profile/profile';
-import PostScreen from './screens/post/post';
+import LoginScreen from './src/screens/login/login';
+import ProfileScreen from './src/screens/profile/profile';
+import PostScreen from './src/screens/post/post';
+
+const firebaseConfig = require('./firebase.json');
+
+firebase.initializeApp(firebaseConfig);
 
 const Navigator = createBottomTabNavigator({
   TimelineStack: createStackNavigator({

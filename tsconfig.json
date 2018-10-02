@@ -2,33 +2,11 @@
     "compilerOptions": {
         "module":"es6",
         "target": "es6",
-        "jsx": "react-native",
-        "rootDir": "src",
-        "outDir": "output",
+        "jsx": "react",
         "allowSyntheticDefaultImports": true,
-        "sourceMap": true,
-        "experimentalDecorators": true,
-        "allowJs": true,
+        "esModuleInterop": true,
         "skipLibCheck": true,
-        "moduleResolution":"node"
-    },
-    "filesGlob": [
-        "typings/index.d.ts",
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "node_modules/typescript/lib/lib.es6.d.ts"
-    ],
-    "types": [
-      "react",
-      "react-dom",
-      "react-native",
-      "jest"
-    ],
-    "exclude":[
-        "output", 
-        "node_modules",
-        "jest.config.js",
-        "App.js"
-    ],
-    "compileOnSave": false
+        "experimentalDecorators": true,
+        "moduleResolution": "node"
+    }
 }

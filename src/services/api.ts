@@ -2,7 +2,7 @@ import axios from 'axios';
 import firebase from 'firebase';
 
 export const api = axios.create({
-    baseURL: 'http://api.habla.online/',
+    baseURL: 'http://192.168.0.105:3000/',
 });
 
 api.interceptors.request.use(async(config) => {

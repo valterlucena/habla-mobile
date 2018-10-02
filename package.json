@@ -13,6 +13,7 @@
     "@types/react-test-renderer": "^16.0.2",
     "jest-expo": "~27.0.0",
     "react-native-scripts": "1.14.0",
+    "react-native-typescript-transformer": "^1.2.10",
     "react-test-renderer": "16.3.1",
     "ts-jest": "^23.1.4",
     "tslib": "^1.9.3",
@@ -24,21 +25,25 @@
     "eject": "react-native-scripts eject",
     "android": "react-native-scripts android",
     "ios": "react-native-scripts ios",
-    "test": "node node_modules/jest/bin/jest.js",
-    "lint": "tslint src/**/*.ts",
-    "tsc": "tsc",
-    "clean": "rimraf build",
-    "build": "yarn run clean && yarn run tsc --",
-    "watch": "yarn run build -- -w",
-    "watch-and-run-android": "concurrently \"yarn run watch\" \"yarn run android\"",
-    "build-and-run-android": "yarn run build && yarn run watch-and-run-android",
-    "watch-and-run-ios": "concurrently \"yarn run watch\" \"yarn run ios\"",
-    "build-and-run-ios": "yarn run build && yarn run watch-and-run-ios ",
-    "watch-and-start": "concurrently \"yarn run watch\" \"yarn run start\"",
-    "build-and-start": "yarn run build && yarn run watch-and-start "
+    "test": "jest"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(js)$": "<rootDir>/node_modules/babel-jest",
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "testPathIgnorePatterns": [
+      "\\.snap$",
+      "<rootDir>/node_modules/"
+    ],
+    "cacheDirectory": ".jest/cache"
   },
   "dependencies": {
     "@expo/vector-icons": "^6.3.1",
