@@ -2,18 +2,19 @@ import React, {Component} from 'react';
 import { StyleSheet, View, StatusBar, Platform, Text } from 'react-native';
 import TimelineScreen from './src/screens/timeline/timeline';
 import ChannelsScreen from './src/screens/channels/channels';
-import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
+import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
 import { FontAwesome } from '@expo/vector-icons';
 import firebase from 'firebase';
 import LoginScreen from './src/screens/login/login';
 import ProfileScreen from './src/screens/profile/profile';
 import PostScreen from './src/screens/post/post';
+import AppLoadingScreen from './src/screens/app-loading/app-loading';
 
 const firebaseConfig = require('./firebase.json');
 
 firebase.initializeApp(firebaseConfig);
 
-const Navigator = createBottomTabNavigator({
+const TabsNavigator = createBottomTabNavigator({
   TimelineStack: createStackNavigator({
     TimelineScreen,
     ProfileScreen,
@@ -51,40 +52,10 @@ const Navigator = createBottomTabNavigator({
   })
 });
 
-export default class App extends Component<any, any> {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      user: null,
-      ready: false
-    };
-
-    firebase.auth().onAuthStateChanged(user => {
-      this.setState({
-        ready: true,
-        user: user
-      });
-    });
-
-    console.disableYellowBox = true;
-  }
-
-  render() {
-    if (this.state.ready) {
-      return this.state.user?
-      (<View style={styles.container}>
-        <StatusBar barStyle="dark-content"/>
-        <Navigator/>
-      </View>): <LoginScreen></LoginScreen>;
-    } else {
-      return null;
-    }
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  }
-});
+export default createSwitchNavigator({
+    AppLoadingScreen,
+    LoginScreen,
+    TabsNavigator,
+  },
+);
+  

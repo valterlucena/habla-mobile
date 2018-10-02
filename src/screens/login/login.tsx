@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ScrollView, Text, TextInput, ViewStyle, TouchableOpacity, TextStyle, ActivityIndicator, StyleSheet } from "react-native";
-import { api } from "../../services/api";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet } from "react-native";
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 import firebase from 'firebase';
 
 export default class LoginScreen extends React.Component<{}, LoginState> {
@@ -16,7 +16,7 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
 
     render() {
         return (
-            <ScrollView contentContainerStyle={styles.page.container} bounces={false}>
+            <View style={styles.page.container}>
                 <Text style={styles.login.headerText}>Habla!</Text>
                 <TextInput placeholder="Email"
                            style={styles.login.input}
@@ -29,16 +29,17 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
                            editable={!this.state.loading}
                            secureTextEntry={true}
                            onChangeText={text => this.setState({ credentials: { ...this.state.credentials, password: text }})}></TextInput>
-                <TouchableOpacity style={styles.login.loginButton.button}
+                <TouchableOpacity style={styles.login.loginButton}
                                   onPress={this.login}
                                   disabled={this.state.loading}
                                   activeOpacity={1}>
                     {this.state.loading? 
                           (<ActivityIndicator color="white"
                                               size="small"/>)
-                        : (<Text style={styles.login.loginButton.text as TextStyle}>Sign in</Text>) }
+                        : (<Text style={styles.login.loginButtonText}>Sign in</Text>) }
                 </TouchableOpacity>
-            </ScrollView>
+                <KeyboardSpacer/>
+            </View>
         )
     }
 
@@ -48,9 +49,8 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
         try {
           await firebase.auth().signInWithEmailAndPassword(this.state.credentials.email, this.state.credentials.password);
         } catch (error) {
-          console.log(error);
-        } finally {
           this.setState({ loading: false });
+          console.log(error);
         }
     };
 }
@@ -63,40 +63,39 @@ interface LoginState {
 const styles = {
     page: StyleSheet.create({
         container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 5,
-        backgroundColor: "white"
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#FFFFFF",
+            padding: 12
       }
     }),
-    login: {
+    login: StyleSheet.create({
         headerText: {
-            fontSize: 25,
-            marginBottom: 10
+            fontSize: 50,
+            marginBottom: 10,
+            color: "#795548"
         },
         input: {
-            width: '80%',
-            backgroundColor: "#f4f4f4",
-            paddingHorizontal: 10,
-            paddingVertical: 10,
-            borderRadius: 5,
+            width: '100%',
+            backgroundColor: "#FFFFFF",
+            paddingHorizontal: 14,
+            paddingVertical: 14,
             marginBottom: 10,
-            fontSize: 16,
+            fontSize: 18,
         },
         loginButton: {
-            button: {
-                paddingHorizontal: 10,
-                paddingVertical: 10,
-                backgroundColor: "#2196f3",
-                width: '80%',
-                borderRadius: 5
-            },
-            text: {
-                fontSize: 16,
-                color: 'white',
-                textAlign: 'center'
-            }
+            paddingHorizontal: 14,
+            paddingVertical: 14,
+            backgroundColor: "#795548",
+            width: '100%',
+            borderRadius: 5
+        },
+        loginButtonText: {
+            fontSize: 18,
+            textAlign: 'center',
+            color: "#FFFFFF",
+            fontWeight: "bold"
         }
-    }
+    })
 }
