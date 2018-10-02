@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FlatList, View, StyleSheet, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
+import { FlatList, View, StyleSheet, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator, StatusBar } from 'react-native';
 import { api } from '../../services/api';
 import { TextInput } from 'react-native-gesture-handler';
 import moment from 'moment';
@@ -12,11 +12,11 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     return {
       title: params && params.channel? `#${params.channel.title}`: 'Timeline', 
       headerStyle: {
-        backgroundColor: 'white',
+        backgroundColor: '#795548',
         borderBottomWidth: 0,
       },
       headerTitleStyle: {
-        color: '#161616'
+        color: '#F5F5F5'
       }
     }
   };
@@ -111,6 +111,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                       onRefresh={this.refresh}
                     />
                   }>
+        <StatusBar barStyle="light-content"/>
         <View style={styles.newPost.container}>
           <TextInput style={styles.newPost.input}
                      onChangeText={this.handlePostInput}
@@ -145,7 +146,7 @@ const styles = {
   page: StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#eee'
+      backgroundColor: '#fff'
     }
   }),
   newPost: StyleSheet.create({

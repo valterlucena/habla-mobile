@@ -6,11 +6,11 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   static navigationOptions = {
     title: 'Channels', 
     headerStyle: {
-      backgroundColor: 'white',
+      backgroundColor: '#795548',
       borderBottomWidth: 0,
     },
     headerTitleStyle: {
-      color: '#161616'
+      color: '#F5F5F5'
     }
   };
 
@@ -73,7 +73,7 @@ const styles = {
   page: StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#eee'
+      backgroundColor: '#fff'
     }
   }),
   channel: StyleSheet.create({

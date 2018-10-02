@@ -7,11 +7,11 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
   static navigationOptions = {
     title: 'Profile', 
     headerStyle: {
-      backgroundColor: 'white',
+      backgroundColor: '#795548',
       borderBottomWidth: 0,
     },
     headerTitleStyle: {
-      color: '#161616'
+      color: '#F5F5F5'
     }
   };
 
@@ -78,7 +78,7 @@ const styles = {
   page: StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#eee'
+      backgroundColor: '#fff'
     }
   }),
   profileInfo: StyleSheet.create({

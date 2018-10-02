@@ -19,34 +19,50 @@ const TabsNavigator = createBottomTabNavigator({
     TimelineScreen,
     ProfileScreen,
     PostScreen
+  }, {
+    navigationOptions: {
+      headerTintColor: 'white',
+    }
   }),
   ChannelsStack: createStackNavigator({
     ChannelsScreen,
     TimelineScreen,
     ProfileScreen,
     PostScreen
+  }, {
+    navigationOptions: {
+      headerTintColor: 'white',
+    }
   }),
   ProfileStack: createStackNavigator({
     ProfileScreen,
     PostScreen
+  }, {
+    navigationOptions: {
+      headerTintColor: 'white',
+    }
   })
 }, 
 {
   navigationOptions: ({ navigation }) => ({
     tabBarOptions: {
-      showLabel: false
+      showLabel: false,
+      activeTintColor: '#795548',
+      style: {
+        backgroundColor: '#F5F5F5',
+        height: 40
+      }
     },
     tabBarIcon: ({ focused, tintColor }) => {
-      let platformPrefix = Platform.OS === 'ios'? 'ios': 'md';
-
       const { routeName } = navigation.state;
+      const size = focused? 30: 20;
 
       if (routeName === 'TimelineStack') {
-        return <FontAwesome name="home" size={25} color={tintColor}/>;
+        return <FontAwesome name="home" size={size} color={tintColor}/>;
       } else if (routeName === 'ChannelsStack') {
-        return <FontAwesome name="weixin" size={25} color={tintColor}/>;
+        return <FontAwesome name="weixin" size={size} color={tintColor}/>;
       } else if (routeName === 'ProfileStack') {
-        return <FontAwesome name="user" size={25} color={tintColor}/>;
+        return <FontAwesome name="user" size={size} color={tintColor}/>;
       }
     },
   })
