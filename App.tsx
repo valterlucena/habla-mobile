@@ -9,6 +9,7 @@ import LoginScreen from './src/screens/login/login';
 import ProfileScreen from './src/screens/profile/profile';
 import PostScreen from './src/screens/post/post';
 import AppLoadingScreen from './src/screens/app-loading/app-loading';
+import NewPostScreen from './src/screens/new-post/new-post';
 
 const firebaseConfig = require('./firebase.json');
 
@@ -18,7 +19,7 @@ const TabsNavigator = createBottomTabNavigator({
   TimelineStack: createStackNavigator({
     TimelineScreen,
     ProfileScreen,
-    PostScreen
+    PostScreen,
   }, {
     navigationOptions: {
       headerTintColor: 'white',
@@ -50,12 +51,12 @@ const TabsNavigator = createBottomTabNavigator({
       activeTintColor: '#795548',
       style: {
         backgroundColor: '#F5F5F5',
-        height: 40
-      }
+        height: 60
+      },
     },
     tabBarIcon: ({ focused, tintColor }) => {
       const { routeName } = navigation.state;
-      const size = focused? 30: 20;
+      const size = focused? 35: 25;
 
       if (routeName === 'TimelineStack') {
         return <FontAwesome name="home" size={size} color={tintColor}/>;

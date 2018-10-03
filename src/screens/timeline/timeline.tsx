@@ -4,6 +4,10 @@ import { api } from '../../services/api';
 import { TextInput } from 'react-native-gesture-handler';
 import moment from 'moment';
 import PostComponent from '../../components/post/post';
+import ActionButton from 'react-native-action-button';
+import { FontAwesome } from '@expo/vector-icons';
+import Modal from "react-native-modal";
+import NewPostScreen from '../new-post/new-post';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
   static navigationOptions = (navigation) => {
@@ -25,25 +29,14 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     super(props);
 
     this.state = { 
-      posts: [], 
-      post: {}, 
-      refreshing: false, 
-      editable: false, 
-      posting: false 
+      posts: [],
+      refreshing: false,
+      showNewPostModal: false
     };
-  }
-
-  resetPost() {
-    this.setState({
-      post: {
-        channelId: this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null
-      }
-    });
   }
 
   componentWillMount() {
     this.refresh();
-    this.resetPost();
   }
 
   refresh = async() => {
@@ -69,25 +62,6 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     }
   }
 
-  sendPost = async() => {
-    this.setState({ posting: true });
-
-    try {
-      await api.post('posts', this.state.post);
-      await this.fetchPosts();
-
-    } catch (error) {
-      console.log(error);
-    } 
-
-    this.resetPost();
-    this.setState({ posting: false });
-  }
-
-  handlePostInput = (text: string) => {
-    this.setState({ post: { ...this.state.post, body: text }});
-  }
-
   openChannel = (channel) => {
     if (this.props.navigation.state.params && this.props.navigation.state.params.channel) return;
     
@@ -102,42 +76,55 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     this.props.navigation.push('PostScreen', { post: post });
   }
 
+  newPost = () => {
+    this.setState({ showNewPostModal: true });
+  }
+
+  onPostSent = () => {
+    this.setState({ showNewPostModal: false });
+    this.refresh();
+  }
+
   render() {
     return (
-      <ScrollView contentContainerStyle={styles.page.container}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={this.state.refreshing}
-                      onRefresh={this.refresh}
-                    />
-                  }>
-        <StatusBar barStyle="light-content"/>
-        <View style={styles.newPost.container}>
-          <TextInput style={styles.newPost.input}
-                     onChangeText={this.handlePostInput}
-                     value={this.state.post.body}
-                     placeholderTextColor="black"
-                     placeholder="What's up?"
-                     editable={!this.state.posting}
-                     underlineColorAndroid="rgba(0,0,0,0)"/>
-          {(this.state.post.body && this.state.post.body.trim() !== '')? <TouchableOpacity style={styles.newPost.sendButton}
-                            onPress={this.sendPost}
-                            disabled={this.state.posting}
-                            activeOpacity={1}>
-            {this.state.posting? <ActivityIndicator color="white"/>: <Text style={styles.newPost.sendButtonText}>Send</Text>}
-          </TouchableOpacity>: null}
-        </View>
-        <FlatList data={this.state.posts}
-                  keyExtractor={(item) => item.id.toString()}
-                  renderItem={({item}) =>(
-                  <TouchableOpacity onPress={() => this.openPost(item)}>
-                    <PostComponent post={item}
-                                   showPostHeader={true}
-                                   onOpenProfile={this.openProfile}
-                                   onOpenChannel={this.openChannel}/>
-                  </TouchableOpacity>
-        )}/>
-      </ScrollView>
+      <View style={styles.page.container}>
+        <ScrollView contentContainerStyle={styles.page.container}
+                    refreshControl={
+                      <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this.refresh}
+                      />
+                    }>
+          <StatusBar barStyle="light-content"/>
+          <FlatList data={this.state.posts}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({item}) =>(
+                    <TouchableOpacity onPress={() => this.openPost(item)}>
+                      <PostComponent post={item}
+                                    showPostHeader={true}
+                                    onOpenProfile={this.openProfile}
+                                    onOpenChannel={this.openChannel}/>
+                    </TouchableOpacity>
+          )}/>
+        </ScrollView>
+        <ActionButton buttonColor="#795548"
+                      position="center"
+                      hideShadow={true}
+                      offsetY={10}
+                      onPress={this.newPost}
+                      renderIcon={() => <FontAwesome name="plus" size={28} color={'#F5F5F5'}/>}/>
+
+        <Modal isVisible={this.state.showNewPostModal}
+               avoidKeyboard={true}
+               style={styles.page.newPostModal}
+               animationInTiming={400}
+               animationOutTiming={400}>
+          <NewPostScreen navigation={this.props.navigation} 
+                         onSuccess={this.onPostSent}
+                         onDismiss={() => this.setState({ showNewPostModal: false })}
+                         channel={this.props.navigation.state.params && this.props.navigation.state.params.channel}/>
+        </Modal>
+      </View>
     );
   }
 }
@@ -146,45 +133,21 @@ const styles = {
   page: StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff'
+      backgroundColor: '#fff',
+      flexGrow: 1
+    },
+    newPostModal: {
+      width: '100%',
+      margin: 0,
+      padding: 0
     }
   }),
-  newPost: StyleSheet.create({
-    container: {
-      flexDirection: 'row',
-      backgroundColor: 'white',
-      marginVertical: 2,
-    },
-    input: {
-      padding: 16,
-      backgroundColor: 'white',
-      color: 'black',
-      flex: 1,
-      fontSize: 18
-    },
-    sendButton: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#4dabf5',
-      padding: 8,
-      width: 50,
-      height: 35,
-      borderRadius: 100,
-      margin: 5
-    },
-    sendButtonText: {
-      color: 'white',
-      fontWeight: 'bold',
-    }
-  })
 };
 
 interface TimelineState {
-    posts: any[];
-    post: any;
-    refreshing: boolean;
-    editable: boolean;
-    posting: boolean;
+  posts: any[];
+  refreshing: boolean;
+  showNewPostModal: boolean;
 }
 
 interface TimelineProps {
