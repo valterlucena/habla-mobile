@@ -1,7 +1,6 @@
 import * as React from "react";
 import firebase from 'firebase';
 import { api } from "../../services/api";
-
 export default class AppLoadingScreen extends React.Component<any, any> {
     constructor(props) {
       super(props);
@@ -20,7 +19,8 @@ export default class AppLoadingScreen extends React.Component<any, any> {
               // handle
             }
           } catch (error) {
-            if (error.response.status === 404) {
+            console.log(JSON.stringify(error));
+            if (error.response && error.response.status === 404) {
               // this.props.navigation.navigate('ProfileCreationScreen');
             }
           }
