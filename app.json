@@ -1,5 +1,13 @@
 {
   "expo": {
-    "sdkVersion": "30.0.0"
+    "version": "1.0.0",
+    "slug": "habla",
+    "sdkVersion": "30.0.0",
+    "ios": {
+      "bundleIdentifier": "online.habla.app"
+    },
+    "android": {
+      "package": "online.habla.app"
+    }
   }
 }
