@@ -1,6 +1,5 @@
 import React from 'react';
 import TimelineScreen from './src/screens/timeline/timeline';
-import ChannelsScreen from './src/screens/channels/channels';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
 import { FontAwesome } from '@expo/vector-icons';
 import firebase from 'firebase';
@@ -8,7 +7,7 @@ import LoginScreen from './src/screens/login/login';
 import ProfileScreen from './src/screens/profile/profile';
 import PostScreen from './src/screens/post/post';
 import AppLoadingScreen from './src/screens/app-loading/app-loading';
-import NewPostScreen from './src/screens/new-post/new-post';
+import ProfileCreationScreen from './src/screens/profile-creation/profile-creation';
 
 const firebaseConfig = require('./firebase.json');
 
@@ -72,6 +71,7 @@ export default createSwitchNavigator({
     AppLoadingScreen,
     LoginScreen,
     TabsNavigator,
+    ProfileCreationScreen
   },
 );
   
