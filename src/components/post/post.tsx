@@ -14,7 +14,8 @@ export default class PostComponent extends React.Component<any, PostComponentPro
               {this.props.post.owner?
               <TouchableOpacity onPress={() => this.props.onOpenProfile(this.props.post.owner)}>
                 <Text style={styles.username}>@{ this.props.post.owner.username }</Text>
-              </TouchableOpacity>: (null)}
+              </TouchableOpacity>
+              : <Text style={styles.username}>@anonymous</Text>}
 
               {this.props.post.channel?
               <TouchableOpacity onPress={() => this.props.onOpenChannel(this.props.post.channel)}>

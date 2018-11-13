@@ -1,5 +1,4 @@
-import React, {Component} from 'react';
-import { StyleSheet, View, StatusBar, Platform, Text } from 'react-native';
+import React from 'react';
 import TimelineScreen from './src/screens/timeline/timeline';
 import ChannelsScreen from './src/screens/channels/channels';
 import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
@@ -25,16 +24,16 @@ const TabsNavigator = createBottomTabNavigator({
       headerTintColor: 'white',
     }
   }),
-  ChannelsStack: createStackNavigator({
-    ChannelsScreen,
-    TimelineScreen,
-    ProfileScreen,
-    PostScreen
-  }, {
-    navigationOptions: {
-      headerTintColor: 'white',
-    }
-  }),
+  // ChannelsStack: createStackNavigator({
+  //   TimelineScreen,
+  //   ChannelsScreen,
+  //   ProfileScreen,
+  //   PostScreen
+  // }, {
+  //   navigationOptions: {
+  //     headerTintColor: 'white',
+  //   }
+  // }),
   ProfileStack: createStackNavigator({
     ProfileScreen,
     PostScreen
