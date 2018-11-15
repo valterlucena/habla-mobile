@@ -8,6 +8,7 @@ import ActionButton from 'react-native-action-button';
 import { FontAwesome } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import NewPostScreen from '../new-post/new-post';
+import { Location, Permissions } from 'expo';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
   static navigationOptions = (navigation) => {
@@ -53,7 +54,17 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
   fetchPosts = async() => {
     try {
-      let posts = await api.get('posts', { params: { channelId: this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null }});
+      await Permissions.askAsync(Permissions.LOCATION);
+      const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: false });
+
+      let posts = await api.get('posts', { 
+                                            params: { 
+                                              channelId: this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null,
+                                              lat: location.coords.latitude,
+                                              lon: location.coords.longitude,
+                                              radius: 10000
+                                            }
+                                          });
 
       this.setState({ posts: posts.data });
 
