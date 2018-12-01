@@ -7,12 +7,13 @@ import { TextInput } from 'react-native-gesture-handler';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import { Location } from 'expo';
+import THEME from '../../theme/theme';
 
 export default class PostScreen extends React.Component<PostScreenProps, PostScreenState> {
   static navigationOptions = {
     title: 'Post', 
     headerStyle: {
-      backgroundColor: '#795548',
+      backgroundColor: THEME.colors.primary.default,
       borderBottomWidth: 0,
     },
     headerTitleStyle: {
@@ -251,7 +252,7 @@ const styles = {
     sendButton: {
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#4dabf5',
+      backgroundColor: THEME.colors.secondary.default,
       padding: 8,
       width: 50,
       height: 35,

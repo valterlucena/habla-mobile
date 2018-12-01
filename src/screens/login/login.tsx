@@ -4,6 +4,7 @@ import KeyboardSpacer from 'react-native-keyboard-spacer';
 import firebase from 'firebase';
 import Expo from "expo";
 import { FontAwesome } from '@expo/vector-icons';
+import THEME from "../../theme/theme";
 
 export default class LoginScreen extends React.Component<{}, LoginState> {
     static navigationOptions = {
@@ -102,7 +103,7 @@ const styles = {
         headerText: {
             fontSize: 50,
             marginBottom: 10,
-            color: "#795548"
+            color: THEME.colors.primary.default
         },
         input: {
             width: '100%',

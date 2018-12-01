@@ -4,12 +4,13 @@ import { FontAwesome } from '@expo/vector-icons';
 import { Permissions, Location } from 'expo';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
+import THEME from '../../theme/theme';
 
 export default class NewPostScreen extends React.Component<NewPostScreenProps, NewPostScreenState> {
   static navigationOptions = {
     title: 'New post', 
     headerStyle: {
-      backgroundColor: '#795548',
+      backgroundColor: THEME.colors.primary.default,
       borderBottomWidth: 0,
     },
     headerTitleStyle: {
@@ -96,13 +97,16 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
         <StatusBar hidden={true}></StatusBar>
         <View style={styles.header.container}>
           <TouchableOpacity onPress={this.dismiss}>
-            <FontAwesome name="angle-left" size={45} color="#795548"></FontAwesome>
+            <FontAwesome name="chevron-left" size={35} color={THEME.colors.primary.default}></FontAwesome>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <FontAwesome name="image" size={35} color={THEME.colors.primary.default}></FontAwesome>
           </TouchableOpacity>
         </View>
         <TextInput style={styles.newPost.input}
                   onChangeText={this.handlePostInput}
                   value={this.state.post.body}
-                  placeholderTextColor="black"
+                  placeholderTextColor="white"
                   placeholder="What's up?"
                   editable={!this.state.posting}
                   multiline={true}
@@ -123,33 +127,35 @@ const styles = {
     container: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: 16
+      padding: 16,
+      justifyContent: 'space-between'
     }
   }),
   newPost: StyleSheet.create({
     container: {
-      backgroundColor: 'white',
+      backgroundColor: THEME.colors.secondary.light,
       flexGrow: 1,
     },
     input: {
       marginTop: 5,
       padding: 16,
-      backgroundColor: 'white',
-      color: 'black',
+      backgroundColor: THEME.colors.secondary.light,
+      color: 'white',
       flex: 1,
       fontSize: 25,
-      flexGrow: 1
+      flexGrow: 1,
+      fontWeight: "bold"
     },
     sendButton: {
-      paddingHorizontal: 14,
-      paddingVertical: 14,
-      backgroundColor: "#795548",
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      backgroundColor: THEME.colors.primary.default,
       width: '100%',
     },
     sendButtonText: {
       fontSize: 18,
       textAlign: 'center',
-      color: "#FFFFFF",
+      color: 'white',
       fontWeight: "bold"
     }
   })

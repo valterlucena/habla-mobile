@@ -8,6 +8,7 @@ import NewPostScreen from '../new-post/new-post';
 import { Location, Permissions } from 'expo';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
+import THEME from '../../theme/theme';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
   static navigationOptions = (navigation) => {
@@ -16,7 +17,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     return {
       title: params && params.channel? `#${params.channel.name}`: 'Timeline', 
       headerStyle: {
-        backgroundColor: '#795548',
+        backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
       },
       headerTitleStyle: {
@@ -138,7 +139,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                     </TouchableOpacity>
           )}/>
         </ScrollView>
-        <ActionButton buttonColor="#795548"
+        <ActionButton buttonColor={THEME.colors.secondary.default}
                       position="center"
                       hideShadow={true}
                       offsetY={10}

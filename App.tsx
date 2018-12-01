@@ -9,6 +9,7 @@ import PostScreen from './src/screens/post/post';
 import AppLoadingScreen from './src/screens/app-loading/app-loading';
 import ProfileCreationScreen from './src/screens/profile-creation/profile-creation';
 import ChannelsScreen from './src/screens/channels/channels';
+import THEME from './src/theme/theme';
 
 const firebaseConfig = require('./firebase.json');
 
@@ -47,7 +48,7 @@ const TabsNavigator = createBottomTabNavigator({
   navigationOptions: ({ navigation }) => ({
     tabBarOptions: {
       showLabel: false,
-      activeTintColor: '#795548',
+      activeTintColor: THEME.colors.primary.default,
       style: {
         backgroundColor: '#F5F5F5',
         height: 60

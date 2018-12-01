@@ -3,6 +3,7 @@ import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity } 
 import firebase from 'firebase';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
+import THEME from '../../theme/theme';
 
 export default class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
   static navigationOptions = (navigation) => {
@@ -11,7 +12,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     return {
       title: params && params.profile? `@${params.profile.username}`: 'Profile', 
       headerStyle: {
-        backgroundColor: '#795548',
+        backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
       },
       headerTitleStyle: {

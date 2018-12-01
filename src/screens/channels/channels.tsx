@@ -2,12 +2,13 @@ import * as React from 'react';
 import { StyleSheet, Text, ScrollView, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
+import THEME from '../../theme/theme';
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
   static navigationOptions = {
     title: 'Channels', 
     headerStyle: {
-      backgroundColor: '#795548',
+      backgroundColor: THEME.colors.primary.default,
       borderBottomWidth: 0,
     },
     headerTitleStyle: {

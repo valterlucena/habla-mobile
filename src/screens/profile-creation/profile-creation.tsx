@@ -2,6 +2,7 @@ import React from "react";
 import { Text, StyleSheet, View, SafeAreaView, StatusBar, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
+import THEME from "../../theme/theme";
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   constructor(props: any) {
@@ -111,7 +112,7 @@ const styles = {
       submitButton: {
         paddingHorizontal: 14,
         paddingVertical: 14,
-        backgroundColor: "#795548",
+        backgroundColor: THEME.colors.primary.default,
         width: '100%',
         borderRadius: 5,
         alignItems: "center"
