@@ -11,6 +11,7 @@ export default class PostComponent extends React.Component<any, PostComponentPro
       return (<View style={styles.container}>
           { this.props.showPostHeader? 
             (<View style={styles.header}>
+            
               {this.props.post.owner?
               <TouchableOpacity onPress={() => this.props.onOpenProfile(this.props.post.owner)}>
                 <Text style={styles.username}>@{ this.props.post.owner.username }</Text>
@@ -19,8 +20,10 @@ export default class PostComponent extends React.Component<any, PostComponentPro
 
               {this.props.post.channel?
               <TouchableOpacity onPress={() => this.props.onOpenChannel(this.props.post.channel)}>
-                <Text style={styles.channelTitle}>#{ this.props.post.channel.title }</Text>
+                <Text style={styles.channelTitle}>#{ this.props.post.channel.name }</Text>
               </TouchableOpacity>: (null)}
+
+              <Text>{this.props.post.distance}</Text>
             </View>)
           : null }
             

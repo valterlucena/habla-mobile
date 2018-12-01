@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator, StatusBar } from 'react-native';
-import { api } from '../../services/api';
-import firebase from 'firebase';
-import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { FontAwesome } from '@expo/vector-icons';
-import { Header } from 'react-navigation';
+import { Permissions, Location } from 'expo';
+import { client } from '../../services/client';
+import gql from 'graphql-tag';
 
 export default class NewPostScreen extends React.Component<NewPostScreenProps, NewPostScreenState> {
   static navigationOptions = {
@@ -36,19 +35,53 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   sendPost = async() => {
     this.setState({ posting: true });
 
-    try {
-      await api.post('posts', this.state.post);
+    await Permissions.askAsync(Permissions.LOCATION);
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: false });
 
-      this.props.onSuccess && this.props.onSuccess();
+    try {
+      const response = await client.mutate({
+        variables: { 
+          post: this.state.post,
+          channelId: this.props.channel? this.props.channel.id: null
+        },
+        mutation: gql(`
+          mutation CreatePost ($channelId: ID, $post: PostInput!) {
+            createPost(channelId: $channelId, post: $post) {
+              id,
+              body,
+              distance,
+              createdAt
+              owner {
+                uid
+                username
+              }
+              channel {
+                id
+                name
+              }
+            }
+          }
+        `),
+        context: {
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+          }
+        }
+      });
+
+      this.props.onSuccess && this.props.onSuccess(response.data.createPost);
     } catch (error) {
       console.log(error);
     } 
+
+    this.setState({ posting: false });
   }
 
   resetPost() {
     this.setState({
       post: {
-        channelId: this.props.channel? this.props.channel.id: null
+        
       }
     });
   }

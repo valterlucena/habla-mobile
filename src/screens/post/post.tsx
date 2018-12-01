@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import { api } from '../../services/api';
 import firebase from 'firebase';
 import PostComponent from '../../components/post/post';
 import moment from 'moment';
 import { TextInput } from 'react-native-gesture-handler';
+import { client } from '../../services/client';
+import gql from 'graphql-tag';
+import { Location } from 'expo';
 
 export default class PostScreen extends React.Component<PostScreenProps, PostScreenState> {
   static navigationOptions = {
@@ -21,7 +23,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   constructor(props) {
     super(props);
 
-    this.state = { post: null, comments: [], newComment: { body: null }, refreshing: false, postingComment: false };
+    this.state = { post: null, newComment: { body: null }, refreshing: false, postingComment: false };
   }
 
   async componentWillMount() {
@@ -39,7 +41,6 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
 
     try {
       await this.loadPost();
-      await this.loadComments();
     } catch (error) {
       console.log(error);
     }
@@ -48,15 +49,49 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   }
 
   loadPost = async() => {
-    let post = await api.get(`posts/${this.state.post.id}`);
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: false });
 
-    this.setState({ post: post.data });
-  }
+    const response = await client.query<any>({
+      query: gql(`
+        {
+          post(id: ${this.state.post.id}) {
+            id
+            body
+            distance
+            createdAt
+            anonymous
+            owner {
+              uid
+              username
+              name
+            }
+            channel {
+              id
+              name
+            }
+            comments {
+              id
+              createdAt
+              body
+              owner {
+                uid
+                name
+                username
+              }
+            }
+          }
+        }
+      `),
+      context: {
+        location: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude
+        }
+      },
+      fetchPolicy: 'no-cache'
+    });
 
-  loadComments = async() => {
-    let comments = await api.get(`posts/${this.state.post.id}/comments`);
-
-    this.setState({ comments: comments.data });
+    this.setState({ post: response.data.post });
   }
 
   logout = () => {
@@ -82,9 +117,37 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   sendComment = async() => {
     this.setState({ postingComment: true });
 
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: false });
+
     try {
-      await api.post(`posts/${this.state.post.id}/comments`, this.state.newComment);
-      await this.loadComments();
+      const response = await client.mutate({
+        variables: { 
+          comment: this.state.newComment,
+          postId: this.state.post.id
+        },
+        mutation: gql(`
+          mutation CreateComment ($postId: ID!, $comment: CommentInput!) {
+            createComment(postId: $postId, comment: $comment) {
+              id
+              body
+              distance
+              owner {
+                uid
+                name
+                username
+              }
+            }
+          }
+        `),
+        context: {
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+          }
+        }
+      });
+
+      this.setState({ post: { ...this.state.post, comments: [response.data.createComment, ...this.state.post.comments]}});
     } catch (error) {
       console.log(error);
     } 
@@ -122,7 +185,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             {this.state.postingComment? <ActivityIndicator color="white"/>: <Text style={styles.newComment.sendButtonText}>Send</Text>}
           </TouchableOpacity>: null}
         </View>
-        <FlatList data={this.state.comments}
+        <FlatList data={this.state.post.comments as any[]}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({item}) =>(
             <View style={styles.comment.view}>
@@ -204,7 +267,6 @@ const styles = {
 
 interface PostScreenState {
   post: any;
-  comments: any[];
   newComment: { body: string };
   refreshing: boolean;
   postingComment: boolean;

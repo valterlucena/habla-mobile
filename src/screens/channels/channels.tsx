@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { StyleSheet, Text, ScrollView, FlatList, RefreshControl, View, TouchableOpacity } from 'react-native';
-import { api } from '../../services/api';
+import { StyleSheet, Text, ScrollView, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
+import { client } from '../../services/client';
+import gql from 'graphql-tag';
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
   static navigationOptions = {
@@ -38,11 +39,20 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
 
   fetchChannels = async() => {
     try {
-      let channels = await api.get('channels');
-
-      this.setState({ channels: channels.data });
+      const response = await client.query<any>({
+        query: gql(`
+          {
+            channels {
+              id,
+              name
+            }
+          }
+        `)
+      });
+    
+      this.setState({ channels: response.data.channels });
     } catch (error) {
-     console.log(error);
+      console.log(error);
     }
   }
 
@@ -61,7 +71,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                   renderItem={({item}) =>(
                     <TouchableOpacity style={styles.channel.container}
                                       onPress={() => this.props.navigation.navigate('TimelineScreen', { channel: item })}>
-                      <Text style={styles.channel.channelTitle}>#{ item.title }</Text>
+                      <Text style={styles.channel.channelTitle}>#{ item.name }</Text>
                     </TouchableOpacity>
         )}/>
       </ScrollView>

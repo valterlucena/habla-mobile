@@ -1,17 +1,22 @@
 import * as React from 'react';
 import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity } from 'react-native';
-import { api } from '../../services/api';
 import firebase from 'firebase';
+import { client } from '../../services/client';
+import gql from 'graphql-tag';
 
 export default class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
-  static navigationOptions = {
-    title: 'Profile', 
-    headerStyle: {
-      backgroundColor: '#795548',
-      borderBottomWidth: 0,
-    },
-    headerTitleStyle: {
-      color: '#F5F5F5'
+  static navigationOptions = (navigation) => {
+    let params = navigation.navigation.state.params;
+
+    return {
+      title: params && params.profile? `@${params.profile.username}`: 'Profile', 
+      headerStyle: {
+        backgroundColor: '#795548',
+        borderBottomWidth: 0,
+      },
+      headerTitleStyle: {
+        color: '#F5F5F5'
+      }
     }
   };
 
@@ -31,9 +36,21 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     this.setState({ refreshing: true });
 
     try {
-      let profile = await api.get(`profiles/${navProfile? navProfile.uid: 'self'}`);
+      const response = await client.query<any>({
+        query: gql(`
+          {
+            profile(uid: "${navProfile? navProfile.uid: firebase.auth().currentUser.uid}") {
+              uid,
+              name,
+              username
+            }
+          }
+        `),
+        fetchPolicy: 'no-cache'
+      },
+      );
 
-      this.setState({ profile: profile.data });
+      this.setState({ profile: response.data.profile });
     } catch (error) {
       console.log(error);
     }
@@ -43,6 +60,10 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
 
   logout = () => {
     firebase.auth().signOut();
+  }
+
+  isSelfProfile = () => {
+    return !this.state.profile || firebase.auth().currentUser && firebase.auth().currentUser.uid === this.state.profile.uid;
   }
 
   render() {
@@ -65,10 +86,10 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
           </View>
         </View>): null }
 
-        <TouchableOpacity style={styles.profileInfo.line}
+        {this.isSelfProfile()? <TouchableOpacity style={styles.profileInfo.line}
                           onPress={this.logout}>
           <Text style={styles.profileInfo.lineText}>Sign out</Text>
-        </TouchableOpacity>
+        </TouchableOpacity>: null}
       </ScrollView>
     );
   }

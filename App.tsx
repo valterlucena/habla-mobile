@@ -8,6 +8,7 @@ import ProfileScreen from './src/screens/profile/profile';
 import PostScreen from './src/screens/post/post';
 import AppLoadingScreen from './src/screens/app-loading/app-loading';
 import ProfileCreationScreen from './src/screens/profile-creation/profile-creation';
+import ChannelsScreen from './src/screens/channels/channels';
 
 const firebaseConfig = require('./firebase.json');
 
@@ -23,16 +24,16 @@ const TabsNavigator = createBottomTabNavigator({
       headerTintColor: 'white',
     }
   }),
-  // ChannelsStack: createStackNavigator({
-  //   TimelineScreen,
-  //   ChannelsScreen,
-  //   ProfileScreen,
-  //   PostScreen
-  // }, {
-  //   navigationOptions: {
-  //     headerTintColor: 'white',
-  //   }
-  // }),
+  ChannelsStack: createStackNavigator({
+    ChannelsScreen,
+    TimelineScreen,
+    ProfileScreen,
+    PostScreen
+  }, {
+    navigationOptions: {
+      headerTintColor: 'white',
+    }
+  }),
   ProfileStack: createStackNavigator({
     ProfileScreen,
     PostScreen

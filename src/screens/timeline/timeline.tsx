@@ -1,21 +1,20 @@
 import * as React from 'react';
-import { FlatList, View, StyleSheet, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator, StatusBar } from 'react-native';
-import { api } from '../../services/api';
-import { TextInput } from 'react-native-gesture-handler';
-import moment from 'moment';
+import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar } from 'react-native';
 import PostComponent from '../../components/post/post';
 import ActionButton from 'react-native-action-button';
 import { FontAwesome } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import NewPostScreen from '../new-post/new-post';
 import { Location, Permissions } from 'expo';
+import { client } from '../../services/client';
+import gql from 'graphql-tag';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
   static navigationOptions = (navigation) => {
     let params = navigation.navigation.state.params;
 
     return {
-      title: params && params.channel? `#${params.channel.title}`: 'Timeline', 
+      title: params && params.channel? `#${params.channel.name}`: 'Timeline', 
       headerStyle: {
         backgroundColor: '#795548',
         borderBottomWidth: 0,
@@ -57,17 +56,37 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       await Permissions.askAsync(Permissions.LOCATION);
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: false });
 
-      let posts = await api.get('posts', { 
-                                            params: { 
-                                              channelId: this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null,
-                                              lat: location.coords.latitude,
-                                              lon: location.coords.longitude,
-                                              radius: 10000
-                                            }
-                                          });
+      const channelId = this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null;
 
-      this.setState({ posts: posts.data });
-
+      const response = await client.query<any>({
+        query: gql(`
+          {
+            posts(radius: 1500000000000000, skip: 0, take: 10, channelId: ${channelId}) {
+              id,
+              body,
+              distance,
+              createdAt
+              owner {
+                uid
+                username
+              }
+              channel {
+                id
+                name
+              }
+            }
+          }
+        `),
+        context: {
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+          }
+        },
+        fetchPolicy: 'no-cache'
+      });
+      
+      this.setState({ posts: response.data.posts });
     } catch (error) {
      console.log(error);
     }
@@ -91,9 +110,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     this.setState({ showNewPostModal: true });
   }
 
-  onPostSent = () => {
+  onPostSent = (post) => {
     this.setState({ showNewPostModal: false });
-    this.refresh();
+    
+    this.setState({ posts: [post, ...this.state.posts]});
   }
 
   render() {

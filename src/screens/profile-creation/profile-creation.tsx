@@ -1,6 +1,7 @@
 import React from "react";
-import { Text, StyleSheet, View, SafeAreaView, StatusBar, TextInput, NativeSyntheticEvent, TextInputChangeEventData, TouchableOpacity, ActivityIndicator } from "react-native";
-import { api } from "../../services/api";
+import { Text, StyleSheet, View, SafeAreaView, StatusBar, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
+import { client } from "../../services/client";
+import gql from "graphql-tag";
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   constructor(props: any) {
@@ -27,12 +28,23 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     this.setState({ loading: true });
 
     try {
-      await api.put("profiles/self", this.state.profile);
+      const response = await client.mutate({
+        variables: { 
+          profile: this.state.profile
+        },
+        mutation: gql(`
+          mutation UpdateProfile ($profile: ProfileInput!) {
+            updateProfile(profile: $profile) {
+              uid
+            }
+          }
+        `)
+      });
 
       this.props.navigation.navigate("TabsNavigator");
     } catch (error) {
       this.setState({ loading: false });
-      console.log(error);
+      console.log(JSON.stringify(error));
     }
   }
 

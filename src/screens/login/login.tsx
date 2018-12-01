@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from "react-native";
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import firebase from 'firebase';
 import Expo from "expo";
