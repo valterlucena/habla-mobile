@@ -74,6 +74,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
               id
               createdAt
               body
+              distance
               owner {
                 uid
                 name
@@ -194,9 +195,10 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
                 <TouchableOpacity onPress={() => this.openProfile(item.owner)}>
                   <Text style={styles.comment.username}>@{ item.owner.username }</Text>
                 </TouchableOpacity>
-                <Text style={styles.comment.timeAgo}>{ moment(item.createdAt).fromNow(true) }</Text>
+                <Text style={styles.comment.headerText}>{ item.distance }</Text>
               </View>
               <Text style={styles.comment.body}>{ item.body }</Text>
+              <Text style={styles.comment.bottomText}>{ moment(item.createdAt).fromNow(true) }</Text>
             </View>
           )}/>
       </ScrollView>
@@ -221,7 +223,11 @@ const styles = {
       flexDirection: 'row',
       justifyContent: 'space-between'
     },
-    timeAgo: {
+    headerText: {
+      fontSize: 10, 
+      color: '#000'
+    },
+    bottomText: {
       fontSize: 10, 
       color: '#000'
     },

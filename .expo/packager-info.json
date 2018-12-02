@@ -1,9 +1,9 @@
 {
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 27873,
-  "expoServerNgrokUrl": "https://eg-u3s.lucashenrique125.habla-mobile.exp.direct",
-  "packagerNgrokUrl": "https://packager.eg-u3s.lucashenrique125.habla-mobile.exp.direct",
-  "ngrokPid": 12194,
+  "packagerPid": 1843,
+  "expoServerNgrokUrl": "https://px-i46.lucashenrique125.habla-mobile.exp.direct",
+  "packagerNgrokUrl": "https://packager.px-i46.lucashenrique125.habla-mobile.exp.direct",
+  "ngrokPid": 76073,
   "devToolsPort": 19002
 }
