@@ -61,6 +61,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             distance
             createdAt
             anonymous
+            commentsCount
             owner {
               uid
               username
