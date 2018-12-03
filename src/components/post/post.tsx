@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 import moment from 'moment';
 import { FontAwesome } from '@expo/vector-icons';
 import { client } from '../../services/client';
@@ -36,6 +36,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
               }
               profile {
                 uid
+                photoURL
               }
               post {
                 rate
@@ -65,7 +66,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       { this.props.showPostHeader? 
         (<View style={styles.header}>
           <TouchableOpacity style={styles.avatar} disabled={ !this.state.post.owner } onPress={() => this.props.onOpenProfile(this.state.post.owner)}>
-            <FontAwesome style={styles.avatarIcon} name="user-circle"/>
+            { this.state.post.owner && this.state.post.owner.photoURL? <Image style={styles.avatarIconImage as any} source={{ uri: this.state.post.owner.photoURL }}/>: <FontAwesome style={styles.avatarIcon} name="user-circle"/>}
             {this.state.post.owner?
               <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>
             : <Text style={styles.headerText}>anonymous</Text>}
@@ -142,6 +143,12 @@ const styles = StyleSheet.create({
   avatarIcon: {
     fontSize: 30,
     marginRight: 8
+  },
+  avatarIconImage: {
+    marginRight: 8,
+    width: 40,
+    height: 40,
+    borderRadius: 20
   },
   headerText: {
     fontSize: 12, 

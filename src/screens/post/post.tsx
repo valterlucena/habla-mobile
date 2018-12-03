@@ -63,11 +63,14 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             anonymous
             commentsCount
             rate
-            profilePostVote
+            profilePostVote {
+              type
+            }
             owner {
               uid
               username
               name
+              photoURL
             }
             channel {
               id

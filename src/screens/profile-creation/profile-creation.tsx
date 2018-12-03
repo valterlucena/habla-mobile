@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, View, SafeAreaView, StatusBar, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Text, StyleSheet, View, SafeAreaView, StatusBar, TextInput, TouchableOpacity, ActivityIndicator, Image } from "react-native";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
 import THEME from "../../theme/theme";
@@ -12,8 +12,9 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
 
     if (this.props.navigation.state.params && this.props.navigation.state.params.user) {
       propsProfile = {
-        name: this.props.navigation.state.params.user.displayName
-      }
+        name: this.props.navigation.state.params.user.displayName,
+        photoURL: this.props.navigation.state.params.user.photoURL
+      };
     }
 
     this.state = {
@@ -54,7 +55,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         <SafeAreaView>
           <StatusBar barStyle="dark-content"/>
           <View style={styles.page.container.view}>
-            <Text style={styles.page.header.viewTitle}>Profile</Text>
+            <View style={styles.page.header.row}>
+              <Text style={styles.page.header.viewTitle}>Profile</Text>
+              { this.state.profile.photoURL? <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={{ uri: this.state.profile.photoURL }}/> : null }
+            </View>
             <Text style={styles.page.header.viewSubtitle}>You're almost ready to start using Habla, {this.state.profile.name}! Let's create your public profile.</Text>
             <TextInput style={styles.page.profileForm.textInput}
                        placeholder="Name"
@@ -94,12 +98,18 @@ const styles = {
       }
     }),
     header: StyleSheet.create({
+      row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 5
+      },
       viewTitle: {
         fontSize: 35,
         fontWeight: "bold"
       },
       viewSubtitle: {
-        fontSize: 20
+        fontSize: 20,
+        textAlign: 'justify'
       }
     }),
     profileForm: StyleSheet.create({

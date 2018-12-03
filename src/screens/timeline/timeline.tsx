@@ -75,6 +75,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
               owner {
                 uid
                 username
+                photoURL
               }
               channel {
                 id
