@@ -62,6 +62,8 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             createdAt
             anonymous
             commentsCount
+            rate
+            profilePostVote
             owner {
               uid
               username
@@ -150,12 +152,13 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
         }
       });
 
-      this.setState({ post: { ...this.state.post, comments: [response.data.createComment, ...this.state.post.comments]}});
+      this.setState({ post: { ...this.state.post, comments: [response.data.createComment, ...this.state.post.comments], commentsCount: this.state.post.commentsCount + 1 }});
+      this.setState({ newComment: { body: null }});
     } catch (error) {
       console.log(error);
     } 
 
-    this.setState({ newComment: { body: null }, postingComment: false });
+    this.setState({ postingComment: false });
   }
 
   render() {

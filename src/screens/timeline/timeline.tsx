@@ -68,6 +68,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
               distance
               createdAt
               commentsCount
+              rate
+              profilePostVote {
+                type
+              }
               owner {
                 uid
                 username

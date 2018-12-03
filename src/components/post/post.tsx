@@ -2,52 +2,110 @@ import * as React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import moment from 'moment';
 import { FontAwesome } from '@expo/vector-icons';
+import { client } from '../../services/client';
+import gql from 'graphql-tag';
 
-export default class PostComponent extends React.Component<any, PostComponentProps> {
+export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   constructor(props: PostComponentProps) {
     super(props);
+
+    this.state = { post: this.props.post };
+  }
+
+  componentWillReceiveProps() {
+    this.setState({ post: this.props.post });
+  }
+
+  vote = async(type: "UP" | "DOWN") => {
+    if (!(type === "UP" || type === "DOWN")) return;
+
+    this.setState({ post: { ... this.state.post }});
+
+    try {
+      const response = await client.mutate({
+        variables: { 
+          postId: this.state.post.id,
+          type: type
+        },
+        mutation: gql(`
+          mutation VotePost ($postId: ID!, $type: PostVoteType!) {
+            vote(postId: $postId, type: $type) {
+              type
+              post {
+                id
+              }
+              profile {
+                uid
+              }
+              post {
+                rate
+              }
+            }
+          }
+        `)
+      });
+
+      this.setState({
+        post: {
+          ... this.state.post, 
+          rate: response.data.vote.post.rate,
+          profilePostVote: response.data.vote
+        }
+      });
+    } catch (error) {
+      // handle
+    }
   }
 
   render() {
+      const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
+
       return (
       <View style={styles.container}>
       { this.props.showPostHeader? 
         (<View style={styles.header}>
-          <TouchableOpacity style={styles.avatar} disabled={ !this.props.post.owner } onPress={() => this.props.onOpenProfile(this.props.post.owner)}>
+          <TouchableOpacity style={styles.avatar} disabled={ !this.state.post.owner } onPress={() => this.props.onOpenProfile(this.state.post.owner)}>
             <FontAwesome style={styles.avatarIcon} name="user-circle"/>
-            {this.props.post.owner?
-              <Text style={styles.headerText}>{ this.props.post.owner.username }</Text>
+            {this.state.post.owner?
+              <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>
             : <Text style={styles.headerText}>anonymous</Text>}
           </TouchableOpacity>
 
-          {this.props.post.channel?
-          <TouchableOpacity onPress={() => this.props.onOpenChannel(this.props.post.channel)}>
-            <Text style={styles.channelTitle}>#{ this.props.post.channel.name }</Text>
+          {this.state.post.channel?
+          <TouchableOpacity onPress={() => this.props.onOpenChannel(this.state.post.channel)}>
+            <Text style={styles.channelTitle}>#{ this.state.post.channel.name }</Text>
           </TouchableOpacity>: (null)}
 
-          <Text style={styles.headerText}>{this.props.post.distance}</Text>
+          <Text style={styles.headerText}>{this.state.post.distance}</Text>
         </View>)
       : null }
         <View style={styles.postBody}>
           <View style={styles.postLeft}>
             <View style={styles.middle}>
-              <Text style={styles.bodyText}>{ this.props.post.body }</Text>
+              <Text style={styles.bodyText}>{ this.state.post.body }</Text>
             </View>
           </View>
           <View style={styles.postRight}>
-            <FontAwesome style={styles.voteButton} name="chevron-up"/>
-            <FontAwesome style={styles.voteButton} name="chevron-down"/>
+            <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")}>
+              <FontAwesome style={styles.voteButton} name="chevron-up" color={vote === "UP"? "#777": null}/>
+            </TouchableOpacity>
+            <Text style={styles.postRate}>
+              { this.state.post.rate || 0 }
+            </Text>
+            <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")}>
+              <FontAwesome style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.bottom}>
-          <Text style={styles.bottomText}>{ moment(this.props.post.createdAt).fromNow() }</Text>
+          <Text style={styles.bottomText}>{ moment(this.state.post.createdAt).fromNow() }</Text>
           <Text style={styles.separator}>
             •
           </Text>
           <View style={styles.comments}>
             <FontAwesome style={styles.commentsIcon} name="comments"/>
             <Text style={styles.bottomText}>
-              { this.props.post.commentsCount }
+              { this.state.post.commentsCount }
             </Text>
           </View>
         </View>
@@ -57,7 +115,7 @@ export default class PostComponent extends React.Component<any, PostComponentPro
 
 const styles = StyleSheet.create({
   postBody: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   container: { 
     backgroundColor: '#fff',
@@ -114,6 +172,9 @@ const styles = StyleSheet.create({
   voteButton: {
     fontSize: 25
   },
+  postRate: {
+    fontSize: 18
+  },
   bottomText: {
     fontSize: 10
   },
@@ -135,4 +196,8 @@ export interface PostComponentProps {
   showPostHeader: boolean;
   onOpenProfile: (profile) => void;
   onOpenChannel: (channel) => void;
+}
+
+export interface PostComponentState {
+  post: any;
 }
