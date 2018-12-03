@@ -64,7 +64,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
   }
 
   isSelfProfile = () => {
-    return !this.state.profile || firebase.auth().currentUser && firebase.auth().currentUser.uid === this.state.profile.uid;
+    return this.state.profile && firebase.auth().currentUser && firebase.auth().currentUser.uid === this.state.profile.uid;
   }
 
   render() {
