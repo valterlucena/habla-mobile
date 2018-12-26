@@ -200,7 +200,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             <View style={styles.comment.view}>
               <View style={styles.comment.header}>
                 <TouchableOpacity onPress={() => this.openProfile(item.owner)}>
-                  <Text style={styles.comment.username}>@{ item.owner.username }</Text>
+                  <Text style={styles.comment.username}>@{ item.owner? item.owner.username: 'anonymous' }</Text>
                 </TouchableOpacity>
                 <Text style={styles.comment.headerText}>{ item.distance }</Text>
               </View>

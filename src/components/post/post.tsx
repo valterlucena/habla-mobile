@@ -65,7 +65,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       <View style={styles.container}>
       { this.props.showPostHeader? 
         (<View style={styles.header}>
-          <TouchableOpacity style={styles.avatar} disabled={ !this.state.post.owner } onPress={() => this.props.onOpenProfile(this.state.post.owner)}>
+          <TouchableOpacity style={styles.avatar} disabled={ !this.state.post.owner } onPress={() => this.props.onOpenProfile && this.props.onOpenProfile(this.state.post.owner)}>
             { this.state.post.owner && this.state.post.owner.photoURL? <Image style={styles.avatarIconImage as any} source={{ uri: this.state.post.owner.photoURL }}/>: <FontAwesome style={styles.avatarIcon} name="user-circle"/>}
             {this.state.post.owner?
               <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>
@@ -73,7 +73,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </TouchableOpacity>
 
           {this.state.post.channel?
-          <TouchableOpacity onPress={() => this.props.onOpenChannel(this.state.post.channel)}>
+          <TouchableOpacity onPress={() => this.props.onOpenChannel && this.props.onOpenChannel(this.state.post.channel)}>
             <Text style={styles.channelTitle}>#{ this.state.post.channel.name }</Text>
           </TouchableOpacity>: (null)}
 
@@ -201,8 +201,8 @@ const styles = StyleSheet.create({
 export interface PostComponentProps {
   post: any;
   showPostHeader: boolean;
-  onOpenProfile: (profile) => void;
-  onOpenChannel: (channel) => void;
+  onOpenProfile?: (profile) => void;
+  onOpenChannel?: (channel) => void;
 }
 
 export interface PostComponentState {
