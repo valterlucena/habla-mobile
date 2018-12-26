@@ -128,9 +128,8 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
           <Text style={styles.profileInfo.lineText}>Sign out</Text>
         </TouchableOpacity>: null}
         { (this.state.profile && this.state.profile.posts || []).map(item => (
-        <TouchableOpacity onPress={() => this.openPost(item)}>
-          <PostComponent key={item.id}
-                         post={item}
+        <TouchableOpacity key={item.id} onPress={() => this.openPost(item)}>
+          <PostComponent post={item}
                          showPostHeader={true}
                          onOpenChannel={this.openChannel}/>
         </TouchableOpacity>)
