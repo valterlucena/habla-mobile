@@ -107,7 +107,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   }
 
   openChannel = (channel) => {
-    // to be implemented
+    this.props.navigation.push('TimelineScreen', { channel: channel });
   }
 
   openProfile = (profile) => {
