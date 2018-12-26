@@ -72,11 +72,6 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             : <Text style={styles.headerText}>anonymous</Text>}
           </TouchableOpacity>
 
-          {this.state.post.channel?
-          <TouchableOpacity onPress={() => this.props.onOpenChannel && this.props.onOpenChannel(this.state.post.channel)}>
-            <Text style={styles.channelTitle}>#{ this.state.post.channel.name }</Text>
-          </TouchableOpacity>: (null)}
-
           <Text style={styles.headerText}>{this.state.post.distance}</Text>
         </View>)
       : null }
@@ -100,11 +95,20 @@ export default class PostComponent extends React.Component<PostComponentProps, P
         </View>
         <View style={styles.bottom}>
           <Text style={styles.bottomText}>{ moment(this.state.post.createdAt).fromNow() }</Text>
+          {this.state.post.channel? 
+          (<View style={styles.footerItem}>
+            <Text style={styles.separator}>
+              •
+            </Text>
+            <TouchableOpacity onPress={() => this.props.onOpenChannel && this.props.onOpenChannel(this.state.post.channel)}>
+              <Text style={styles.channelTitle}>#{ this.state.post.channel.name }</Text>
+            </TouchableOpacity>
+          </View>): (null)}
           <Text style={styles.separator}>
             •
           </Text>
-          <View style={styles.comments}>
-            <FontAwesome style={styles.commentsIcon} name="comments"/>
+          <View style={styles.footerItem}>
+            <FontAwesome style={styles.footerItemIcon} name="comments"/>
             <Text style={styles.bottomText}>
               { this.state.post.commentsCount }
             </Text>
@@ -185,11 +189,11 @@ const styles = StyleSheet.create({
   bottomText: {
     fontSize: 10
   },
-  comments: {
+  footerItem: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  commentsIcon: {
+  footerItemIcon: {
     fontSize: 20,
     marginRight: 3
   },
