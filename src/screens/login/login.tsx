@@ -70,11 +70,16 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
 
     signInWithFacebook = async() => {
         this.setState({ loading: true });
-
-    
+        
         try {
-          const result = await Expo.Facebook.logInWithReadPermissionsAsync("2136539466408117", { behavior: "web"});
-          const credential = firebase.auth.FacebookAuthProvider.credential(result.token);
+          const result: any = await Expo.AuthSession.startAsync({
+            authUrl:
+              `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` +
+              `&client_id=${"2136539466408117"}` +
+              `&redirect_uri=${encodeURIComponent(Expo.AuthSession.getRedirectUrl())}`,
+          })
+
+          const credential = firebase.auth.FacebookAuthProvider.credential(result.params.access_token);
           
           await firebase.auth().signInAndRetrieveDataWithCredential(credential);
         } catch (error) {
