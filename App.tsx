@@ -1,6 +1,6 @@
 import React from 'react';
 import TimelineScreen from './src/screens/timeline/timeline';
-import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator } from 'react-navigation';
+import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 import { FontAwesome } from '@expo/vector-icons';
 import firebase from 'firebase';
 import LoginScreen from './src/screens/login/login';
@@ -10,6 +10,7 @@ import AppLoadingScreen from './src/screens/app-loading/app-loading';
 import ProfileCreationScreen from './src/screens/profile-creation/profile-creation';
 import ChannelsScreen from './src/screens/channels/channels';
 import THEME from './src/theme/theme';
+import { Linking } from 'expo';
 
 const firebaseConfig = require('./firebase.json');
 
@@ -21,7 +22,7 @@ const TabsNavigator = createBottomTabNavigator({
     ProfileScreen,
     PostScreen,
   }, {
-    navigationOptions: {
+    defaultNavigationOptions: {
       headerTintColor: 'white',
     }
   }),
@@ -31,7 +32,7 @@ const TabsNavigator = createBottomTabNavigator({
     ProfileScreen,
     PostScreen
   }, {
-    navigationOptions: {
+    defaultNavigationOptions: {
       headerTintColor: 'white',
     }
   }),
@@ -39,13 +40,13 @@ const TabsNavigator = createBottomTabNavigator({
     ProfileScreen,
     PostScreen
   }, {
-    navigationOptions: {
+    defaultNavigationOptions: {
       headerTintColor: 'white',
     }
   })
 }, 
 {
-  navigationOptions: ({ navigation }) => ({
+  defaultNavigationOptions: ({ navigation }) => ({
     tabBarOptions: {
       showLabel: false,
       activeTintColor: THEME.colors.primary.default,
@@ -54,6 +55,7 @@ const TabsNavigator = createBottomTabNavigator({
         height: 60
       },
     },
+    headerTintColor: 'white',
     tabBarIcon: ({ focused, tintColor }) => {
       const { routeName } = navigation.state;
       const size = focused? 35: 25;
@@ -69,11 +71,32 @@ const TabsNavigator = createBottomTabNavigator({
   })
 });
 
-export default createSwitchNavigator({
-    AppLoadingScreen,
-    LoginScreen,
-    TabsNavigator,
-    ProfileCreationScreen
-  },
-);
+const AppContainer = createAppContainer(createSwitchNavigator({
+  AppLoadingScreen,
+  LoginScreen,
+  TabsNavigator,
+  ProfileCreationScreen
+}));
+
+class HablaApp extends React.Component<any, any> {
+  constructor(props) {
+    super(props);
+
+            
+    Linking.parseInitialURLAsync().then(this.handleLink);
+    Linking.addEventListener('url', event => this.handleLink(Linking.parse(event.url)));
+  }
+
+  render() {
+    return <AppContainer/>
+  }
+
+  handleLink = (link) => {
+    if (link.path === "post") {
+      this.props.navigation.navigate("PostScreen", { postId: link.queryParams.postId });
+    }
+  }
+}
+
+export default HablaApp;
   

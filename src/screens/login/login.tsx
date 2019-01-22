@@ -2,7 +2,7 @@ import * as React from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from "react-native";
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import firebase from 'firebase';
-import Expo from "expo";
+import { AuthSession } from "expo";
 import { FontAwesome } from '@expo/vector-icons';
 import THEME from "../../theme/theme";
 
@@ -72,11 +72,11 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
         this.setState({ loading: true });
         
         try {
-          const result: any = await Expo.AuthSession.startAsync({
+          const result: any = await AuthSession.startAsync({
             authUrl:
               `https://www.facebook.com/v2.8/dialog/oauth?response_type=token` +
               `&client_id=${"2136539466408117"}` +
-              `&redirect_uri=${encodeURIComponent(Expo.AuthSession.getRedirectUrl())}`,
+              `&redirect_uri=${encodeURIComponent(AuthSession.getRedirectUrl())}`,
           })
 
           const credential = firebase.auth.FacebookAuthProvider.credential(result.params.access_token);
