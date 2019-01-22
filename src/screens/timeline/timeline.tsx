@@ -9,7 +9,6 @@ import { Location, Permissions } from 'expo';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
-import Expo from 'expo';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
   static navigationOptions = (navigation) => {
@@ -35,16 +34,6 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       refreshing: false,
       showNewPostModal: false
     };
-
-        
-    Expo.Linking.parseInitialURLAsync().then(this.handleLink);
-    Expo.Linking.addEventListener('url', event => this.handleLink(Expo.Linking.parse(event.url)));
-  }
-
-  handleLink = (link) => {
-    if (link.path === "post") {
-      this.props.navigation.navigate("PostScreen", { postId: link.queryParams.postId });
-    }
   }
 
   componentWillMount = async() => {
@@ -70,7 +59,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       
     this.setState({ refreshing: false });
 
-    await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
+    if (!(this.props.navigation.state.params && this.props.navigation.state.params.channel)) await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
   }
 
   fetchPosts = async() => {
@@ -133,7 +122,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   }
 
   openPost = (post) => {
-    this.props.navigation.push('PostScreen', { postId: post.id });
+    this.props.navigation.push('PostScreen', { post: post });
   }
 
   newPost = () => {
