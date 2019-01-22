@@ -36,7 +36,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   }
 
   refresh = async() => {
-    if (!this.state.post) return;
+    if (!this.postId) return;
 
     this.setState({ refreshing: true });
 
@@ -55,7 +55,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
     const response = await client.query<any>({
       query: gql(`
         {
-          post(id: ${this.state.post.id}) {
+          post(id: ${this.postId}) {
             id
             body
             distance
@@ -164,6 +164,10 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
     this.setState({ postingComment: false });
   }
 
+  get postId() {
+    return this.props.navigation.state.params && (this.props.navigation.state.params.post && this.props.navigation.state.params.post.id || this.props.navigation.state.params.postId);
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
@@ -173,12 +177,12 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
                       onRefresh={this.refresh}
                     />
                   }>
-        { this.state.post? 
-        (
-          <PostComponent post={this.state.post}
-                         showPostHeader={true}
-                         onOpenProfile={this.openProfile}
-                         onOpenChannel={this.openChannel}/>) : null }
+        { this.state.post && 
+        <PostComponent post={this.state.post}
+                        showPostHeader={true}
+                        onOpenProfile={this.openProfile}
+                        onOpenChannel={this.openChannel}/> }
+        { this.state.post &&
         <View style={styles.newComment.container}>
           <TextInput style={styles.newComment.input}
                      onChangeText={this.handleCommentInput}
@@ -187,14 +191,15 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
                      placeholder="Type a comment..."
                      editable={!this.state.postingComment}
                      underlineColorAndroid="rgba(0,0,0,0)"/>
-            {(this.state.newComment.body && this.state.newComment.body.trim() !== '')? <TouchableOpacity style={styles.newComment.sendButton}
-              onPress={this.sendComment}
-              disabled={this.state.postingComment}
-              activeOpacity={1}>
-            {this.state.postingComment? <ActivityIndicator color="white"/>: <Text style={styles.newComment.sendButtonText}>Send</Text>}
-          </TouchableOpacity>: null}
-        </View>
-        <FlatList data={this.state.post.comments as any[]}
+          {(this.state.newComment.body && this.state.newComment.body.trim() !== '') &&
+          <TouchableOpacity style={styles.newComment.sendButton}
+            onPress={this.sendComment}
+            disabled={this.state.postingComment}
+            activeOpacity={1}>
+          {this.state.postingComment? <ActivityIndicator color="white"/>: <Text style={styles.newComment.sendButtonText}>Send</Text>}
+          </TouchableOpacity>}
+        </View> }
+        {this.state.post && this.state.post.comments && <FlatList data={this.state.post.comments as any[]}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({item}) =>(
             <View style={styles.comment.view}>
@@ -207,7 +212,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
               <Text style={styles.comment.body}>{ item.body }</Text>
               <Text style={styles.comment.bottomText}>{ moment(item.createdAt).fromNow(true) }</Text>
             </View>
-          )}/>
+          )}/>}
       </ScrollView>
     );
   }
