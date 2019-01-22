@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Text } from 'react-native';
+import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Text, AsyncStorage } from 'react-native';
 import PostComponent from '../../components/post/post';
 import ActionButton from 'react-native-action-button';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import { Location, Permissions } from 'expo';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
+import Expo from 'expo';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
   static navigationOptions = (navigation) => {
@@ -34,14 +35,32 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       refreshing: false,
       showNewPostModal: false
     };
+
+        
+    Expo.Linking.parseInitialURLAsync().then(this.handleLink);
+    Expo.Linking.addEventListener('url', event => this.handleLink(Expo.Linking.parse(event.url)));
   }
 
-  componentWillMount() {
-    this.refresh();
+  handleLink = (link) => {
+    if (link.path === "post") {
+      this.props.navigation.navigate("PostScreen", { postId: link.queryParams.postId });
+    }
+  }
+
+  componentWillMount = async() => {
+    let cachedPosts;
+    
+    if (!(this.props.navigation.state.params && this.props.navigation.state.params.channel)) {
+      cachedPosts = await AsyncStorage.getItem('cached-timeline');
+    }
+
+    this.setState({ posts: cachedPosts? JSON.parse(cachedPosts): [] });
+    
+    await this.refresh();
   }
 
   refresh = async() => {
-    this.setState({ refreshing: true });
+    this.setState({ refreshing: true  });
     
     try {
       await this.fetchPosts();
@@ -50,6 +69,8 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     }
       
     this.setState({ refreshing: false });
+
+    await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
   }
 
   fetchPosts = async() => {
@@ -112,7 +133,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   }
 
   openPost = (post) => {
-    this.props.navigation.push('PostScreen', { post: post });
+    this.props.navigation.push('PostScreen', { postId: post.id });
   }
 
   newPost = () => {
@@ -128,13 +149,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   render() {
     return (
       <View style={styles.page.container}>
-        <ScrollView contentContainerStyle={styles.page.container}
-                    refreshControl={
-                      <RefreshControl
-                        refreshing={this.state.refreshing}
-                        onRefresh={this.refresh}
-                      />
-                    }>
+        <View style={styles.page.container}>
           <StatusBar barStyle="light-content"/>
           { this.state.errorMessage && 
           <View style={styles.page.errorView}>
@@ -143,6 +158,8 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
           </View>}
           <FlatList data={this.state.posts}
                     keyExtractor={(item) => item.id.toString()}
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.refresh}
                     renderItem={({item}) =>(
                     <TouchableOpacity onPress={() => this.openPost(item)}>
                       <PostComponent post={item}
@@ -151,7 +168,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                                     onOpenChannel={this.openChannel}/>
                     </TouchableOpacity>
           )}/>
-        </ScrollView>
+        </View>
         <ActionButton buttonColor={THEME.colors.secondary.default}
                       position="center"
                       hideShadow={true}
