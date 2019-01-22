@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar } from 'react-native';
+import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Text } from 'react-native';
 import PostComponent from '../../components/post/post';
 import ActionButton from 'react-native-action-button';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import NewPostScreen from '../new-post/new-post';
 import { Location, Permissions } from 'expo';
@@ -93,9 +93,11 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
         fetchPolicy: 'no-cache'
       });
       
-      this.setState({ posts: response.data.posts });
+      this.setState({ posts: response.data.posts, errorMessage: null });
     } catch (error) {
-     console.log(error);
+      const errorMessage = error.networkError? 'There was a problem loading the posts. Please check your connection.': 'An unexpected error ocurred while loading the posts.';
+
+      this.setState({ errorMessage });
     }
   }
 
@@ -134,6 +136,11 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                       />
                     }>
           <StatusBar barStyle="light-content"/>
+          { this.state.errorMessage && 
+          <View style={styles.page.errorView}>
+            <Ionicons name="ios-sad" size={100} color="white"/>
+            <Text style={styles.page.errorText}>{ this.state.errorMessage }</Text>
+          </View>}
           <FlatList data={this.state.posts}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({item}) =>(
@@ -178,6 +185,16 @@ const styles = {
       width: '100%',
       margin: 0,
       padding: 0
+    },
+    errorView: {
+      padding: 20,
+      backgroundColor: THEME.colors.error.default,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    errorText: {
+      color: 'white',
+      textAlign: 'center'
     }
   }),
 };
@@ -186,6 +203,7 @@ interface TimelineState {
   posts: any[];
   refreshing: boolean;
   showNewPostModal: boolean;
+  errorMessage?: string;
 }
 
 interface TimelineProps {

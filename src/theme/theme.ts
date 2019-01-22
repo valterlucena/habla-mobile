@@ -9,6 +9,9 @@ const THEME = {
             default: "#e85b1e",
             light: "#ff8c4d",
             dark: "#ae2800"
+        },
+        error: {
+            default: "#ef5350"
         }
     }
 };
