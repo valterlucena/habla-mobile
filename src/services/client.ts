@@ -4,12 +4,14 @@ import firebase from 'firebase';
 export const client = new ApolloClient({
     uri: 'http://192.168.0.101:3000/graphql',
     request: async operation => {
-        let token = await firebase.auth().currentUser.getIdToken();
+        let token = firebase.auth().currentUser? await firebase.auth().currentUser.getIdToken(): null;
 
-        let headers: any = {
-            authorization: token
-        };
+        let headers: any = {};
 
+        if (token) {
+            headers.authorization = token;
+        }
+        
         if (operation.getContext() && operation.getContext().location) {
             const location = operation.getContext().location;
 
