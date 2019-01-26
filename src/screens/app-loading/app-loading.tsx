@@ -4,10 +4,12 @@ import { client } from "../../services/client";
 import gql from "graphql-tag";
 import { AsyncStorage, Text, View, StyleSheet, ActivityIndicator, TouchableOpacity, AppState, StatusBar } from "react-native";
 import THEME from "../../theme/theme";
-import { Location, Linking } from 'expo';
+import { Location, Linking, Permissions, Notifications } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 
 export default class AppLoadingScreen extends React.Component<any, AppLoadingState> {
+  _notificationsSubscription;
+
   constructor(props) {
     super(props);
 
@@ -80,7 +82,6 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     firebase.auth().onAuthStateChanged(async user => {
       if (user) {
         let token = await firebase.auth().currentUser.getIdToken();
-        console.log(token);
 
         const storedProfile = await AsyncStorage.getItem('userProfile');
         
@@ -115,16 +116,67 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
           await AsyncStorage.setItem('userProfile', JSON.stringify(profile));
 
           this.props.navigation.navigate('TabsNavigator');
+
+          await this.registerForNotifications();
         } else {
           this.props.navigation.navigate('ProfileCreationScreen', { user: user });
         }
-
-        return;
+      } else {
+        this.props.navigation.navigate('LoginScreen');
+        await AsyncStorage.removeItem('userProfile');
       }
-     
-      this.props.navigation.navigate('LoginScreen');
-      await AsyncStorage.removeItem('userProfile');
     });
+  }
+
+  registerForNotifications = async() => {
+    if (this.props.exp && this.props.exp.notification) {
+      console.log(this.props.exp.notification);
+    }
+
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    );
+    
+    let finalStatus = existingStatus;
+  
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== 'granted') {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+  
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== 'granted') {
+      return;
+    }
+  
+    // Get the token that uniquely identifies this device
+    let token = await Notifications.getExpoPushTokenAsync();
+  
+    // POST the token to your backend server from where you can retrieve it to send push notifications.
+    const response = await client.mutate({
+      variables: { 
+        token: token
+      },
+      mutation: gql(`
+        mutation UpdateExpoPushToken ($token: String) {
+          updateExpoPushToken(token: $token)
+        }
+      `)
+    });
+
+    if (response.data.updateExpoPushToken) {
+      console.log("Expo push token updated.");
+    }
+
+    this._notificationsSubscription = Notifications.addListener(this.handleNotification);
+  }
+
+  handleNotification = async(notification) => {
+    console.log(notification);
   }
 
   render() {

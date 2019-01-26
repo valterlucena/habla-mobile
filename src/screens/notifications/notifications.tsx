@@ -3,6 +3,7 @@ import { View, StyleSheet, AsyncStorage, FlatList, Text, TouchableOpacity, Image
 import THEME from '../../theme/theme';
 import { gql } from 'apollo-boost';
 import { client } from '../../services/client';
+import moment from 'moment';
 
 export default class NotificationsScreen extends React.Component<NotificationsProps, NotificationsState> {
   static navigationOptions = (navigation) => {
@@ -57,6 +58,7 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
             id
             type
             read
+            createdAt
             comment {
               postId
               owner {
@@ -82,9 +84,14 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
       return (
       <TouchableOpacity style={Object.assign({ backgroundColor: notification.read? '#f9f9f9': undefined }, styles.notification.touchable)}
                         onPress={() => this.openPost(notification.comment.postId)}>
-        { notification.comment && notification.comment.owner  && <Image source={{ uri: notification.comment.owner.photoURL }}
-                                 style={styles.notification.avatar}/> }
-        <Text style={styles.notification.username}>{ notification.comment.owner.username }</Text><Text> commented on your post</Text>
+        <View style={styles.notification.left}>
+          { notification.comment && notification.comment.owner  && <Image source={{ uri: notification.comment.owner.photoURL }}
+                                  style={styles.notification.avatar}/> }
+          <Text style={styles.notification.username}>{ notification.comment.owner.username }</Text><Text> commented on your post</Text>
+        </View>
+        <View style={styles.notification.right}>
+          <Text>{ moment(notification.createdAt).fromNow() }</Text>
+        </View>
       </TouchableOpacity>
       );
     }
@@ -129,6 +136,14 @@ const styles = {
     },
     username: {
       fontWeight: "bold"
+    },
+    left: {
+      flexDirection: 'row',
+      flexGrow: 1,
+      alignItems: 'center'
+    },
+    right: {
+      marginLeft: 'auto'
     }
   })
 };
