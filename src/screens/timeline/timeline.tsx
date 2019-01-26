@@ -70,7 +70,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   fetchPosts = async() => {
     try {
       await Permissions.askAsync(Permissions.LOCATION);
-      const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: false });
+      const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
 
       const channelId = this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null;
 

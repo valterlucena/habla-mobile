@@ -29,6 +29,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     try {
       await this.checkLocationServices();
     } catch (error) {
+      console.log(error)
       let handler = async(event) => {
         if (event === 'active') {
           AppState.removeEventListener('change', handler);
@@ -65,7 +66,9 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
       throw error;
     }
 
-    const coords = (await Location.getCurrentPositionAsync()).coords;
+    const coords = (await Location.getCurrentPositionAsync({ enableHighAccuracy: true })).coords;
+
+    // handle timeout
     
     let location: any = await Location.reverseGeocodeAsync({ latitude: coords.latitude, longitude: coords.longitude });
 
@@ -130,6 +133,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
 
   registerForNotifications = async() => {
     if (this.props.exp && this.props.exp.notification) {
+      console.log("notification in props")
       console.log(this.props.exp.notification);
     }
 
