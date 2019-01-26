@@ -50,7 +50,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   }
 
   loadPost = async() => {
-    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: false });
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
 
     const response = await client.query<any>({
       query: gql(`
@@ -125,7 +125,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   sendComment = async() => {
     this.setState({ postingComment: true });
 
-    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: false });
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
 
     try {
       const response = await client.mutate({

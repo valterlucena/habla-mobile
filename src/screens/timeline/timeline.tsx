@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Text, AsyncStorage } from 'react-native';
+import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Text, AsyncStorage, Button } from 'react-native';
 import PostComponent from '../../components/post/post';
 import ActionButton from 'react-native-action-button';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import NewPostScreen from '../new-post/new-post';
 import { Location, Permissions } from 'expo';
@@ -16,6 +16,11 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
     return {
       title: params && params.channel? `#${params.channel.name}`: 'Timeline', 
+      headerRight: (
+        <TouchableOpacity onPress={() => navigation.navigation.navigate('NotificationsScreen')} style={styles.page.notificationButton}>
+          <MaterialIcons name="notifications" size={30} color="white"/>
+        </TouchableOpacity>
+      ),
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
@@ -39,7 +44,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   componentWillMount = async() => {
     let cachedPosts;
     
-    if (!(this.props.navigation.state.params && this.props.navigation.state.params.channel)) {
+    if (this.isRoot()) {
       cachedPosts = await AsyncStorage.getItem('cached-timeline');
     }
 
@@ -59,13 +64,13 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       
     this.setState({ refreshing: false });
 
-    if (!(this.props.navigation.state.params && this.props.navigation.state.params.channel)) await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
+    if (this.isRoot()) await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
   }
 
   fetchPosts = async() => {
     try {
       await Permissions.askAsync(Permissions.LOCATION);
-      const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: false });
+      const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
 
       const channelId = this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null;
 
@@ -112,7 +117,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   }
 
   openChannel = (channel) => {
-    if (this.props.navigation.state.params && this.props.navigation.state.params.channel) return;
+    if (!this.isRoot()) return;
     
     this.props.navigation.push('TimelineScreen', { channel: channel });
   }
@@ -133,6 +138,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     this.setState({ showNewPostModal: false });
     
     this.setState({ posts: [post, ...this.state.posts]});
+  }
+
+  isRoot() {
+    return !(this.props.navigation.state.params && this.props.navigation.state.params.channel);
   }
 
   render() {
@@ -201,6 +210,9 @@ const styles = {
     errorText: {
       color: 'white',
       textAlign: 'center'
+    },
+    notificationButton: {
+      marginRight: 10
     }
   }),
 };

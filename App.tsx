@@ -1,6 +1,6 @@
 import React from 'react';
 import TimelineScreen from './src/screens/timeline/timeline';
-import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator, createStackNavigator, createSwitchNavigator, createAppContainer, NavigationActions } from 'react-navigation';
 import { FontAwesome } from '@expo/vector-icons';
 import firebase from 'firebase';
 import LoginScreen from './src/screens/login/login';
@@ -10,7 +10,7 @@ import AppLoadingScreen from './src/screens/app-loading/app-loading';
 import ProfileCreationScreen from './src/screens/profile-creation/profile-creation';
 import ChannelsScreen from './src/screens/channels/channels';
 import THEME from './src/theme/theme';
-import { Linking } from 'expo';
+import NotificationsScreen from './src/screens/notifications/notifications';
 
 const firebaseConfig = require('./firebase.json');
 
@@ -21,6 +21,7 @@ const TabsNavigator = createBottomTabNavigator({
     TimelineScreen,
     ProfileScreen,
     PostScreen,
+    NotificationsScreen
   }, {
     defaultNavigationOptions: {
       headerTintColor: 'white',
@@ -79,23 +80,24 @@ const AppContainer = createAppContainer(createSwitchNavigator({
 }));
 
 class HablaApp extends React.Component<any, any> {
+  navigator: any;
+
   constructor(props) {
     super(props);
 
-            
-    Linking.parseInitialURLAsync().then(this.handleLink);
-    Linking.addEventListener('url', event => this.handleLink(Linking.parse(event.url)));
+    // Linking.parseInitialURLAsync().then(this.handleLink);
+    // Linking.addEventListener('url', event => this.handleLink(Linking.parse(event.url)));
   }
 
   render() {
-    return <AppContainer/>
+    return <AppContainer ref={navigator => this.navigator = navigator}/>
   }
 
-  handleLink = (link) => {
-    if (link.path === "post") {
-      this.props.navigation.navigate("PostScreen", { postId: link.queryParams.postId });
-    }
-  }
+  // handleLink = (link) => {
+  //   if (link.path === "post") {
+  //     this.navigator.dispatch(NavigationActions.navigate("LoginScreen", { postId: link.queryParams.postId }));
+  //   }
+  // }
 }
 
 export default HablaApp;

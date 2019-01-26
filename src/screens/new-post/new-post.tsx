@@ -37,7 +37,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
     this.setState({ posting: true });
 
     await Permissions.askAsync(Permissions.LOCATION);
-    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: false });
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
 
     try {
       const response = await client.mutate({
