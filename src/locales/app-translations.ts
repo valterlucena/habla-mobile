@@ -4,6 +4,15 @@ export interface AppTranslations {
     global: {
         user: {
             anonymousLabel: string;
+        },
+        enums: {
+            distance: {
+                here: string;
+                very_close: string;
+                close: string;
+                far: string;
+                very_far: string;
+            }
         }
     },
     screens: {

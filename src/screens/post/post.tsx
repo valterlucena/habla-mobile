@@ -9,6 +9,7 @@ import gql from 'graphql-tag';
 import { Location } from 'expo';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
+import { getTranslatedDistanceFromEnum } from '../../util';
 
 export default class PostScreen extends React.Component<PostScreenProps, PostScreenState> {
   static navigationOptions = () => {
@@ -210,7 +211,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
                 <TouchableOpacity onPress={() => this.openProfile(item.owner)}>
                   <Text style={styles.comment.username}>{ item.owner? item.owner.username: i18n.t('global.user.anonymousLabel') }</Text>
                 </TouchableOpacity>
-                <Text style={styles.comment.headerText}>{ item.distance }</Text>
+                <Text style={styles.comment.distance}>{ getTranslatedDistanceFromEnum(item.distance) }</Text>
               </View>
               <Text style={styles.comment.body}>{ item.body }</Text>
               <Text style={styles.comment.bottomText}>{ moment(item.createdAt).fromNow(true) }</Text>
@@ -241,6 +242,10 @@ const styles = {
     headerText: {
       fontSize: 10, 
       color: '#000'
+    },
+    distance: {
+      fontSize: 10,
+      fontWeight: 'bold'
     },
     bottomText: {
       fontSize: 10, 

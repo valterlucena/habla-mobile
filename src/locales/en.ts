@@ -4,6 +4,15 @@ const en: AppTranslations = {
     global: {
         user: {
             anonymousLabel: 'anonymous'
+        },
+        enums: {
+            distance: {
+                here: 'here',
+                very_close: 'very close',
+                close: 'close',
+                far: 'far',
+                very_far: 'very far'
+            }
         }
     },
     screens: {
