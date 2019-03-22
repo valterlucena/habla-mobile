@@ -18,6 +18,7 @@ import { Localization } from 'expo';
 
 // languages
 import en from './src/locales/en';
+import pt from './src/locales/pt';
 
 const firebaseConfig = require('./firebase.json');
 
@@ -27,7 +28,7 @@ Localization.getLocalizationAsync().then(localization => {
   const locale = localization.locale
 
   i18n.fallbacks = true;
-  i18n.translations = { en };
+  i18n.translations = { en, pt };
   i18n.locale = locale;
 
   moment.locale(locale);
