@@ -11,10 +11,10 @@ import ProfileCreationScreen from './src/screens/profile-creation/profile-creati
 import ChannelsScreen from './src/screens/channels/channels';
 import THEME from './src/theme/theme';
 import NotificationsScreen from './src/screens/notifications/notifications';
-import { Localization } from 'expo';
 import i18n from 'i18n-js';
 import moment from 'moment';
 import 'moment/min/locales';
+import { Localization } from 'expo';
 
 // languages
 import en from './src/locales/en';
@@ -23,11 +23,15 @@ const firebaseConfig = require('./firebase.json');
 
 firebase.initializeApp(firebaseConfig);
 
-i18n.fallbacks = true;
-i18n.translations = { en };
-i18n.locale = Localization.locale;
+Localization.getLocalizationAsync().then(localization => {
+  const locale = localization.locale
 
-moment.locale(Localization.locale);
+  i18n.fallbacks = true;
+  i18n.translations = { en };
+  i18n.locale = locale;
+
+  moment.locale(locale);
+});
 
 const TabsNavigator = createBottomTabNavigator({
   TimelineStack: createStackNavigator({
