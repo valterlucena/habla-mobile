@@ -4,6 +4,7 @@ import moment from 'moment';
 import { FontAwesome } from '@expo/vector-icons';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
+import i18n from 'i18n-js';
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   constructor(props: PostComponentProps) {
@@ -69,7 +70,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             { this.state.post.owner && this.state.post.owner.photoURL? <Image style={styles.avatarIconImage as any} source={{ uri: this.state.post.owner.photoURL }}/>: <FontAwesome style={styles.avatarIcon} name="user-circle"/>}
             {this.state.post.owner?
               <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>
-            : <Text style={styles.headerText}>anonymous</Text>}
+            : <Text style={styles.headerText}>{ i18n.t('global.user.anonymousLabel') }</Text>}
           </TouchableOpacity>
 
           <Text style={styles.headerText}>{this.state.post.distance}</Text>

@@ -5,20 +5,9 @@ import { Permissions, Location } from 'expo';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
+import i18n from 'i18n-js';
 
 export default class NewPostScreen extends React.Component<NewPostScreenProps, NewPostScreenState> {
-  static navigationOptions = {
-    title: 'New post', 
-    headerStyle: {
-      backgroundColor: THEME.colors.primary.default,
-      borderBottomWidth: 0,
-    },
-    headerTitleStyle: {
-      color: '#F5F5F5'
-    },
-    tabBarVisible: false
-  };
-
   constructor(props: NewPostScreenProps) {
     super(props);
 
@@ -108,7 +97,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
                   onChangeText={this.handlePostInput}
                   value={this.state.post.body}
                   placeholderTextColor="white"
-                  placeholder="What's up?"
+                  placeholder={i18n.t('screens.newPost.inputPlaceholder')}
                   editable={!this.state.posting}
                   multiline={true}
                   underlineColorAndroid="rgba(0,0,0,0)"/>
@@ -116,7 +105,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
                           onPress={this.sendPost}
                           disabled={this.state.posting || !this.state.post.body || this.state.post.body.trim() == ''}
                           activeOpacity={1}>
-          {this.state.posting? <ActivityIndicator color="white"/>: <Text style={styles.newPost.sendButtonText}>Send</Text>}
+          {this.state.posting? <ActivityIndicator color="white"/>: <Text style={styles.newPost.sendButtonText}>{ i18n.t('screens.newPost.buttons.submit') }</Text>}
         </TouchableOpacity>
       </View>
     );

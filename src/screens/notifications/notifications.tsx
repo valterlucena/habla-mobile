@@ -4,11 +4,12 @@ import THEME from '../../theme/theme';
 import { gql } from 'apollo-boost';
 import { client } from '../../services/client';
 import moment from 'moment';
+import i18n from 'i18n-js';
 
 export default class NotificationsScreen extends React.Component<NotificationsProps, NotificationsState> {
   static navigationOptions = (navigation) => {
     return {
-      title: 'Notifications', 
+      title: i18n.t('screens.notifications.title'), 
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
@@ -87,7 +88,7 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
         <View style={styles.notification.left}>
           { notification.comment && notification.comment.owner  && <Image source={{ uri: notification.comment.owner.photoURL }}
                                   style={styles.notification.avatar}/> }
-          <Text style={styles.notification.username}>{ notification.comment.owner.username }</Text><Text> commented on your post</Text>
+          <Text> { i18n.t('screens.notifications.notificationTypes.commentOnOwnedPost', { username: notification.comment.owner.username }) }</Text>
         </View>
         <View style={styles.notification.right}>
           <Text>{ moment(notification.createdAt).fromNow(true) }</Text>
@@ -133,9 +134,6 @@ const styles = {
       height: 40,
       borderRadius: 20,
       marginRight: 12
-    },
-    username: {
-      fontWeight: "bold"
     },
     left: {
       flexDirection: 'row',

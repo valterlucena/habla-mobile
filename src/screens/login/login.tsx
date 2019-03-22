@@ -5,6 +5,7 @@ import firebase from 'firebase';
 import { AuthSession } from "expo";
 import { FontAwesome } from '@expo/vector-icons';
 import THEME from "../../theme/theme";
+import i18n from 'i18n-js';
 
 export default class LoginScreen extends React.Component<{}, LoginState> {
     static navigationOptions = {
@@ -49,7 +50,7 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
                           (<ActivityIndicator color="white"
                                               size="small"/>)
                         : (<View style={styles.login.loginButtonInnerView}>
-                            <FontAwesome name="facebook" style={styles.login.facebookIcon}/><Text style={styles.login.loginButtonText}>Sign in with Facebook</Text>
+                            <FontAwesome name="facebook" style={styles.login.facebookIcon}/><Text style={styles.login.loginButtonText}>{ i18n.t('screens.login.buttons.signInWithFacebook') }</Text>
                            </View>) }
                 </TouchableOpacity>
                 <KeyboardSpacer/>

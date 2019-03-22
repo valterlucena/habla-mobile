@@ -9,13 +9,14 @@ import { Location, Permissions } from 'expo';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
+import i18n from 'i18n-js';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
   static navigationOptions = (navigation) => {
     let params = navigation.navigation.state.params;
 
     return {
-      title: params && params.channel? `#${params.channel.name}`: 'Timeline', 
+      title: params && params.channel? `#${params.channel.name}`: i18n.t('screens.timeline.title'), 
       headerRight: (
         <TouchableOpacity onPress={() => navigation.navigation.navigate('NotificationsScreen')} style={styles.page.notificationButton}>
           <MaterialIcons name="notifications" size={30} color="white"/>
@@ -110,7 +111,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       
       this.setState({ posts: response.data.posts, errorMessage: null });
     } catch (error) {
-      const errorMessage = error.networkError? 'There was a problem loading the posts. Please check your connection.': 'An unexpected error ocurred while loading the posts.';
+      const errorMessage = error.networkError? i18n.t('screens.timeline.errors.fetchingPosts.connection'): i18n.t('screens.timeline.errors.fetchingPosts.unexpected');
 
       this.setState({ errorMessage });
     }

@@ -3,16 +3,19 @@ import { StyleSheet, Text, ScrollView, FlatList, RefreshControl, TouchableOpacit
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
+import i18n from 'i18n-js';
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
-  static navigationOptions = {
-    title: 'Channels', 
-    headerStyle: {
-      backgroundColor: THEME.colors.primary.default,
-      borderBottomWidth: 0,
-    },
-    headerTitleStyle: {
-      color: '#F5F5F5'
+  static navigationOptions = () => {
+    return {
+      title: i18n.t('screens.channels.title'), 
+      headerStyle: {
+        backgroundColor: THEME.colors.primary.default,
+        borderBottomWidth: 0,
+      },
+      headerTitleStyle: {
+        color: '#F5F5F5'
+      }
     }
   };
 
