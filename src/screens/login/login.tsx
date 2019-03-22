@@ -79,12 +79,15 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
               `&redirect_uri=${encodeURIComponent(AuthSession.getRedirectUrl())}`,
           })
 
-          const credential = firebase.auth.FacebookAuthProvider.credential(result.params.access_token);
-          
-          await firebase.auth().signInAndRetrieveDataWithCredential(credential);
+          if (result.type === 'success') {
+            const credential = firebase.auth.FacebookAuthProvider.credential(result.params.access_token);
+            
+            await firebase.auth().signInAndRetrieveDataWithCredential(credential);
+          }
         } catch (error) {
-          this.setState({ loading: false });
           console.log(error);
+        } finally { 
+            this.setState({ loading: false });
         }
     }
 }

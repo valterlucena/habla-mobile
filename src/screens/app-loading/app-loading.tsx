@@ -85,6 +85,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     firebase.auth().onAuthStateChanged(async user => {
       if (user) {
         let token = await firebase.auth().currentUser.getIdToken();
+        console.log(token)
 
         const storedProfile = await AsyncStorage.getItem('userProfile');
         

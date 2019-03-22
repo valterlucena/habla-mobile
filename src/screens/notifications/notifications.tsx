@@ -90,7 +90,7 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
           <Text style={styles.notification.username}>{ notification.comment.owner.username }</Text><Text> commented on your post</Text>
         </View>
         <View style={styles.notification.right}>
-          <Text>{ moment(notification.createdAt).fromNow() }</Text>
+          <Text>{ moment(notification.createdAt).fromNow(true) }</Text>
         </View>
       </TouchableOpacity>
       );
