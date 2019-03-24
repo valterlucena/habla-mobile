@@ -6,6 +6,7 @@ import { AsyncStorage, Text, View, StyleSheet, ActivityIndicator, TouchableOpaci
 import THEME from "../../theme/theme";
 import { Location, Linking, Permissions, Notifications } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
+import i18n from 'i18n-js';
 
 export default class AppLoadingScreen extends React.Component<any, AppLoadingState> {
   _notificationsSubscription;
@@ -113,6 +114,8 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
             profile = (response.data as any).profile;
           } catch (error) {
             console.log(JSON.stringify(error));
+
+            return;
           }
         }
 
@@ -189,13 +192,13 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
       <View style={styles.page.container}>
         <StatusBar barStyle="light-content"/>
         { this.state.loading && <ActivityIndicator color="white" size="large"/>}
-        { this.state.location && !this.state.locationNotAuthorized && <Text style={styles.page.text}>See what people are talking about in { this.state.location.city || this.state.location.name }!</Text> }
+        { this.state.location && !this.state.locationNotAuthorized && <Text style={styles.page.text}>{ i18n.t('screens.appLoading.greeting', { location: this.state.location.city || this.state.location.name }) }</Text> }
         { this.state.locationNotAuthorized && 
           <View style={styles.page.locationNotAuthorizedView}>
             <Ionicons name="ios-sad" size={100} color="white"/>
-            <Text style={styles.page.text}>You need to allow access to your location information to use Habla.</Text>
+            <Text style={styles.page.text}>{ i18n.t('screens.appLoading.locationNotAuthorized.message') }</Text>
             <TouchableOpacity style={styles.button.touchable} onPress={() => Linking.openURL('app-settings:')}>
-              <Text style={styles.button.text}>Open settings</Text>
+              <Text style={styles.button.text}>{ i18n.t('screens.appLoading.locationNotAuthorized.buttons.openSettings') }</Text>
             </TouchableOpacity>
           </View>}
       </View>

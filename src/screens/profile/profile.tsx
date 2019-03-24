@@ -6,13 +6,15 @@ import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import AutoHeightImage from 'react-native-auto-height-image';
 import PostComponent from '../../components/post/post';
+import i18n from 'i18n-js';
+import { Permissions, Location } from 'expo';
 
 export default class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
   static navigationOptions = (navigation) => {
     let params = navigation.navigation.state.params;
 
     return {
-      title: params && params.profile? `@${params.profile.username}`: 'Profile', 
+      title: params && params.profile? `@${params.profile.username}`: i18n.t('screens.profile.title'), 
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
@@ -40,6 +42,9 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
 
     this.setState({ refreshing: true });
 
+    await Permissions.askAsync(Permissions.LOCATION);
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+
     try {
       const response = await client.query<any>({
         query: gql(`
@@ -57,6 +62,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
                 createdAt
                 commentsCount
                 rate
+                distance
                 profilePostVote {
                   type
                 }
@@ -72,7 +78,13 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               }
             }
           }`),
-        fetchPolicy: 'no-cache'
+        fetchPolicy: 'no-cache',
+        context: {
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+          }
+        }
       });
 
       this.setState({ profile: response.data.profile });
@@ -125,7 +137,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
 
         {this.isSelfProfile()? <TouchableOpacity style={styles.profileInfo.line}
                           onPress={this.logout}>
-          <Text style={styles.profileInfo.lineText}>Sign out</Text>
+          <Text style={styles.profileInfo.lineText}>{ i18n.t('screens.profile.buttons.signOut') }</Text>
         </TouchableOpacity>: null}
         { (this.state.profile && this.state.profile.posts || []).map(item => (
         <TouchableOpacity key={item.id} onPress={() => this.openPost(item)}>

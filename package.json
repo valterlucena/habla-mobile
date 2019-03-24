@@ -3,17 +3,17 @@
   "version": "0.1.0",
   "private": false,
   "devDependencies": {
+    "@expo/vector-icons": "^9.0.0",
+    "@types/expo": "^31.0.8",
+    "@types/node": "^10.12.18",
     "@types/react": "^16.7.18",
     "@types/react-native": "^0.57.26",
-    "@types/expo": "^31.0.8",
-    "@expo/vector-icons": "^9.0.0",
-    "@types/node": "^10.12.18",
+    "babel-preset-expo": "^5.0.0",
     "jest-expo": "^32.0.0",
     "react-test-renderer": "16.3.1",
     "ts-jest": "^23.1.4",
     "tslib": "^1.9.3",
-    "typescript": "^3.0.3",
-    "babel-preset-expo": "^5.0.0"
+    "typescript": "^3.0.3"
   },
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -49,6 +49,7 @@
     "firebase": "^5.4.2",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",
+    "i18n-js": "^3.2.1",
     "moment": "^2.0.0",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",

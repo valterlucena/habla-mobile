@@ -3,6 +3,7 @@ import { Text, StyleSheet, View, SafeAreaView, StatusBar, TextInput, TouchableOp
 import { client } from "../../services/client";
 import gql from "graphql-tag";
 import THEME from "../../theme/theme";
+import i18n from 'i18n-js';
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   constructor(props: any) {
@@ -56,10 +57,14 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
           <StatusBar barStyle="dark-content"/>
           <View style={styles.page.container.view}>
             <View style={styles.page.header.row}>
-              <Text style={styles.page.header.viewTitle}>Profile</Text>
+              <Text style={styles.page.header.viewTitle}>
+                { i18n.t('screens.profileCreation.title') }
+              </Text>
               { this.state.profile.photoURL? <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={{ uri: this.state.profile.photoURL }}/> : null }
             </View>
-            <Text style={styles.page.header.viewSubtitle}>You're almost ready to start using Habla, {this.state.profile.name}! Let's create your public profile.</Text>
+            <Text style={styles.page.header.viewSubtitle}> 
+              { i18n.t('screens.profileCreation.subtitle', { name: this.state.profile.name }) } 
+            </Text>
             <TextInput style={styles.page.profileForm.textInput}
                        placeholder="Name"
                        value={this.state.profile.name}

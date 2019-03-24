@@ -8,16 +8,20 @@ import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import { Location } from 'expo';
 import THEME from '../../theme/theme';
+import i18n from 'i18n-js';
+import { getTranslatedDistanceFromEnum } from '../../util';
 
 export default class PostScreen extends React.Component<PostScreenProps, PostScreenState> {
-  static navigationOptions = {
-    title: 'Post', 
-    headerStyle: {
-      backgroundColor: THEME.colors.primary.default,
-      borderBottomWidth: 0,
-    },
-    headerTitleStyle: {
-      color: '#F5F5F5'
+  static navigationOptions = () => {
+    return {
+      title: i18n.t('screens.post.title'), 
+      headerStyle: {
+        backgroundColor: THEME.colors.primary.default,
+        borderBottomWidth: 0,
+      },
+      headerTitleStyle: {
+        color: '#F5F5F5'
+      }
     }
   };
 
@@ -188,7 +192,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
                      onChangeText={this.handleCommentInput}
                      value={this.state.newComment.body}
                      placeholderTextColor="black"
-                     placeholder="Type a comment..."
+                     placeholder={i18n.t('screens.post.comments.newCommentInputPlaceholder')}
                      editable={!this.state.postingComment}
                      underlineColorAndroid="rgba(0,0,0,0)"/>
           {(this.state.newComment.body && this.state.newComment.body.trim() !== '') &&
@@ -196,7 +200,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             onPress={this.sendComment}
             disabled={this.state.postingComment}
             activeOpacity={1}>
-          {this.state.postingComment? <ActivityIndicator color="white"/>: <Text style={styles.newComment.sendButtonText}>Send</Text>}
+          {this.state.postingComment? <ActivityIndicator color="white"/>: <Text style={styles.newComment.sendButtonText}>{i18n.t('screens.post.comments.buttons.submit')}</Text>}
           </TouchableOpacity>}
         </View> }
         {this.state.post && this.state.post.comments && <FlatList data={this.state.post.comments as any[]}
@@ -205,9 +209,9 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             <View style={styles.comment.view}>
               <View style={styles.comment.header}>
                 <TouchableOpacity onPress={() => this.openProfile(item.owner)}>
-                  <Text style={styles.comment.username}>@{ item.owner? item.owner.username: 'anonymous' }</Text>
+                  <Text style={styles.comment.username}>{ item.owner? item.owner.username: i18n.t('global.user.anonymousLabel') }</Text>
                 </TouchableOpacity>
-                <Text style={styles.comment.headerText}>{ item.distance }</Text>
+                <Text style={styles.comment.distance}>{ getTranslatedDistanceFromEnum(item.distance) }</Text>
               </View>
               <Text style={styles.comment.body}>{ item.body }</Text>
               <Text style={styles.comment.bottomText}>{ moment(item.createdAt).fromNow(true) }</Text>
@@ -238,6 +242,10 @@ const styles = {
     headerText: {
       fontSize: 10, 
       color: '#000'
+    },
+    distance: {
+      fontSize: 10,
+      fontWeight: 'bold'
     },
     bottomText: {
       fontSize: 10, 
