@@ -8,7 +8,6 @@ import i18n from 'i18n-js';
 export default class ProfileCreationScreen extends React.Component<any, any> {
   constructor(props: any){
       super(props);
-
       this.state = {};
   }
 
