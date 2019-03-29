@@ -9,6 +9,7 @@ import PostScreen from './src/screens/post/post';
 import AppLoadingScreen from './src/screens/app-loading/app-loading';
 import ProfileCreationScreen from './src/screens/profile-creation/profile-creation';
 import ChannelsScreen from './src/screens/channels/channels';
+import ProfileEditionScreen from './src/screens/profile-edition/profile-edition';
 import THEME from './src/theme/theme';
 import NotificationsScreen from './src/screens/notifications/notifications';
 import i18n from 'i18n-js';
@@ -57,7 +58,8 @@ const TabsNavigator = createBottomTabNavigator({
   }),
   ProfileStack: createStackNavigator({
     ProfileScreen,
-    PostScreen
+    PostScreen,
+    ProfileEditionScreen
   }, {
     defaultNavigationOptions: {
       headerTintColor: 'white',
