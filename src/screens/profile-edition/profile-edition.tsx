@@ -18,7 +18,6 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
 
   constructor(props: any){
       super(props);
-
       this.state = {};
   }
 
