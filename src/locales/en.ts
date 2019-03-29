@@ -72,6 +72,12 @@ const en: AppTranslations = {
         },
         profile: {
             title: 'Profile',
+            changePhoto: {
+              title: 'Change photo',
+              option1: 'Camera',
+              option2: 'Gallery',
+              cancel: 'Cancel'
+            },
             buttons: {
                 signOut: 'Sign out'
             }

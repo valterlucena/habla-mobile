@@ -8,13 +8,17 @@ import AutoHeightImage from 'react-native-auto-height-image';
 import PostComponent from '../../components/post/post';
 import i18n from 'i18n-js';
 import { Permissions, Location } from 'expo';
+import ActionSheet from 'react-native-actionsheet'
 
 export default class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
+
+  actionSheet: ActionSheet;
+
   static navigationOptions = (navigation) => {
     let params = navigation.navigation.state.params;
 
     return {
-      title: params && params.profile? `@${params.profile.username}`: i18n.t('screens.profile.title'), 
+      title: params && params.profile ? `@${params.profile.username}` : i18n.t('screens.profile.title'),
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
@@ -35,10 +39,10 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     this.refresh();
   }
 
-  refresh = async() => {
+  refresh = async () => {
     let navProfile = this.props.navigation.state.params && this.props.navigation.state.params.profile;
 
-    let profileUid = navProfile? navProfile.uid: firebase.auth().currentUser.uid;
+    let profileUid = navProfile ? navProfile.uid : firebase.auth().currentUser.uid;
 
     this.setState({ refreshing: true });
 
@@ -111,40 +115,60 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     this.props.navigation.push('PostScreen', { post: post });
   }
 
+  showActionSheet = () => {
+    this.actionSheet.show()
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={this.state.refreshing}
-                      onRefresh={this.refresh}
-                    />
-                  }>
-        { this.state.profile? 
-        (
-        <View>
-          <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profile.photoURL }} style={styles.profileInfo.photo}/>
-          <View style={styles.profileInfo.line}>
-            <Text style={styles.profileInfo.lineText}>{ this.state.profile.name }</Text>
-          </View>
-          { this.state.profile.bio? <View style={styles.profileInfo.line}>
-            <Text style={styles.profileInfo.lineText}>{ this.state.profile.bio }</Text>
-          </View>: null }
-          <View style={styles.profileInfo.line}>
-            <Text style={styles.profileInfo.lineText}>@{ this.state.profile.username }</Text>
-          </View>
-        </View>): null }
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.refresh}
+          />
+        }>
+        {this.state.profile ?
+          (
+            <View>
+              <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profile.photoURL }} style={styles.profileInfo.photo} />
+              <View>
+                <Text
+                  style={styles.page.textChangePhoto}
+                  onPress={this.showActionSheet}>
+                  {i18n.t('screens.profile.changePhoto.title')}
+                </Text>
+                <ActionSheet
+                  tintColor={THEME.colors.primary.default}
+                  ref={o => this.actionSheet = o}
+                  options={[i18n.t('screens.profile.changePhoto.option1'),
+                  i18n.t('screens.profile.changePhoto.option2'),
+                  i18n.t('screens.profile.changePhoto.cancel')]}
+                  cancelButtonIndex={2}
+                  onPress={(index) => { /* do something */ }}
+                />
+              </View>
+              <View style={styles.profileInfo.line}>
+                <Text style={styles.profileInfo.lineText}>{this.state.profile.name}</Text>
+              </View>
+              {this.state.profile.bio ? <View style={styles.profileInfo.line}>
+                <Text style={styles.profileInfo.lineText}>{this.state.profile.bio}</Text>
+              </View> : null}
+              <View style={styles.profileInfo.line}>
+                <Text style={styles.profileInfo.lineText}>@{this.state.profile.username}</Text>
+              </View>
+            </View>) : null}
 
-        {this.isSelfProfile()? <TouchableOpacity style={styles.profileInfo.line}
-                          onPress={this.logout}>
-          <Text style={styles.profileInfo.lineText}>{ i18n.t('screens.profile.buttons.signOut') }</Text>
-        </TouchableOpacity>: null}
-        { (this.state.profile && this.state.profile.posts || []).map(item => (
-        <TouchableOpacity key={item.id} onPress={() => this.openPost(item)}>
-          <PostComponent post={item}
-                         showPostHeader={true}
-                         onOpenChannel={this.openChannel}/>
-        </TouchableOpacity>)
+        {this.isSelfProfile() ? <TouchableOpacity style={styles.profileInfo.line}
+          onPress={this.logout}>
+          <Text style={styles.profileInfo.lineText}>{i18n.t('screens.profile.buttons.signOut')}</Text>
+        </TouchableOpacity> : null}
+        {(this.state.profile && this.state.profile.posts || []).map(item => (
+          <TouchableOpacity key={item.id} onPress={() => this.openPost(item)}>
+            <PostComponent post={item}
+              showPostHeader={true}
+              onOpenChannel={this.openChannel} />
+          </TouchableOpacity>)
         )}
       </ScrollView>
     );
@@ -154,8 +178,13 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
 const styles = {
   page: StyleSheet.create({
     container: {
-      flexGrow: 1, 
+      flexGrow: 1,
       backgroundColor: '#fff'
+    },
+    textChangePhoto: {
+      textAlign: 'center',
+      fontSize: 14,
+      fontWeight: 'bold'
     }
   }),
   profileInfo: StyleSheet.create({

@@ -72,6 +72,12 @@ export interface AppTranslations {
         },
         profile: {
             title: string;
+            changePhoto: {
+                title: string;
+                option1: string,
+                option2: string,
+                cancel: string
+            },
             buttons: {
                 signOut: string;
             }
