@@ -86,7 +86,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                 {this.state.loading? 
                     (<ActivityIndicator color="white"
                                         size="small"/>)
-                  : (<Text style={styles.page.profileForm.submitButtonText}>Next</Text>) }
+                  : (<Text style={styles.page.profileForm.submitButtonText}>{ i18n.t('screens.profileCreation.buttons.next') }</Text>) }
                 </TouchableOpacity> 
           </View>
         </SafeAreaView>
