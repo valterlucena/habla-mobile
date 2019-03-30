@@ -55,6 +55,9 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               username
               photoURL
               bio
+              website
+              phone
+              gender
 
               posts {
                 id
@@ -137,11 +140,13 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
           <View style={styles.profileInfo.line}>
             <Text style={styles.profileInfo.lineText}>@{ this.state.profile.username }</Text>
           </View>
-          <TouchableOpacity onPress={() => this.openProfileEdition(this.state.profile)}>
-            <Text style={styles.profileInfo.line}>
-              Editar perfil
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.profileInfo.line}>
+            <TouchableOpacity onPress={() => this.openProfileEdition(this.state.profile)}>
+              <Text style={styles.profileInfo.lineText}>
+                Editar perfil
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>): null }       
         {this.isSelfProfile()? <TouchableOpacity style={styles.profileInfo.line}
                           onPress={this.logout}>
