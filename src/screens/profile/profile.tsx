@@ -143,7 +143,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
           <View style={styles.profileInfo.line}>
             <TouchableOpacity onPress={() => this.openProfileEdition(this.state.profile)}>
               <Text style={styles.profileInfo.lineText}>
-                Editar perfil
+                { i18n.t('screens.profile.buttons.editProfile') }
               </Text>
             </TouchableOpacity>
           </View>

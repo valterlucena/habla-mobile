@@ -73,7 +73,27 @@ const en: AppTranslations = {
         profile: {
             title: 'Profile',
             buttons: {
-                signOut: 'Sign out'
+                signOut: 'Sign out',
+                editProfile: 'Edit profile'
+            }
+        },
+        profileEdition: {
+            title: 'Edit profile',
+            labels: {
+                name: 'Name',
+                username: 'Username',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Phone',
+                genderEnum: {
+                    gender: 'Gender',
+                    male: 'Male',
+                    female: 'Female',
+                    other: 'Other'
+                }
+            },
+            buttons: {
+                save: 'Save changes'
             }
         }
     }

@@ -73,7 +73,27 @@ const pt: AppTranslations = {
         profile: {
             title: 'Perfil',
             buttons: {
-                signOut: 'Sair'
+                signOut: 'Sair',
+                editProfile: 'Editar perfil'
+            }
+        },
+        profileEdition: {
+            title: 'Editar perfil',
+            labels: {
+                name: 'Nome',
+                username: 'Usuário',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Telefone',
+                genderEnum: {
+                    gender: 'Gênero',
+                    male: 'Masculino',
+                    female: 'Feminino',
+                    other: 'Outro'
+                }
+            },
+            buttons: {
+                save: 'Salvar alterações'
             }
         }
     }

@@ -3,11 +3,12 @@ import { Text, StyleSheet, View, SafeAreaView, TextInput, StatusBar, TouchableOp
 import THEME from "../../theme/theme";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
+import i18n from 'i18n-js';
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   static navigationOptions = () => {
     return {
-      title: 'Editar perfil',
+      title: i18n.t('screens.profileEdition.title'),
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
@@ -70,10 +71,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         <StatusBar barStyle="dark-content"/>
           <View style={styles.page.container.view}>
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>Name:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.name')}:</Text>
               <TextInput 
               style={styles.page.form.textInput}
-              placeholder="Name"
+              placeholder={i18n.t('screens.profileEdition.labels.name')}
               value={name}
               onChangeText={text => this.setState({ profile: { ...this.state.profile, name: text }})}
               underlineColorAndroid="rgba(0, 0, 0, 0)"
@@ -81,10 +82,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
             
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>Username:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.username')}:</Text>
               <TextInput 
                 style={styles.page.form.textInput}
-                placeholder="Username"
+                placeholder={i18n.t('screens.profileEdition.labels.username')}
                 value={username}
                 onChangeText={text => this.setState({ profile: { ...this.state.profile, username: text }})}
                 autoCapitalize="none"
@@ -94,10 +95,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>Bio:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.bio')}:</Text>
               <TextInput 
                 style={styles.page.form.textInput}
-                placeholder="Bio"
+                placeholder={i18n.t('screens.profileEdition.labels.bio')}
                 value={bio}
                 onChangeText={text => this.setState({ profile: { ...this.state.profile, bio: text }})}
                 underlineColorAndroid="rgba(0, 0, 0, 0)"
@@ -105,10 +106,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>Website:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.website')}:</Text>
               <TextInput 
                 style={styles.page.form.textInput}
-                placeholder="Website"
+                placeholder={i18n.t('screens.profileEdition.labels.website')}
                 value={website}
                 onChangeText={text => this.setState({ profile: { ...this.state.profile, website: text }})}
                 underlineColorAndroid="rgba(0, 0, 0, 0)"
@@ -116,10 +117,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>Phone:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.phone')}:</Text>
               <TextInput 
                 style={styles.page.form.textInput}
-                placeholder="Phone"
+                placeholder={i18n.t('screens.profileEdition.labels.phone')}
                 value={phone}
                 onChangeText={text => this.setState({ profile: { ...this.state.profile, phone: text }})}
                 underlineColorAndroid="rgba(0, 0, 0, 0)"
@@ -127,15 +128,15 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>Gender:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.genderEnum.gender')}:</Text>
               <Picker 
                 style={styles.page.form.picker}
                 selectedValue={gender}
                 onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text }})}
               >
-                <Picker.Item label="Masculino" value="MALE" />
-                <Picker.Item label="Feminino" value="FEMALE" />
-                <Picker.Item label="Outro" value="OTHER" />
+                <Picker.Item label={i18n.t('screens.profileEdition.labels.genderEnum.male')} value="MALE" />
+                <Picker.Item label={i18n.t('screens.profileEdition.labels.genderEnum.female')} value="FEMALE" />
+                <Picker.Item label={i18n.t('screens.profileEdition.labels.genderEnum.other')} value="OTHER" />
               </Picker>
             </View>
           </View>
@@ -144,7 +145,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
               style={styles.page.form.submitButton}
               onPress={this.submit}
               activeOpacity={1}>
-              <Text style={styles.page.form.submitButtonText}>Salvar</Text> 
+              <Text style={styles.page.form.submitButtonText}>{i18n.t('screens.profileEdition.buttons.save')}</Text> 
             </TouchableOpacity>            
           </View>
       </SafeAreaView>
