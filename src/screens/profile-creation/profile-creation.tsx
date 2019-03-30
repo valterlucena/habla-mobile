@@ -21,7 +21,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     this.state = {
       profile: propsProfile || {
         name: "",
-        username: ""
+        username: "",
+        bio: "",
+        website: "",
+        phone: ""
       },
       loading: false
     };
@@ -79,6 +82,24 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                        autoCapitalize="none"
                        keyboardType="twitter"
                        editable={!this.state.loading}/>
+            <TextInput style={styles.page.profileForm.textInput}
+                       placeholder="Bio"
+                       value={this.state.profile.bio}
+                       onChangeText={text => this.setState({ profile: { ...this.state.profile, name: text }})}
+                       underlineColorAndroid="rgba(0, 0, 0, 0)"
+                       editable={!this.state.loading}/>
+            <TextInput style={styles.page.profileForm.textInput}
+                       placeholder="Web Site"
+                       value={this.state.profile.website}
+                       onChangeText={text => this.setState({ profile: { ...this.state.profile, name: text }})}
+                       underlineColorAndroid="rgba(0, 0, 0, 0)"
+                       editable={!this.state.loading}/>
+            <TextInput style={styles.page.profileForm.textInput}
+                       placeholder="Phone"
+                       value={this.state.profile.phone}
+                       onChangeText={text => this.setState({ profile: { ...this.state.profile, name: text }})}
+                       underlineColorAndroid="rgba(0, 0, 0, 0)"
+                       editable={!this.state.loading}/>           
               <TouchableOpacity style={styles.page.profileForm.submitButton}
                                 onPress={this.submit}
                                 disabled={this.state.loading}
