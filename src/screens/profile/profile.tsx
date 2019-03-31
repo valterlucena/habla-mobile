@@ -115,7 +115,9 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
   }
 
   openProfileEdition = (profile) => {
-    this.props.navigation.push('ProfileEditionScreen', { profile: profile });
+    this.props.navigation.push('ProfileEditionScreen', { profile: profile, onProfileEdition: profile => {
+      this.setState({ profile: { ...this.state.profile, ...profile }});
+    }});
   }
 
   render() {
