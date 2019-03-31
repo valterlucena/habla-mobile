@@ -74,7 +74,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             <Text style={styles.page.header.viewSubtitle}> 
               { i18n.t('screens.profileCreation.subtitle', { name: this.state.profile.name }) } 
             </Text>
-            
+              
             <View style={styles.page.form.row}>
               <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.name') }</Text>
               <TextInput style={styles.page.form.textInput}
@@ -84,53 +84,53 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                       underlineColorAndroid="rgba(0, 0, 0, 0)"
                       editable={!this.state.loading}/>
             </View>
-            
+              
             <View style={styles.page.form.row}>
               <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.username') }</Text>
               <TextInput style={styles.page.form.textInput}
-                       placeholder={ i18n.t('screens.profileCreation.labels.username') }
-                       value={this.state.profile.username}
-                       onChangeText={text => this.setState({ profile: { ...this.state.profile, username: text }})}
-                       underlineColorAndroid="rgba(0, 0, 0, 0)"
-                       autoCapitalize="none"
-                       keyboardType="twitter"
-                       editable={!this.state.loading}/>
+                        placeholder={ i18n.t('screens.profileCreation.labels.username') }
+                        value={this.state.profile.username}
+                        onChangeText={text => this.setState({ profile: { ...this.state.profile, username: text }})}
+                        underlineColorAndroid="rgba(0, 0, 0, 0)"
+                        autoCapitalize="none"
+                        keyboardType="twitter"
+                        editable={!this.state.loading}/>
             </View>               
-            
+              
             <View style={styles.page.form.row}>
-            <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.bio') }</Text>
-            <TextInput style={styles.page.form.textInput}
-                       placeholder={ i18n.t('screens.profileCreation.labels.bio') }
-                       value={this.state.profile.bio}
-                       onChangeText={text => this.setState({ profile: { ...this.state.profile, bio: text }})}
-                       underlineColorAndroid="rgba(0, 0, 0, 0)"
-                       editable={!this.state.loading}/>
+                <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.bio') }</Text>
+                <TextInput style={styles.page.form.textInput}
+                          placeholder={ i18n.t('screens.profileCreation.labels.bio') }
+                          value={this.state.profile.bio}
+                          onChangeText={text => this.setState({ profile: { ...this.state.profile, bio: text }})}
+                          underlineColorAndroid="rgba(0, 0, 0, 0)"
+                          editable={!this.state.loading}/>
             </View>
 
             <View style={styles.page.form.row}>
               <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.website') }</Text>
               <TextInput style={styles.page.form.textInput}
-                       placeholder={ i18n.t('screens.profileCreation.labels.website') }
-                       value={this.state.profile.website}
-                       onChangeText={text => this.setState({ profile: { ...this.state.profile, website: text }})}
-                       underlineColorAndroid="rgba(0, 0, 0, 0)"
-                       autoCapitalize="none"
-                       editable={!this.state.loading}/>
+                        placeholder={ i18n.t('screens.profileCreation.labels.website') }
+                        value={this.state.profile.website}
+                        onChangeText={text => this.setState({ profile: { ...this.state.profile, website: text }})}
+                        underlineColorAndroid="rgba(0, 0, 0, 0)"
+                        autoCapitalize="none"
+                        editable={!this.state.loading}/>
             </View>            
-            
+              
             <View style={styles.page.form.row}>
               <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.phone') }</Text>
               <TextInput style={styles.page.form.textInput}
-                       placeholder={ i18n.t('screens.profileCreation.labels.phone') }
-                       value={this.state.profile.phone}
-                       onChangeText={text => this.setState({ profile: { ...this.state.profile, phone: text }})}
-                       underlineColorAndroid="rgba(0, 0, 0, 0)"
-                       keyboardType="numeric"
-                       editable={!this.state.loading}/>
+                        placeholder={ i18n.t('screens.profileCreation.labels.phone') }
+                        value={this.state.profile.phone}
+                        onChangeText={text => this.setState({ profile: { ...this.state.profile, phone: text }})}
+                        underlineColorAndroid="rgba(0, 0, 0, 0)"
+                        keyboardType="numeric"
+                        editable={!this.state.loading}/>
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{ i18n.t('glonal.enums.gender') }</Text>
+              <Text style={styles.page.form.label}>{ i18n.t('global.enums.gender.gender') }</Text>
               <Picker 
                 style={styles.page.form.picker}
                 selectedValue={this.state.profile.gender}
@@ -142,15 +142,15 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
               </Picker>
             </View>    
 
-              <TouchableOpacity style={styles.page.form.submitButton}
-                                onPress={this.submit}
-                                disabled={this.state.loading}
-                                activeOpacity={1}>
-                {this.state.loading? 
-                    (<ActivityIndicator color="white"
-                                        size="small"/>)
-                  : (<Text style={styles.page.form.submitButtonText}>{ i18n.t('screens.profileCreation.buttons.next') }</Text>) }
-                </TouchableOpacity> 
+            <TouchableOpacity style={styles.page.form.submitButton}
+                            onPress={this.submit}
+                            disabled={this.state.loading}
+                            activeOpacity={1}>
+            {this.state.loading? 
+                (<ActivityIndicator color="white"
+                                    size="small"/>)
+              : (<Text style={styles.page.form.submitButtonText}>{ i18n.t('screens.profileCreation.buttons.next') }</Text>) }
+            </TouchableOpacity> 
           </ScrollView>
         </SafeAreaView>
       );
@@ -170,16 +170,17 @@ const styles = {
       row: {
         flexDirection: "row",
         justifyContent: "space-between",
-        paddingVertical: 5,
-        marginTop: 15,
+        paddingVertical: 15,
+        borderBottomColor: '#eee',
+        borderBottomWidth: 1
       },
       label: {
-        fontSize: 15,
+        fontSize: 18,
         fontWeight: "bold"
       },
       textInput: {
         width: "70%",
-        fontSize: 15
+        fontSize: 18
       },
       picker: {
         width: "70%"
