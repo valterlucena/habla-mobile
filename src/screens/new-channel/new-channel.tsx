@@ -10,7 +10,7 @@ export default class NewChannelScreen extends React.Component<NewChannelScreenPr
     constructor(props: NewChannelScreenProps) {
         super(props);
     
-        this.state = { channel: { body: null }, teste: false };
+        this.state = { channel: { name: null }, creating: false };
     }
 
     componentWillMount() {
@@ -22,11 +22,11 @@ export default class NewChannelScreen extends React.Component<NewChannelScreenPr
     }
 
     handleChannelInput = (text: string) => {
-        this.setState({ channel: { ...this.state.channel, body: text }});
+        this.setState({ channel: { ...this.state.channel, name: text }});
       }
 
     sendChannel = async() => {
-        this.setState({ teste: true });
+        this.setState({ creating: true });
     
         try {
           const response = await client.mutate({
@@ -51,7 +51,7 @@ export default class NewChannelScreen extends React.Component<NewChannelScreenPr
           console.log(error);
         } 
     
-        this.setState({  teste: false });
+        this.setState({ creating: false });
     }
 
       resetChannel() {
@@ -73,17 +73,17 @@ export default class NewChannelScreen extends React.Component<NewChannelScreenPr
                 </View>
                 <TextInput style={styles.newChannel.input}
                   onChangeText={this.handleChannelInput}
-                  value={this.state.channel.body}
+                  value={this.state.channel.name}
                   placeholderTextColor="white"
-                  placeholder={i18n.t('screens.newPost.inputPlaceholder')}
-                  editable={!this.state.teste}
+                  placeholder={i18n.t('screens.newChannel.inputPlaceholder')}
+                  editable={!this.state.creating}
                   multiline={true}
                   underlineColorAndroid="rgba(0,0,0,0)"/>
                 <TouchableOpacity style={styles.newChannel.sendButton}
                         onPress={this.sendChannel}
-                        disabled={this.state.teste || !this.state.channel.body || this.state.channel.body.trim() == ''}
+                        disabled={this.state.creating || !this.state.channel.name || this.state.channel.name.trim() == ''}
                           activeOpacity={1}>
-                     {this.state.teste? <ActivityIndicator color="white"/>: <Text style={styles.newChannel.sendButtonText}>{ i18n.t('screens.newPost.buttons.submit') }</Text>}
+                     {this.state.creating? <ActivityIndicator color="white"/>: <Text style={styles.newChannel.sendButtonText}>{ i18n.t('screens.newPost.buttons.submit') }</Text>}
                 </TouchableOpacity>
             </View>
 
@@ -134,10 +134,11 @@ interface NewChannelScreenProps{
     navigation: any;
     onSuccess: Function;
     onDismiss: Function;
+    posts: any;
 
 }
 
 interface NewChannelScreenState{
-    teste: boolean;
+    creating: boolean;
     channel: any;
 }
