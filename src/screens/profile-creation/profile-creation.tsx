@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, View, SafeAreaView, StatusBar, TextInput, TouchableOpacity, ActivityIndicator, Image, Picker } from "react-native";
+import { Text, StyleSheet, View, SafeAreaView, StatusBar, TextInput, TouchableOpacity, ActivityIndicator, Image, Picker, ScrollView } from "react-native";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
 import THEME from "../../theme/theme";
@@ -63,7 +63,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       return (
         <SafeAreaView>
           <StatusBar barStyle="dark-content"/>
-          <View style={styles.page.container.view}>
+          <ScrollView style={styles.page.container.view}>
             <View style={styles.page.header.row}>
               <Text style={styles.page.header.viewTitle}>
                 { i18n.t('screens.profileCreation.title') }
@@ -151,7 +151,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                                         size="small"/>)
                   : (<Text style={styles.page.form.submitButtonText}>{ i18n.t('screens.profileCreation.buttons.next') }</Text>) }
                 </TouchableOpacity> 
-          </View>
+          </ScrollView>
         </SafeAreaView>
       );
   }
