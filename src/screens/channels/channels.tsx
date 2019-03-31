@@ -7,7 +7,8 @@ import i18n from 'i18n-js';
 import ActionButton from 'react-native-action-button';
 import { FontAwesome} from '@expo/vector-icons';
 import Modal from "react-native-modal";
-import NewChannelScreen from '../new-channel/new-channel'
+import NewChannelScreen from '../new-channel/new-channel';
+
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
   static navigationOptions = () => {
@@ -93,7 +94,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                     </TouchableOpacity>
         )}/>
         <ActionButton buttonColor={THEME.colors.secondary.default}
-                      position="center"
+                      position="right"
                       hideShadow={true}
                       offsetY={10}
                       onPress={this.newChannel}

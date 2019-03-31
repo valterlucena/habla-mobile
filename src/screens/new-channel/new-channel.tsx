@@ -134,7 +134,6 @@ interface NewChannelScreenProps{
     navigation: any;
     onSuccess: Function;
     onDismiss: Function;
-    posts: any;
 
 }
 
