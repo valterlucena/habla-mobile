@@ -12,6 +12,12 @@ const pt: AppTranslations = {
                 close: 'perto',
                 far: 'longe',
                 very_far: 'muito longe'
+            },
+            gender: {
+                gender: 'Gênero',
+                male: 'Masculino',
+                female: 'Feminino',
+                other: 'Outro'
             }
         }
     },
@@ -84,13 +90,7 @@ const pt: AppTranslations = {
                 username: 'Usuário',
                 bio: 'Bio',
                 website: 'Website',
-                phone: 'Telefone',
-                genderEnum: {
-                    gender: 'Gênero',
-                    male: 'Masculino',
-                    female: 'Feminino',
-                    other: 'Outro'
-                }
+                phone: 'Telefone'
             },
             buttons: {
                 save: 'Salvar alterações'
