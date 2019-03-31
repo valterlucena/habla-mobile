@@ -12,7 +12,13 @@ export interface AppTranslations {
                 close: string;
                 far: string;
                 very_far: string;
-            }
+            },
+            gender: {
+                gender: string;
+                male: string;
+                female: string;
+                other: string;
+            };
         }
     },
     screens: {
@@ -77,6 +83,20 @@ export interface AppTranslations {
             title: string;
             buttons: {
                 signOut: string;
+                editProfile: string;
+            }
+        },
+        profileEdition: {
+            title: string;
+            labels: {
+                name: string;
+                username: string;
+                bio: string;
+                website: string;
+                phone: string;
+            },
+            buttons: {
+                save: string,
             }
         }
     }

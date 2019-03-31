@@ -12,6 +12,12 @@ const pt: AppTranslations = {
                 close: 'perto',
                 far: 'longe',
                 very_far: 'muito longe'
+            },
+            gender: {
+                gender: 'Gênero',
+                male: 'Masculino',
+                female: 'Feminino',
+                other: 'Outro'
             }
         }
     },
@@ -76,7 +82,21 @@ const pt: AppTranslations = {
         profile: {
             title: 'Perfil',
             buttons: {
-                signOut: 'Sair'
+                signOut: 'Sair',
+                editProfile: 'Editar perfil'
+            }
+        },
+        profileEdition: {
+            title: 'Editar perfil',
+            labels: {
+                name: 'Nome',
+                username: 'Usuário',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Telefone'
+            },
+            buttons: {
+                save: 'Salvar alterações'
             }
         }
     }
