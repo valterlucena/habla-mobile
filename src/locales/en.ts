@@ -13,7 +13,7 @@ const en: AppTranslations = {
                 far: 'far',
                 very_far: 'very far'
             },
-            genderEnum: {
+            gender: {
                 gender: 'Gender',
                 male: 'Male',
                 female: 'Female',
@@ -67,9 +67,6 @@ const en: AppTranslations = {
             buttons: {
                 submit: 'Send'
             }
-        },
-        newChannel:{
-            inputPlaceholder: "Type it channel name..."
         },
         notifications: {
             title: 'Notifications',
