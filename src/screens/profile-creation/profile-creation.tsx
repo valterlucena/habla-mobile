@@ -114,6 +114,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                        value={this.state.profile.website}
                        onChangeText={text => this.setState({ profile: { ...this.state.profile, website: text }})}
                        underlineColorAndroid="rgba(0, 0, 0, 0)"
+                       autoCapitalize="none"
                        editable={!this.state.loading}/>
             </View>            
             
@@ -124,6 +125,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                        value={this.state.profile.phone}
                        onChangeText={text => this.setState({ profile: { ...this.state.profile, phone: text }})}
                        underlineColorAndroid="rgba(0, 0, 0, 0)"
+                       keyboardType="numeric"
                        editable={!this.state.loading}/>
             </View>
 
@@ -134,9 +136,9 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                 selectedValue={this.state.profile.gender}
                 onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text }})}>
 
-                <Picker.Item label={ i18n.t('screens.profileCreation.labels.genderEnum.male') } value="MALE"/>
-                <Picker.Item label={ i18n.t('screens.profileCreation.labels.genderEnum.female') } value="FEMALE"/>
-                <Picker.Item label={ i18n.t('screens.profileCreation.labels.genderEnum.other') } value="OTHER"/> 
+                <Picker.Item label={ i18n.t('global.enumns.genderEnum.male') } value="MALE"/>
+                <Picker.Item label={ i18n.t('global.enumns.genderEnum.female') } value="FEMALE"/>
+                <Picker.Item label={ i18n.t('global.enumns.genderEnum.other') } value="OTHER"/> 
               </Picker>
             </View>    
 
