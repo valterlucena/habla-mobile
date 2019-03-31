@@ -12,6 +12,12 @@ const en: AppTranslations = {
                 close: 'close',
                 far: 'far',
                 very_far: 'very far'
+            },
+            genderEnum: {
+                gender: 'Gender',
+                male: 'Male',
+                female: 'Female',
+                other: 'Other'
             }
         }
     },
@@ -39,12 +45,6 @@ const en: AppTranslations = {
                 bio: 'Bio',
                 website: 'Website',
                 phone: 'Phone',
-                genderEnum: {
-                    gender: 'Gender',
-                    male: 'Male',
-                    female: 'Female',
-                    other: 'Other'
-                }
             },
             buttons: {
                 next: 'Next'
