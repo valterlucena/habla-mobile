@@ -13,8 +13,7 @@ export interface AppTranslations {
                 far: string;
                 very_far: string;
             },
-            
-            genderEnum: {
+            gender: {
                 gender: string;
                 male: string;
                 female: string;
@@ -68,9 +67,6 @@ export interface AppTranslations {
             buttons: {
                 submit: string;
             }
-        },
-        newChannel:{
-            inputPlaceholder: string;
         },
         notifications: {
             title: string;

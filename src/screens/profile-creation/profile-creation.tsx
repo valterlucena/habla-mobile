@@ -130,15 +130,15 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{ i18n.t('screens.profileCreation.labels.genderEnum.gender') }</Text>
+              <Text style={styles.page.form.label}>{ i18n.t('glonal.enums.gender') }</Text>
               <Picker 
                 style={styles.page.form.picker}
                 selectedValue={this.state.profile.gender}
                 onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text }})}>
 
-                <Picker.Item label={ i18n.t('global.enumns.genderEnum.male') } value="MALE"/>
-                <Picker.Item label={ i18n.t('global.enumns.genderEnum.female') } value="FEMALE"/>
-                <Picker.Item label={ i18n.t('global.enumns.genderEnum.other') } value="OTHER"/> 
+                <Picker.Item label={ i18n.t('global.enums.gender.male') } value="MALE"/>
+                <Picker.Item label={ i18n.t('global.enums.gender.female') } value="FEMALE"/>
+                <Picker.Item label={ i18n.t('global.enums.gender.other') } value="OTHER"/> 
               </Picker>
             </View>    
 
