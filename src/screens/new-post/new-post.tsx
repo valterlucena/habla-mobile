@@ -134,7 +134,8 @@ const styles = {
       flex: 1,
       fontSize: 25,
       flexGrow: 1,
-      fontWeight: "bold"
+      fontWeight: "bold",
+      textAlignVertical: "top"
     },
     sendButton: {
       paddingHorizontal: 16,

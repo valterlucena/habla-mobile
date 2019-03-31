@@ -83,7 +83,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         <StatusBar barStyle="dark-content"/>
           <ScrollView style={styles.page.container.view}>
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.name')}:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.name')}</Text>
               <TextInput 
               style={styles.page.form.textInput}
               placeholder={i18n.t('screens.profileEdition.labels.name')}
@@ -94,7 +94,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
             
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.username')}:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.username')}</Text>
               <TextInput 
                 style={styles.page.form.textInput}
                 placeholder={i18n.t('screens.profileEdition.labels.username')}
@@ -107,7 +107,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.bio')}:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.bio')}</Text>
               <TextInput 
                 style={styles.page.form.textInput}
                 placeholder={i18n.t('screens.profileEdition.labels.bio')}
@@ -118,7 +118,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.website')}:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.website')}</Text>
               <TextInput 
                 style={styles.page.form.textInput}
                 placeholder={i18n.t('screens.profileEdition.labels.website')}
@@ -130,7 +130,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.phone')}:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.phone')}</Text>
               <TextInput 
                 style={styles.page.form.textInput}
                 placeholder={i18n.t('screens.profileEdition.labels.phone')}
@@ -142,7 +142,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
             </View>
 
             <View style={styles.page.form.row}>
-              <Text style={styles.page.form.label}>{i18n.t('global.enums.gender.gender')}:</Text>
+              <Text style={styles.page.form.label}>{i18n.t('global.enums.gender.gender')}</Text>
               <Picker 
                 style={styles.page.form.picker}
                 selectedValue={gender}
@@ -171,23 +171,24 @@ const styles = {
   page: {
     container: StyleSheet.create({
       view: {
-        padding: 16
+        paddingHorizontal: 16
       }
     }),
     form: StyleSheet.create({
       row: {
         flexDirection: "row",
         justifyContent: "space-between",
-        paddingVertical: 5,
-        marginTop: 15,
+        paddingVertical: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee'
       },
       label: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: "bold"
       },
       textInput: {
         width: "70%",
-        fontSize: 20
+        fontSize: 18
       },
       picker: {
         width: "70%"

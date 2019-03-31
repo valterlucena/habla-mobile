@@ -39,6 +39,13 @@ const en: AppTranslations = {
         profileCreation: {
             title: 'Profile',
             subtitle: "You're almost ready to start using Habla, {{name}}! Let's create your pubic profile.",
+            labels: {
+                name: 'Name',
+                username: 'Username',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Phone',
+            },
             buttons: {
                 next: 'Next'
             }
@@ -60,6 +67,9 @@ const en: AppTranslations = {
             buttons: {
                 submit: 'Send'
             }
+        },
+        newChannel:{
+            inputPlaceholder: "#Channel"
         },
         notifications: {
             title: 'Notifications',

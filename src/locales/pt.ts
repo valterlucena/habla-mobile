@@ -39,6 +39,13 @@ const pt: AppTranslations = {
         profileCreation: {
             title: 'Perfil',
             subtitle: "Você está quase lá, {{name}}! Vamos criar o seu perfil público.",
+            labels: {
+                name: 'Nome',
+                username: 'Usuário',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Telefone',
+            },
             buttons: {
                 next: 'Continuar'
             }
@@ -60,6 +67,9 @@ const pt: AppTranslations = {
             buttons: {
                 submit: 'Enviar'
             }
+        },
+        newChannel: {
+            inputPlaceholder: "#Canal",
         },
         notifications: {
             title: 'Notificações',
