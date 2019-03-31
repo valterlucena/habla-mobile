@@ -68,6 +68,9 @@ const en: AppTranslations = {
                 submit: 'Send'
             }
         },
+        newChannel:{
+            inputPlaceholder: "#Channel"
+        },
         notifications: {
             title: 'Notifications',
             notificationTypes: {
@@ -86,7 +89,21 @@ const en: AppTranslations = {
         profile: {
             title: 'Profile',
             buttons: {
-                signOut: 'Sign out'
+                signOut: 'Sign out',
+                editProfile: 'Edit profile'
+            }
+        },
+        profileEdition: {
+            title: 'Edit profile',
+            labels: {
+                name: 'Name',
+                username: 'Username',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Phone'
+            },
+            buttons: {
+                save: 'Save changes'
             }
         }
     }

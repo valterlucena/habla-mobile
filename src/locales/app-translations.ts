@@ -17,8 +17,8 @@ export interface AppTranslations {
                 gender: string;
                 male: string;
                 female: string;
-                other: string; 
-            };    
+                other: string;
+            };
         }
     },
     screens: {
@@ -68,6 +68,9 @@ export interface AppTranslations {
                 submit: string;
             }
         },
+        newChannel:{
+            inputPlaceholder: string;
+        },
         notifications: {
             title: string;
             notificationTypes: {
@@ -87,6 +90,20 @@ export interface AppTranslations {
             title: string;
             buttons: {
                 signOut: string;
+                editProfile: string;
+            }
+        },
+        profileEdition: {
+            title: string;
+            labels: {
+                name: string;
+                username: string;
+                bio: string;
+                website: string;
+                phone: string;
+            },
+            buttons: {
+                save: string,
             }
         }
     }
