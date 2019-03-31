@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, View, SafeAreaView, TextInput, StatusBar, TouchableOpacity, Picker } from "react-native";
+import { Text, StyleSheet, View, ScrollView, SafeAreaView, TextInput, StatusBar, TouchableOpacity, Picker } from "react-native";
 import THEME from "../../theme/theme";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
@@ -69,7 +69,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     return (
       <SafeAreaView>
         <StatusBar barStyle="dark-content"/>
-          <View style={styles.page.container.view}>
+          <ScrollView style={styles.page.container.view}>
             <View style={styles.page.form.row}>
               <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.name')}:</Text>
               <TextInput 
@@ -112,6 +112,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                 placeholder={i18n.t('screens.profileEdition.labels.website')}
                 value={website}
                 onChangeText={text => this.setState({ profile: { ...this.state.profile, website: text }})}
+                autoCapitalize="none"
                 underlineColorAndroid="rgba(0, 0, 0, 0)"
               />
             </View>
@@ -123,6 +124,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                 placeholder={i18n.t('screens.profileEdition.labels.phone')}
                 value={phone}
                 onChangeText={text => this.setState({ profile: { ...this.state.profile, phone: text }})}
+                keyboardType="numeric"
                 underlineColorAndroid="rgba(0, 0, 0, 0)"
               />
             </View>
@@ -139,7 +141,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                 <Picker.Item label={i18n.t('global.enums.gender.other')} value="OTHER" />
               </Picker>
             </View>
-          </View>
+          </ScrollView>
           <View style={styles.page.container.view}>
             <TouchableOpacity 
               style={styles.page.form.submitButton}
