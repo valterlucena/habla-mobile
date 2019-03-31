@@ -22,8 +22,10 @@ export default class NewChannelScreen extends React.Component<NewChannelScreenPr
     }
 
     handleChannelInput = (text: string) => {
-        this.setState({ channel: { ...this.state.channel, name: text }});
-      }
+      text = text.trim().replace('#', '');
+      
+      this.setState({ channel: { ...this.state.channel, name: text }});
+    }
 
     sendChannel = async() => {
         this.setState({ creating: true });
@@ -73,7 +75,7 @@ export default class NewChannelScreen extends React.Component<NewChannelScreenPr
                 </View>
                 <TextInput style={styles.newChannel.input}
                   onChangeText={this.handleChannelInput}
-                  value={this.state.channel.name}
+                  value={this.state.channel.name && `#${this.state.channel.name}`}
                   placeholderTextColor="white"
                   placeholder={i18n.t('screens.newChannel.inputPlaceholder')}
                   editable={!this.state.creating}
@@ -113,7 +115,8 @@ const styles = {
             flex: 1,
             fontSize: 25,
             flexGrow: 1,
-            fontWeight: "bold"
+            fontWeight: "bold",
+            textAlignVertical: "top"
           },
           sendButton: {
             paddingHorizontal: 16,

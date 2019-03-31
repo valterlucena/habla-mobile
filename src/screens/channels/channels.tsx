@@ -4,14 +4,12 @@ import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
-import ActionButton from 'react-native-action-button';
-import { FontAwesome} from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import NewChannelScreen from '../new-channel/new-channel';
 
-
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
-  static navigationOptions = () => {
+  static navigationOptions = ({ navigation }) => {
     return {
       title: i18n.t('screens.channels.title'), 
       headerStyle: {
@@ -20,7 +18,12 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
       },
       headerTitleStyle: {
         color: '#F5F5F5'
-      }
+      },
+      headerRight: (
+        <TouchableOpacity onPress={navigation.getParam('newChannelTapped')} style={styles.page.newChannelButton}>
+          <Ionicons name="ios-create" size={30} color="white"/>
+        </TouchableOpacity>
+      )
     }
   };
 
@@ -28,13 +31,15 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     super(props);
 
     this.state = { channels: [], refreshing: false, showNewChannelModal: false };
+
+    this.props.navigation.setParams({ newChannelTapped: this.newChannelTapped });
   }
 
   componentWillMount() {
     this.refresh();
   }
 
-  newChannel = () => {
+  newChannelTapped = () => {
     this.setState({ showNewChannelModal: true });
   }
 
@@ -60,7 +65,8 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
               name
             }
           }
-        `)
+        `),
+        fetchPolicy: 'no-cache'
       });
     
       this.setState({ channels: response.data.channels });
@@ -93,12 +99,6 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                       <Text style={styles.channel.channelTitle}>#{ item.name }</Text>
                     </TouchableOpacity>
         )}/>
-        <ActionButton buttonColor={THEME.colors.secondary.default}
-                      position="right"
-                      hideShadow={true}
-                      offsetY={10}
-                      onPress={this.newChannel}
-                      renderIcon={() => <FontAwesome name="plus" size={28} color={'#F5F5F5'}/>}/>
         <Modal isVisible={this.state.showNewChannelModal}
                avoidKeyboard={true}
                style={styles.page.newChannelModal}
@@ -124,6 +124,9 @@ const styles = {
       margin: 0,
       padding: 0
     },
+    newChannelButton: {
+      marginRight: 10
+    }
   }),
   channel: StyleSheet.create({
     container: {

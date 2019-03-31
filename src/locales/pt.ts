@@ -56,7 +56,7 @@ const pt: AppTranslations = {
             }
         },
         newChannel: {
-            inputPlaceholder: "Insira o nome do canal...",
+            inputPlaceholder: "#Canal",
         },
         notifications: {
             title: 'Notificações',
