@@ -55,6 +55,9 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               username
               photoURL
               bio
+              website
+              phone
+              gender
 
               posts {
                 id
@@ -111,6 +114,12 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     this.props.navigation.push('PostScreen', { post: post });
   }
 
+  openProfileEdition = (profile) => {
+    this.props.navigation.push('ProfileEditionScreen', { profile: profile, onProfileEdition: profile => {
+      this.setState({ profile: { ...this.state.profile, ...profile }});
+    }});
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
@@ -133,8 +142,14 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
           <View style={styles.profileInfo.line}>
             <Text style={styles.profileInfo.lineText}>@{ this.state.profile.username }</Text>
           </View>
-        </View>): null }
-
+          <View style={styles.profileInfo.line}>
+            <TouchableOpacity onPress={() => this.openProfileEdition(this.state.profile)}>
+              <Text style={styles.profileInfo.lineText}>
+                { i18n.t('screens.profile.buttons.editProfile') }
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>): null }       
         {this.isSelfProfile()? <TouchableOpacity style={styles.profileInfo.line}
                           onPress={this.logout}>
           <Text style={styles.profileInfo.lineText}>{ i18n.t('screens.profile.buttons.signOut') }</Text>

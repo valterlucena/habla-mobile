@@ -12,6 +12,12 @@ const en: AppTranslations = {
                 close: 'close',
                 far: 'far',
                 very_far: 'very far'
+            },
+            gender: {
+                gender: 'Gender',
+                male: 'Male',
+                female: 'Female',
+                other: 'Other'
             }
         }
     },
@@ -73,7 +79,21 @@ const en: AppTranslations = {
         profile: {
             title: 'Profile',
             buttons: {
-                signOut: 'Sign out'
+                signOut: 'Sign out',
+                editProfile: 'Edit profile'
+            }
+        },
+        profileEdition: {
+            title: 'Edit profile',
+            labels: {
+                name: 'Name',
+                username: 'Username',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Phone'
+            },
+            buttons: {
+                save: 'Save changes'
             }
         }
     }
