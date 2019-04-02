@@ -61,6 +61,9 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               name
               username
               bio
+              website
+              phone
+              gender
 
               posts {
                 id
@@ -128,7 +131,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     await Permissions.askAsync(Permissions.CAMERA);
     let image: any;
     if (index == 0) {
-      image = await ImagePicker.launchCameraAsync()
+      image = await ImagePicker.launchCameraAsync({quality: 0.1})
     }
     else if (index == 1) {
       image = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'Images', allowsEditing: true });
@@ -136,7 +139,9 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     if ((index == 2) || (image.cancelled)) {
       return;
     }
+    console.log("ANTES")
     let base64 = await FileSystem.readAsStringAsync(image.uri, { encoding: FileSystem.EncodingTypes.Base64 });
+    console.log("DEPOIS")
     base64 = `data:image/png;base64,${base64}`;
 
     this.setState({ profilePhoto: base64 })
@@ -159,7 +164,10 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     } catch (error) {
       console.log(JSON.stringify(error));
     }
+  }
 
+  openProfileEdition = (profile) => {
+    this.props.navigation.push('ProfileEditionScreen', { profile: profile });
   }
 
   render() {
@@ -200,8 +208,14 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               <View style={styles.profileInfo.line}>
                 <Text style={styles.profileInfo.lineText}>@{this.state.profile.username}</Text>
               </View>
+              <View style={styles.profileInfo.line}>
+                <TouchableOpacity onPress={() => this.openProfileEdition(this.state.profile)}>
+                  <Text style={styles.profileInfo.lineText}>
+                    {i18n.t('screens.profile.buttons.editProfile')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>) : null}
-
         {this.isSelfProfile() ? <TouchableOpacity style={styles.profileInfo.line}
           onPress={this.logout}>
           <Text style={styles.profileInfo.lineText}>{i18n.t('screens.profile.buttons.signOut')}</Text>

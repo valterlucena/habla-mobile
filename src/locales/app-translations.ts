@@ -12,7 +12,13 @@ export interface AppTranslations {
                 close: string;
                 far: string;
                 very_far: string;
-            }
+            },
+            gender: {
+                gender: string;
+                male: string;
+                female: string;
+                other: string;
+            };
         }
     },
     screens: {
@@ -31,8 +37,15 @@ export interface AppTranslations {
             }
         },
         profileCreation: {
-            title: string,
-            subtitle: string,
+            title: string;
+            subtitle: string;
+            labels: {
+                name: string;
+                username: string;
+                bio: string;
+                website: string;
+                phone: string;
+            },
             buttons: {
                 next: string
             }
@@ -54,6 +67,9 @@ export interface AppTranslations {
             buttons: {
                 submit: string;
             }
+        },
+        newChannel:{
+            inputPlaceholder: string;
         },
         notifications: {
             title: string;
@@ -80,6 +96,20 @@ export interface AppTranslations {
             },
             buttons: {
                 signOut: string;
+                editProfile: string;
+            }
+        },
+        profileEdition: {
+            title: string;
+            labels: {
+                name: string;
+                username: string;
+                bio: string;
+                website: string;
+                phone: string;
+            },
+            buttons: {
+                save: string,
             }
         }
     }

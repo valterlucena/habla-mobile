@@ -12,6 +12,12 @@ const pt: AppTranslations = {
                 close: 'perto',
                 far: 'longe',
                 very_far: 'muito longe'
+            },
+            gender: {
+                gender: 'Gênero',
+                male: 'Masculino',
+                female: 'Feminino',
+                other: 'Outro'
             }
         }
     },
@@ -33,6 +39,13 @@ const pt: AppTranslations = {
         profileCreation: {
             title: 'Perfil',
             subtitle: "Você está quase lá, {{name}}! Vamos criar o seu perfil público.",
+            labels: {
+                name: 'Nome',
+                username: 'Usuário',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Telefone',
+            },
             buttons: {
                 next: 'Continuar'
             }
@@ -54,6 +67,9 @@ const pt: AppTranslations = {
             buttons: {
                 submit: 'Enviar'
             }
+        },
+        newChannel: {
+            inputPlaceholder: "#Canal",
         },
         notifications: {
             title: 'Notificações',
@@ -79,7 +95,21 @@ const pt: AppTranslations = {
                 cancel: 'Cancelar'  
             },
             buttons: {
-                signOut: 'Sair'
+                signOut: 'Sair',
+                editProfile: 'Editar perfil'
+            }
+        },
+        profileEdition: {
+            title: 'Editar perfil',
+            labels: {
+                name: 'Nome',
+                username: 'Usuário',
+                bio: 'Bio',
+                website: 'Website',
+                phone: 'Telefone'
+            },
+            buttons: {
+                save: 'Salvar alterações'
             }
         }
     }
