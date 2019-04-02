@@ -73,6 +73,8 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     
     let location: any = await Location.reverseGeocodeAsync({ latitude: coords.latitude, longitude: coords.longitude });
 
+    console.log(location);
+    
     if (location && location[0]) {
       location = location[0];
     }
@@ -92,47 +94,55 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
         
         let profile = storedProfile? JSON.parse(await AsyncStorage.getItem('userProfile')): null;
 
-        if (!profile) {
-          try {
-            const response = await client.query({
-              query: gql(`
-                {
-                  profile(uid: "${user.uid}") {
-                    uid
-                    name
-                    username
-                    bio
-                    website
-                    phone
-                    gender
-                  }
-                }
-              `),
-              fetchPolicy: 'no-cache'
-            });
-
-            profile = (response.data as any).profile;
-          } catch (error) {
-            console.log(JSON.stringify(error));
-
-            return;
-          }
+        if (profile) {
+          await this.handleSuccessProfileFetch(profile);
         }
 
-        if (profile) {
-          await AsyncStorage.setItem('userProfile', JSON.stringify(profile));
+        try {
+          profile = await this.fetchProfile(user);
 
-          this.props.navigation.navigate('TabsNavigator');
-
-          await this.registerForNotifications();
-        } else {
-          this.props.navigation.navigate('ProfileCreationScreen', { user: user });
+          await this.handleSuccessProfileFetch(profile);
+        } catch (error) {
+          if (error.graphQLErrors.find(e => e.code === 'NOT_FOUND_ERROR')) {
+            this.props.navigation.navigate('ProfileCreationScreen', { user: user });
+          }
         }
       } else {
         this.props.navigation.navigate('LoginScreen');
         await AsyncStorage.removeItem('userProfile');
       }
     });
+  }
+  
+  fetchProfile = async(firebaseUser) => {
+    const response = await client.query({
+      query: gql(`
+        {
+          profile(uid: "${firebaseUser.uid}") {
+            uid
+            name
+            username
+            bio
+            website
+            phone
+            gender
+          }
+        }
+      `),
+      fetchPolicy: 'no-cache'
+    });
+
+    const profile = (response.data as any).profile;
+
+    return profile;
+  }
+
+  handleSuccessProfileFetch = async(profile) => {
+    await AsyncStorage.setItem('userProfile', JSON.stringify(profile));
+    
+    this.props.navigation.navigate('TabsNavigator');
+
+    await this.registerForNotifications();
   }
 
   registerForNotifications = async() => {
