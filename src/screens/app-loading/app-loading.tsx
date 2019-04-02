@@ -105,6 +105,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
         } catch (error) {
           if (error.graphQLErrors.find(e => e.code === 'NOT_FOUND_ERROR')) {
             this.props.navigation.navigate('ProfileCreationScreen', { user: user });
+            await AsyncStorage.removeItem('userProfile');
           }
         }
       } else {
