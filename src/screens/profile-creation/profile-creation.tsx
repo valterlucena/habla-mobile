@@ -14,7 +14,6 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     if (this.props.navigation.state.params && this.props.navigation.state.params.user) {
       propsProfile = {
         name: this.props.navigation.state.params.user.displayName,
-        photoURL: this.props.navigation.state.params.user.photoURL,
         bio: this.props.navigation.state.params.user.bio,
         website: this.props.navigation.state.params.user.website,
         phone: this.props.navigation.state.params.user.phone,

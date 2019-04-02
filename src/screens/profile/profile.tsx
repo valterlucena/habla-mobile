@@ -130,7 +130,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
         { this.state.profile? 
         (
         <View>
-          <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profile.photoURL }} style={styles.profileInfo.photo}/>
+          {this.state.profile.photoURL && <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profile.photoURL }} style={styles.profileInfo.photo}/>}
           <View style={styles.profileInfo.line}>
             <Text style={styles.profileInfo.lineText}>{ this.state.profile.name }</Text>
           </View>
