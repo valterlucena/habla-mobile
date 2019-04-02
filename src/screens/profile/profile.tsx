@@ -9,6 +9,9 @@ import PostComponent from '../../components/post/post';
 import i18n from 'i18n-js';
 import { Permissions, Location } from 'expo';
 import ActionSheet from 'react-native-actionsheet'
+import { ImagePicker } from 'expo';
+import { Platform } from 'expo-core';
+import { FileSystem } from 'expo';
 
 export default class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
 
@@ -32,7 +35,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
   constructor(props) {
     super(props);
 
-    this.state = { profile: null, refreshing: false };
+    this.state = { profile: null, refreshing: false, profilePhoto: null };
   }
 
   componentWillMount() {
@@ -57,7 +60,6 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               uid
               name
               username
-              photoURL
               bio
 
               posts {
@@ -119,6 +121,47 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     this.actionSheet.show()
   }
 
+  choosePhoto = async index => {
+    if (Platform.OS === 'ios') {
+      await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    }
+    await Permissions.askAsync(Permissions.CAMERA);
+    let image: any;
+    if (index == 0) {
+      image = await ImagePicker.launchCameraAsync()
+    }
+    else if (index == 1) {
+      image = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'Images', allowsEditing: true });
+    }
+    if ((index == 2) || (image.cancelled)) {
+      return;
+    }
+    let base64 = await FileSystem.readAsStringAsync(image.uri, { encoding: FileSystem.EncodingTypes.Base64 });
+    base64 = `data:image/png;base64,${base64}`;
+
+    this.setState({ profilePhoto: base64 })
+
+    try {
+      const response = await client.mutate({
+        variables: {
+          profile: this.state.profile,
+          profilePhoto: this.state.profilePhoto
+        },
+        mutation: gql(`
+          mutation UpdateProfile ($profile: ProfileInput!, $photo: Upload) {
+            updateProfile(profile: $profile, photo: $photo) {
+              uid
+            }
+          }
+        `)
+      });
+
+    } catch (error) {
+      console.log(JSON.stringify(error));
+    }
+
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
@@ -131,7 +174,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
         {this.state.profile ?
           (
             <View>
-              <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profile.photoURL }} style={styles.profileInfo.photo} />
+              <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profilePhoto }} style={styles.profileInfo.photo} />
               <View>
                 <Text
                   style={styles.page.textChangePhoto}
@@ -145,7 +188,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
                   i18n.t('screens.profile.changePhoto.option2'),
                   i18n.t('screens.profile.changePhoto.cancel')]}
                   cancelButtonIndex={2}
-                  onPress={(index) => { /* do something */ }}
+                  onPress={(index) => { this.choosePhoto(index) }}
                 />
               </View>
               <View style={styles.profileInfo.line}>
@@ -206,6 +249,7 @@ const styles = {
 interface ProfileScreenState {
   profile: any;
   refreshing: boolean;
+  profilePhoto: any;
 }
 
 interface ProfileScreenProps {
