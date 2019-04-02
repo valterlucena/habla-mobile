@@ -68,7 +68,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     const { name, username, bio, website, phone, gender } = this.state.profile;
     return (
       <SafeAreaView>
-        <StatusBar barStyle="dark-content"/>
+        <StatusBar barStyle="light-content"/>
           <ScrollView style={styles.page.container.view}>
             <View style={styles.page.form.row}>
               <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.name')}</Text>
