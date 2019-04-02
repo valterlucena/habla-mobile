@@ -32,7 +32,11 @@ Localization.getLocalizationAsync().then(localization => {
   i18n.translations = { en, pt };
   i18n.locale = locale;
 
-  moment.locale(locale);
+  if (moment.locales().find(l => l === locale.toLowerCase())) {
+    moment.locale(locale.toLowerCase());
+  } else {
+    moment.locale('en-us');
+  }
 });
 
 const TabsNavigator = createBottomTabNavigator({
