@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, Dimensions, FlatList } from 'react-native';
+import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, Dimensions } from 'react-native';
 import firebase from 'firebase';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
@@ -12,6 +12,7 @@ import ActionSheet from 'react-native-actionsheet'
 import { ImagePicker } from 'expo';
 import { Platform } from 'expo-core';
 import { FileSystem } from 'expo';
+import ChangePhotoComponent from '../../components/change-photo/change-photo'
 
 export default class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
 
@@ -64,6 +65,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               website
               phone
               gender
+              photoURL
 
               posts {
                 id
@@ -96,7 +98,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
         }
       });
 
-      this.setState({ profile: response.data.profile });
+      this.setState({ profile: response.data.profile, profilePhoto: response.data.profile.photoURL });
     } catch (error) {
       console.log(error);
     }
@@ -120,10 +122,6 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     this.props.navigation.push('PostScreen', { post: post });
   }
 
-  showActionSheet = () => {
-    this.actionSheet.show()
-  }
-
   choosePhoto = async index => {
     if (Platform.OS === 'ios') {
       await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -131,7 +129,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     await Permissions.askAsync(Permissions.CAMERA);
     let image: any;
     if (index == 0) {
-      image = await ImagePicker.launchCameraAsync({quality: 0.1})
+      image = await ImagePicker.launchCameraAsync({quality: 0.5, aspect: [4, 4]})
     }
     else if (index == 1) {
       image = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'Images', allowsEditing: true });
@@ -170,6 +168,29 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     this.props.navigation.push('ProfileEditionScreen', { profile: profile });
   }
 
+  changePhoto = async (photo) => {
+    this.setState({ profilePhoto: photo })
+
+    try {
+      const response = await client.mutate({
+        variables: {
+          profile: this.state.profile,
+          profilePhoto: this.state.profilePhoto
+        },
+        mutation: gql(`
+          mutation UpdateProfile ($profile: ProfileInput!, $photo: Upload) {
+            updateProfile(profile: $profile, photo: $photo) {
+              uid
+            }
+          }
+        `)
+      });
+
+    } catch (error) {
+      console.log(JSON.stringify(error));
+    }
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
@@ -183,22 +204,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
           (
             <View>
               <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profilePhoto }} style={styles.profileInfo.photo} />
-              <View>
-                <Text
-                  style={styles.page.textChangePhoto}
-                  onPress={this.showActionSheet}>
-                  {i18n.t('screens.profile.changePhoto.title')}
-                </Text>
-                <ActionSheet
-                  tintColor={THEME.colors.primary.default}
-                  ref={o => this.actionSheet = o}
-                  options={[i18n.t('screens.profile.changePhoto.option1'),
-                  i18n.t('screens.profile.changePhoto.option2'),
-                  i18n.t('screens.profile.changePhoto.cancel')]}
-                  cancelButtonIndex={2}
-                  onPress={(index) => { this.choosePhoto(index) }}
-                />
-              </View>
+              <ChangePhotoComponent onPhotoSelected={this.changePhoto}/>
               <View style={styles.profileInfo.line}>
                 <Text style={styles.profileInfo.lineText}>{this.state.profile.name}</Text>
               </View>
