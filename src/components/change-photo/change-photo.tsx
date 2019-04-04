@@ -26,10 +26,10 @@ export default class ChangePhotoComponent extends React.Component<ChangePhotoPro
         await Permissions.askAsync(Permissions.CAMERA);
         let image: any;
         if (index == 0) {
-            image = await ImagePicker.launchCameraAsync({ quality: 0.5, aspect: [4, 4] })
+            image = await ImagePicker.launchCameraAsync()
         }
         else if (index == 1) {
-            image = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'Images', allowsEditing: true });
+            image = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'Images', allowsEditing: true, aspect: [4, 4] });
         }
         if ((index == 2) || (image.cancelled)) {
             return;
@@ -72,7 +72,8 @@ const styles = {
         textChangePhoto: {
             textAlign: 'center',
             fontSize: 14,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            paddingVertical: 10
         }
     })
 }

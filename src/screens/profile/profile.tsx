@@ -8,15 +8,8 @@ import AutoHeightImage from 'react-native-auto-height-image';
 import PostComponent from '../../components/post/post';
 import i18n from 'i18n-js';
 import { Permissions, Location } from 'expo';
-import ActionSheet from 'react-native-actionsheet'
-import { ImagePicker } from 'expo';
-import { Platform } from 'expo-core';
-import { FileSystem } from 'expo';
-import ChangePhotoComponent from '../../components/change-photo/change-photo'
 
 export default class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
-
-  actionSheet: ActionSheet;
 
   static navigationOptions = (navigation) => {
     let params = navigation.navigation.state.params;
@@ -36,7 +29,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
   constructor(props) {
     super(props);
 
-    this.state = { profile: null, refreshing: false, profilePhoto: null };
+    this.state = { profile: null, refreshing: false };
   }
 
   componentWillMount() {
@@ -98,7 +91,8 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
         }
       });
 
-      this.setState({ profile: response.data.profile, profilePhoto: response.data.profile.photoURL });
+      this.setState({ profile: response.data.profile });
+
     } catch (error) {
       console.log(error);
     }
@@ -122,76 +116,14 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     this.props.navigation.push('PostScreen', { post: post });
   }
 
-  choosePhoto = async index => {
-    if (Platform.OS === 'ios') {
-      await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    }
-    await Permissions.askAsync(Permissions.CAMERA);
-    let image: any;
-    if (index == 0) {
-      image = await ImagePicker.launchCameraAsync({quality: 0.5, aspect: [4, 4]})
-    }
-    else if (index == 1) {
-      image = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'Images', allowsEditing: true });
-    }
-    if ((index == 2) || (image.cancelled)) {
-      return;
-    }
-    console.log("ANTES")
-    let base64 = await FileSystem.readAsStringAsync(image.uri, { encoding: FileSystem.EncodingTypes.Base64 });
-    console.log("DEPOIS")
-    base64 = `data:image/png;base64,${base64}`;
-
-    this.setState({ profilePhoto: base64 })
-
-    try {
-      const response = await client.mutate({
-        variables: {
-          profile: this.state.profile,
-          profilePhoto: this.state.profilePhoto
-        },
-        mutation: gql(`
-          mutation UpdateProfile ($profile: ProfileInput!, $photo: Upload) {
-            updateProfile(profile: $profile, photo: $photo) {
-              uid
-            }
-          }
-        `)
-      });
-
-    } catch (error) {
-      console.log(JSON.stringify(error));
-    }
-  }
-
   openProfileEdition = (profile) => {
     this.props.navigation.push('ProfileEditionScreen', { profile: profile });
   }
 
-  changePhoto = async (photo) => {
-    this.setState({ profilePhoto: photo })
-
-    try {
-      const response = await client.mutate({
-        variables: {
-          profile: this.state.profile,
-          profilePhoto: this.state.profilePhoto
-        },
-        mutation: gql(`
-          mutation UpdateProfile ($profile: ProfileInput!, $photo: Upload) {
-            updateProfile(profile: $profile, photo: $photo) {
-              uid
-            }
-          }
-        `)
-      });
-
-    } catch (error) {
-      console.log(JSON.stringify(error));
-    }
-  }
 
   render() {
+    const photoDefault = require('../../../assets/icon-user-default.png');
+
     return (
       <ScrollView contentContainerStyle={styles.page.container}
         refreshControl={
@@ -203,8 +135,11 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
         {this.state.profile ?
           (
             <View>
-              <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profilePhoto }} style={styles.profileInfo.photo} />
-              <ChangePhotoComponent onPhotoSelected={this.changePhoto}/>
+              {this.state.profile.photoURL != 'https://graph.facebook.com/111410049880120/picture'
+                && <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profile.photoURL }} style={styles.profileInfo.photo} />}
+              {this.state.profile.photoURL == 'https://graph.facebook.com/111410049880120/picture'
+                && <AutoHeightImage width={Dimensions.get('window').width} source={photoDefault} style={styles.profileInfo.photo} />}
+
               <View style={styles.profileInfo.line}>
                 <Text style={styles.profileInfo.lineText}>{this.state.profile.name}</Text>
               </View>
@@ -243,11 +178,6 @@ const styles = {
     container: {
       flexGrow: 1,
       backgroundColor: '#fff'
-    },
-    textChangePhoto: {
-      textAlign: 'center',
-      fontSize: 14,
-      fontWeight: 'bold'
     }
   }),
   profileInfo: StyleSheet.create({
@@ -269,7 +199,6 @@ const styles = {
 interface ProfileScreenState {
   profile: any;
   refreshing: boolean;
-  profilePhoto: any;
 }
 
 interface ProfileScreenProps {
