@@ -21,31 +21,35 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     }
   };
 
-  constructor(props: any) {
-    super(props);
-    let propsProfile;
-    let photoURL;
-    if (this.props.navigation.state.params && this.props.navigation.state.params.profile) {
-      propsProfile = {
-        name: this.props.navigation.state.params.profile.name,
-        username: this.props.navigation.state.params.profile.username,
-        bio: this.props.navigation.state.params.profile.bio,
-        website: this.props.navigation.state.params.profile.website,
-        phone: this.props.navigation.state.params.profile.phone,
-        gender: this.props.navigation.state.params.profile.gender,
+  constructor(props: any){
+      super(props);
+
+      let propsProfile, photo;
+
+      if (this.props.navigation.state.params && this.props.navigation.state.params.profile) {
+        propsProfile = {
+          name: this.props.navigation.state.params.profile.name,
+          username: this.props.navigation.state.params.profile.username,
+          bio: this.props.navigation.state.params.profile.bio,
+          website: this.props.navigation.state.params.profile.website,
+          phone: this.props.navigation.state.params.profile.phone,
+          gender: this.props.navigation.state.params.profile.gender
+        }
+
+        photo = { uri: this.props.navigation.state.params.profile.photoURL }
       }
-      photoURL = this.props.navigation.state.params.profile.photoURL;
-    }
-    this.state = {
-      profile: propsProfile || {
-        name: "",
-        username: "",
-        bio: "",
-        website: "",
-        phone: "",
-        gender: ""
-      }, photo: photoURL || ""
-    };
+
+      this.state = {
+        profile: propsProfile || {
+          name: "",
+          username: "",
+          bio: "",
+          website: "",
+          phone: "",
+          gender: ""
+        },
+        photo: photo
+      };
   }
 
   submit = async () => {
@@ -53,41 +57,47 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       const response = await client.mutate({
         variables: {
           profile: this.state.profile,
-          photo: this.state.photo
+          photo: this.state.photo && this.state.photo.uri && this.state.photo.uri.startsWith('data') && this.state.photo.uri
         },
         mutation: gql(`
           mutation UpdateProfile ($profile: ProfileInput!, $photo: Upload) {
             updateProfile(profile: $profile, photo: $photo) {
               uid
+              name
+              username
+              photoURL
+              bio
+              website
+              phone
+              gender
             }
           }
         `)
       });
+
       this.props.navigation.navigate("ProfileScreen");
+      this.props.navigation.state.params.onProfileEdition && this.props.navigation.state.params.onProfileEdition(response.data.updateProfile);
     } catch (error) {
       console.log(JSON.stringify(error));
     }
   }
 
   changePhoto = async (profilePhoto) => {
-    this.setState({photo: profilePhoto })
-    console.log(profilePhoto.substring(0, 10))
+    this.setState({ photo: { uri: profilePhoto }});
   }
 
 
   render() {
     const { name, username, bio, website, phone, gender } = this.state.profile;
-    const photo = this.state.photo;
+
     const photoDefault = require('../../../assets/icon-user-default.png');
+
     return (
       <SafeAreaView>
         <StatusBar barStyle="light-content" />
         <ScrollView style={styles.page.container.view}>
           <View>
-            {photo != 'https://graph.facebook.com/111410049880120/picture'
-              && <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.photo }} style={styles.page.form.photo} />}
-            {photo == 'https://graph.facebook.com/111410049880120/picture'
-              && <AutoHeightImage width={Dimensions.get('window').width} source={photoDefault} style={styles.page.form.photo} />}
+            <AutoHeightImage width={Dimensions.get('window').width} source={this.state.photo} fallbackSource={photoDefault} style={styles.page.form.photo} />
           </View>
 
           <View>
