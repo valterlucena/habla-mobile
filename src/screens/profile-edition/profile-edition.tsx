@@ -59,11 +59,20 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
           mutation UpdateProfile ($profile: ProfileInput!, $photo: Upload) {
             updateProfile(profile: $profile, photo: $photo) {
               uid
+              name
+              username
+              photoURL
+              bio
+              website
+              phone
+              gender
             }
           }
         `)
       });
+
       this.props.navigation.navigate("ProfileScreen");
+      this.props.navigation.state.params.onProfileEdition && this.props.navigation.state.params.onProfileEdition(response.data.updateProfile);
     } catch (error) {
       console.log(JSON.stringify(error));
     }
