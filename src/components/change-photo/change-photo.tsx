@@ -47,7 +47,7 @@ export default class ChangePhotoComponent extends React.Component<ChangePhotoPro
                 
                 <Text
                     style={styles.page.textChangePhoto}
-                    onPress={this.showActionSheet}>
+                    onPress={() => this.props.enabled && this.showActionSheet()}>
                     {i18n.t('screens.profile.changePhoto.title')}
                 </Text>
                 <ActionSheet
@@ -79,6 +79,7 @@ const styles = {
 }
 export interface ChangePhotoProps {
     onPhotoSelected: (photo: string) => void | Promise<void>;
+    enabled?: boolean;
 }
 
 export interface ChangePhotoState {

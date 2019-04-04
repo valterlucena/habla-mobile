@@ -109,7 +109,7 @@ const en: AppTranslations = {
                 phone: 'Phone'
             },
             buttons: {
-                save: 'Save changes'
+                save: 'Save'
             }
         }
     }
