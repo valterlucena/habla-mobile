@@ -21,7 +21,9 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
 
   constructor(props: any){
       super(props);
+
       let propsProfile;
+
       if (this.props.navigation.state.params && this.props.navigation.state.params.profile) {
         propsProfile = {
           name: this.props.navigation.state.params.profile.name,
@@ -32,6 +34,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
           gender: this.props.navigation.state.params.profile.gender
         }
       }
+
       this.state = {
         profile: propsProfile || {
           name: "",
@@ -54,11 +57,20 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
           mutation UpdateProfile ($profile: ProfileInput!) {
             updateProfile(profile: $profile) {
               uid
+              name
+              username
+              photoURL
+              bio
+              website
+              phone
+              gender
             }
           }
         `)
       });
+
       this.props.navigation.navigate("ProfileScreen");
+      this.props.navigation.state.params.onProfileEdition && this.props.navigation.state.params.onProfileEdition(response.data.updateProfile);
     } catch (error) {
       console.log(JSON.stringify(error));
     }
