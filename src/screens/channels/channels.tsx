@@ -60,7 +60,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
       const response = await client.query<any>({
         query: gql(`
           {
-            channels {
+            channels(skip: 0, take: 20, ignoreIds: ${this.state.channels.map(c => c.id)}) {
               id,
               name
             }
@@ -69,7 +69,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
         fetchPolicy: 'no-cache'
       });
     
-      this.setState({ channels: response.data.channels });
+      this.setState({ channels:[...this.state.channels, ...response.data.channels] });
     } catch (error) {
       console.log(error);
     }
@@ -98,7 +98,10 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                                       onPress={() => this.props.navigation.navigate('TimelineScreen', { channel: item })}>
                       <Text style={styles.channel.channelTitle}>#{ item.name }</Text>
                     </TouchableOpacity>
-        )}/>
+        )}
+        onEndReached={this.fetchChannels}
+        onEndReachedThreshold={0.1}
+        />
         <Modal isVisible={this.state.showNewChannelModal}
                avoidKeyboard={true}
                style={styles.page.newChannelModal}
