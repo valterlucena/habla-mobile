@@ -74,7 +74,8 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
           query Channels($skip: Int, $take: Int, $ignoreIds: [Int!]) {
             channels(skip: $skip, take: $take, ignoreIds: $ignoreIds) {
               id,
-              name
+              name,
+              postsCount
             }
           }
         `),
