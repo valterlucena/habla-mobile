@@ -4,6 +4,7 @@ import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
+import { Location, Permissions } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import NewChannelScreen from '../new-channel/new-channel';
@@ -44,8 +45,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   }
 
   refresh = async() => {
-    this.setState({ refreshing: true });
-    
+    await this.setState({ refreshing: true });
     try {
       await this.fetchChannels();
     } catch (error) {
@@ -57,19 +57,38 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
 
   fetchChannels = async() => {
     try {
+
+      if(this.state.refreshing){
+        this.setState({channels: []})
+      }
+      await Permissions.askAsync(Permissions.LOCATION);
+      const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+      
       const response = await client.query<any>({
+        variables: {
+          take: 10,
+          skip: 0,
+          ignoreIds: this.state.channels.map(c => Number(c.id))
+        },
         query: gql(`
-          {
-            channels(skip: 0, take: 20, ignoreIds: ${this.state.channels.map(c => c.id)}) {
+          query Channels($skip: Int, $take: Int, $ignoreIds: [Int!]) {
+            channels(skip: $skip, take: $take, ignoreIds: $ignoreIds) {
               id,
               name
             }
           }
         `),
+        context: {
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+          },
+        },
         fetchPolicy: 'no-cache'
       });
-    
-      this.setState({ channels:[...this.state.channels, ...response.data.channels] });
+     
+      this.setState({ channels:[...this.state.channels, ...response.data.channels]});
+
     } catch (error) {
       console.log(error);
     }
