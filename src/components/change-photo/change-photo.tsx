@@ -20,10 +20,9 @@ export default class ChangePhotoComponent extends React.Component<ChangePhotoPro
       }
 
     choosePhoto = async index => {
-        if (Platform.OS === 'ios') {
-            await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        }
+        await Permissions.askAsync(Permissions.CAMERA_ROLL);
         await Permissions.askAsync(Permissions.CAMERA);
+        
         let image: any;
         if (index == 0) {
             image = await ImagePicker.launchCameraAsync()
