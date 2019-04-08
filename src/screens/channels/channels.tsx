@@ -47,7 +47,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   refresh = async() => {
     await this.setState({ refreshing: true });
     try {
-      await this.fetchChannels();
+      await this.fetchChannels(true);
     } catch (error) {
       console.log(error);
     }
@@ -55,20 +55,18 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     this.setState({ refreshing: false });
   }
 
-  fetchChannels = async() => {
+  fetchChannels = async(refresh) => {
     try {
 
-      if(this.state.refreshing){
-        this.setState({channels: []})
-      }
       await Permissions.askAsync(Permissions.LOCATION);
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+
       
       const response = await client.query<any>({
         variables: {
           take: 10,
           skip: 0,
-          ignoreIds: this.state.channels.map(c => Number(c.id))
+          ignoreIds: refresh? []: this.state.channels.map(c => Number(c.id))
         },
         query: gql(`
           query Channels($skip: Int, $take: Int, $ignoreIds: [Int!]) {
@@ -88,6 +86,10 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
         fetchPolicy: 'no-cache'
       });
      
+      if (refresh) {
+        await this.setState({channels: []})
+      }
+
       this.setState({ channels:[...this.state.channels, ...response.data.channels]});
 
     } catch (error) {
@@ -119,7 +121,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                       <Text style={styles.channel.channelTitle}>#{ item.name }</Text>
                     </TouchableOpacity>
         )}
-        onEndReached={this.fetchChannels}
+        onEndReached={() => this.fetchChannels(false)}
         onEndReachedThreshold={0.1}
         />
         <Modal isVisible={this.state.showNewChannelModal}
