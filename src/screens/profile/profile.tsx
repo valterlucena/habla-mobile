@@ -137,11 +137,8 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
         {this.state.profile ?
           (
             <View>
-              {this.state.profile.photoURL != 'https://graph.facebook.com/111410049880120/picture'
-                && <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profile.photoURL }} style={styles.profileInfo.photo} />}
-              {this.state.profile.photoURL == 'https://graph.facebook.com/111410049880120/picture'
-                && <AutoHeightImage width={Dimensions.get('window').width} source={photoDefault} style={styles.profileInfo.photo} />}
-
+              {this.state.profile && this.state.profile.photoURL && <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profile.photoURL }} style={styles.profileInfo.photo} />}
+              
               <View style={styles.profileInfo.line}>
                 <Text style={styles.profileInfo.lineText}>{this.state.profile.name}</Text>
               </View>
@@ -151,13 +148,13 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               <View style={styles.profileInfo.line}>
                 <Text style={styles.profileInfo.lineText}>@{this.state.profile.username}</Text>
               </View>
-              <View style={styles.profileInfo.line}>
+              {this.isSelfProfile() && <View style={styles.profileInfo.line}>
                 <TouchableOpacity onPress={() => this.openProfileEdition(this.state.profile)}>
                   <Text style={styles.profileInfo.lineText}>
                     {i18n.t('screens.profile.buttons.editProfile')}
                   </Text>
                 </TouchableOpacity>
-              </View>
+              </View>}
             </View>) : null}
         {this.isSelfProfile() ? <TouchableOpacity style={styles.profileInfo.line}
           onPress={this.logout}>
@@ -193,7 +190,6 @@ const styles = {
     },
     photo: {
       width: '100%',
-
     }
   })
 };
