@@ -6,24 +6,18 @@ import THEME from "../../theme/theme";
 import i18n from 'i18n-js';
 import AutoHeightImage from 'react-native-auto-height-image';
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
 
     let propsProfile;
-    let photo;
+
     if (this.props.navigation.state.params && this.props.navigation.state.params.profile) {
       propsProfile = {
-        name: this.props.navigation.state.params.profile.name,
-        username: this.props.navigation.state.params.profile.username,
-        bio: this.props.navigation.state.params.profile.bio,
-        website: this.props.navigation.state.params.profile.website,
-        phone: this.props.navigation.state.params.profile.phone,
-        gender: this.props.navigation.state.params.profile.gender
-      }
-
-      photo = { uri: this.props.navigation.state.params.profile.photoURL }
+        name: this.props.navigation.state.params.profile.name
+      };
     }
 
     this.state = {
@@ -35,7 +29,6 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         phone: "",
         gender: ""
       },
-      photo: photo,
       loading: false
     };
   }
@@ -66,29 +59,32 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
   }
 
   changePhoto = async (profilePhoto) => {
+    if (!profilePhoto) return; 
+    
     this.setState({ photo: { uri: profilePhoto }});
   }
 
   render() {
     const photoDefault = require('../../../assets/icon-user-default.png');
+
     return (
       <SafeAreaView>
         <StatusBar barStyle="dark-content" />
         <ScrollView style={styles.page.container.view}>
-          <View>
-            <AutoHeightImage width={Dimensions.get('window').width} source={this.state.photo} fallbackSource={photoDefault} style={styles.page.form.photo} />
-            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving} />
-          </View>
           <View style={styles.page.header.row}>
             <Text style={styles.page.header.viewTitle}>
               {i18n.t('screens.profileCreation.title')}
             </Text>
-            {this.state.profile.photoURL ? <Image style={{ width: 40, height: 40, borderRadius: 20 }} source={{ uri: this.state.profile.photoURL }} /> : null}
           </View>
 
           <Text style={styles.page.header.viewSubtitle}>
             {i18n.t('screens.profileCreation.subtitle', { name: this.state.profile.name })}
           </Text>
+
+          <View style={styles.page.form.photoContainer}>
+            <AutoHeightImage width={Dimensions.get('window').width} source={this.state.photo || photoDefault} fallbackSource={photoDefault} style={styles.page.form.photo} />
+            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving} />
+          </View>
 
           <View style={styles.page.form.row}>
             <Text style={styles.page.form.label}>{i18n.t('screens.profileCreation.labels.name')}</Text>
@@ -166,6 +162,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                 size="small" />)
               : (<Text style={styles.page.form.submitButtonText}>{i18n.t('screens.profileCreation.buttons.next')}</Text>)}
           </TouchableOpacity>
+          <KeyboardSpacer/>
         </ScrollView>
       </SafeAreaView>
     );
@@ -180,7 +177,6 @@ const styles = {
         padding: 16
       }
     }),
-
     form: StyleSheet.create({
       row: {
         flexDirection: "row",
@@ -192,6 +188,9 @@ const styles = {
       label: {
         fontSize: 18,
         fontWeight: "bold"
+      },
+      photoContainer: {
+        marginTop: 16
       },
       photo: {
         width: '100%'
@@ -209,7 +208,8 @@ const styles = {
         backgroundColor: THEME.colors.primary.default,
         width: '100%',
         borderRadius: 5,
-        alignItems: "center"
+        alignItems: "center",
+        marginBottom: 30
       },
       submitButtonText: {
         fontSize: 18,

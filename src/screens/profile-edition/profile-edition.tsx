@@ -6,6 +6,7 @@ import gql from "graphql-tag";
 import i18n from 'i18n-js';
 import AutoHeightImage from 'react-native-auto-height-image';
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
@@ -41,7 +42,9 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         gender: this.props.navigation.state.params.profile.gender
       }
 
-      photo = { uri: this.props.navigation.state.params.profile.photoURL }
+      if (this.props.navigation.state.params.profile.photoURL) {
+        photo = { uri: this.props.navigation.state.params.profile.photoURL };
+      }
     }
 
     this.state = {
@@ -97,6 +100,8 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
   }
 
   changePhoto = async (profilePhoto) => {
+    if (!profilePhoto) return; 
+
     this.setState({ photo: { uri: profilePhoto }});
   }
 
@@ -111,7 +116,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         <StatusBar barStyle="light-content"/>
         <ScrollView>
           <View>
-            <AutoHeightImage width={Dimensions.get('window').width} source={this.state.photo} fallbackSource={photoDefault} style={styles.page.form.photo}/>
+            <AutoHeightImage width={Dimensions.get('window').width} source={this.state.photo || photoDefault} fallbackSource={photoDefault} style={styles.page.form.photo}/>
             <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving}/>
           </View>
           <View style={styles.page.form.row}>
@@ -191,6 +196,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
               <Picker.Item label={i18n.t('global.enums.gender.other')} value="OTHER" />
             </Picker>
           </View>
+          <KeyboardSpacer/>
         </ScrollView>
       </SafeAreaView>
     );

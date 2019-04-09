@@ -104,7 +104,11 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
           await this.handleSuccessProfileFetch(profile);
         } catch (error) {
           if (error.graphQLErrors.find(e => e.code === 'NOT_FOUND_ERROR')) {
-            this.props.navigation.navigate('ProfileCreationScreen', { user: user });
+            this.props.navigation.navigate('ProfileCreationScreen', { profile: {
+              name: user.displayName,
+              photoURL: user.photoURL
+            }});
+
             await AsyncStorage.removeItem('userProfile');
           }
         }
