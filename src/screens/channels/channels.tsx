@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { StyleSheet, Text, ScrollView, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, FlatList, RefreshControl, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
+import { Location, Permissions } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import NewChannelScreen from '../new-channel/new-channel';
@@ -30,7 +31,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   constructor(props) {
     super(props);
 
-    this.state = { channels: [], refreshing: false, showNewChannelModal: false };
+    this.state = { channels: [], refreshing: false, showNewChannelModal: false, loadingMoreChannels: false };
 
     this.props.navigation.setParams({ newChannelTapped: this.newChannelTapped });
   }
@@ -44,10 +45,10 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   }
 
   refresh = async() => {
-    this.setState({ refreshing: true });
+    await this.setState({ refreshing: true });
     
     try {
-      await this.fetchChannels();
+      this.setState({ channels: await this.fetchChannels(20) });
     } catch (error) {
       console.log(error);
     }
@@ -55,38 +56,77 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     this.setState({ refreshing: false });
   }
 
-  fetchChannels = async() => {
+  loadMoreChannels = async() => {
+    if (this.state.loadingMoreChannels) return;
+
+    this.setState({ loadingMoreChannels: true });
+
     try {
-      const response = await client.query<any>({
-        query: gql(`
-          {
-            channels {
-              id,
-              name
-            }
-          }
-        `),
-        fetchPolicy: 'no-cache'
-      });
-    
-      this.setState({ channels: response.data.channels });
+      let channels = await this.fetchChannels(10, 0, this.state.channels.map(c => c.id));
+
+      this.setState({ channels: [...this.state.channels, ...channels] });
     } catch (error) {
       console.log(error);
+    } finally {
+      this.setState({ loadingMoreChannels: false });
     }
   }
 
-  onPostSent = (channel) => {
-    this.setState({ showNewChannelModal: false });
+  fetchChannels = async(take?: number, skip?: number, ignoreIds?: number[]) => {
+    try {
+      await Permissions.askAsync(Permissions.LOCATION);
+      const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+      
+      const response = await client.query<any>({
+        variables: {
+          take: take || 20,
+          skip: skip || 0,
+          ignoreIds: ignoreIds || []
+        },
+        query: gql(`
+          query Channels($skip: Int, $take: Int, $ignoreIds: [ID!]) {
+            channels(skip: $skip, take: $take, ignoreIds: $ignoreIds) {
+              id,
+              name,
+              postsCount
+            }
+          }
+        `),
+        context: {
+          location: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+          },
+        },
+        fetchPolicy: 'no-cache'
+      });
+
+      return response.data.channels;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  onChannelCreated = (channel) => {
+    this.setState({ showNewChannelModal: false, channels: [channel, ...this.state.channels] });
     
-    this.setState({ channels: [channel, ...this.state.channels]});
+    this.props.navigation.navigate('TimelineScreen', { channel: channel });
   }
 
   render() {
     return (
-      <ScrollView contentContainerStyle={styles.page.container}
-                  bounces={false}>
+      <View style={styles.page.container}>
         <FlatList data={this.state.channels}
                   keyExtractor={(item) => item.id.toString()}
+                  onEndReached={this.loadMoreChannels}
+                  onEndReachedThreshold={0.1}
+                  ListFooterComponent={() => {
+                    return this.state.loadingMoreChannels? 
+                      <View style={styles.page.listFooter} >
+                        <ActivityIndicator size="large"/>
+                      </View>: null;
+                  }}
                   refreshControl={
                     <RefreshControl
                       refreshing={this.state.refreshing}
@@ -97,6 +137,9 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                     <TouchableOpacity style={styles.channel.container}
                                       onPress={() => this.props.navigation.navigate('TimelineScreen', { channel: item })}>
                       <Text style={styles.channel.channelTitle}>#{ item.name }</Text>
+                      <View style={styles.channel.channelBadge}>
+                        <Text style={styles.channel.channelBadgeText}>{ item.postsCount }</Text>
+                      </View>
                     </TouchableOpacity>
         )}/>
         <Modal isVisible={this.state.showNewChannelModal}
@@ -105,10 +148,10 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                animationInTiming={400}
                animationOutTiming={400}>
                <NewChannelScreen navigation={this.props.navigation} 
-                         onSuccess={this.onPostSent}
+                         onSuccess={this.onChannelCreated}
                          onDismiss={() => this.setState({ showNewChannelModal: false })}/>
         </Modal>
-      </ScrollView>
+      </View>
     );
   }
 }
@@ -126,16 +169,33 @@ const styles = {
     },
     newChannelButton: {
       marginRight: 10
+    },
+
+    listFooter: {
+      padding: 10
     }
   }),
   channel: StyleSheet.create({
     container: {
       backgroundColor: '#fff',
       padding: 12,
-      marginTop: 2
+      marginTop: 2,
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderBottomWidth: 1,
+      borderBottomColor: '#eee',
+      justifyContent: 'space-between'
     },
     channelTitle: {
       fontSize: 22,
+      fontWeight: 'bold'
+    },
+    channelBadge: {
+      padding: 10,
+      backgroundColor: '#eee',
+      borderRadius: 10
+    },
+    channelBadgeText: { 
       fontWeight: 'bold'
     }
   })
@@ -144,6 +204,7 @@ const styles = {
 interface ChannelsScreenState {
   channels: any[];
   refreshing: boolean;
+  loadingMoreChannels: boolean;
   showNewChannelModal: boolean
 }
 

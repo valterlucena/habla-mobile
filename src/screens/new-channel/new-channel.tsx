@@ -39,8 +39,7 @@ export default class NewChannelScreen extends React.Component<NewChannelScreenPr
               mutation CreateChannel ($channel: ChannelInput!) {
                 createChannel(channel: $channel) {
                   id,
-                  name,
-                  createdAt
+                  name
                 }
               }
             `),
