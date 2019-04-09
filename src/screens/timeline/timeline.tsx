@@ -17,11 +17,11 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
     return {
       title: params && params.channel? `#${params.channel.name}`: i18n.t('screens.timeline.title'), 
-      headerRight: (
+      headerRight: !(params && params.channel)? (
         <TouchableOpacity onPress={() => navigation.navigation.navigate('NotificationsScreen')} style={styles.page.notificationButton}>
           <MaterialIcons name="notifications" size={30} color="white"/>
         </TouchableOpacity>
-      ),
+      ): null,
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
