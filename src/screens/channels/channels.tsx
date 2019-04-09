@@ -62,7 +62,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     this.setState({ loadingMoreChannels: true });
 
     try {
-      let channels = await this.fetchChannels(10, 0, this.state.channels.map(c => c.id));
+      let channels = await this.fetchChannels(10, this.state.channels.map(c => c.id));
 
       this.setState({ channels: [...this.state.channels, ...channels] });
     } catch (error) {
@@ -72,20 +72,19 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     }
   }
 
-  fetchChannels = async(take?: number, skip?: number, ignoreIds?: number[]) => {
+  fetchChannels = async(limit?: number, ignoreIds?: number[]) => {
     try {
       await Permissions.askAsync(Permissions.LOCATION);
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
       
       const response = await client.query<any>({
         variables: {
-          take: take || 20,
-          skip: skip || 0,
+          limit: limit || 20,
           ignoreIds: ignoreIds || []
         },
         query: gql(`
-          query Channels($skip: Int, $take: Int, $ignoreIds: [ID!]) {
-            channels(skip: $skip, take: $take, ignoreIds: $ignoreIds) {
+          query Channels($limit: Int, $ignoreIds: [ID!]) {
+            channels(limit: $limit, ignoreIds: $ignoreIds) {
               id,
               name,
               postsCount
@@ -120,7 +119,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
         <FlatList data={this.state.channels}
                   keyExtractor={(item) => item.id.toString()}
                   onEndReached={this.loadMoreChannels}
-                  onEndReachedThreshold={0.1}
+                  onEndReachedThreshold={0.5}
                   ListFooterComponent={() => {
                     return this.state.loadingMoreChannels? 
                       <View style={styles.page.listFooter} >
