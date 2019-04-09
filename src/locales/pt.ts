@@ -88,6 +88,12 @@ const pt: AppTranslations = {
         },
         profile: {
             title: 'Perfil',
+            changePhoto: {
+                title: 'Editar foto',
+                option1: 'Câmera',
+                option2: 'Galeria',
+                cancel: 'Cancelar'  
+            },
             buttons: {
                 signOut: 'Sair',
                 editProfile: 'Editar perfil'
@@ -103,7 +109,7 @@ const pt: AppTranslations = {
                 phone: 'Telefone'
             },
             buttons: {
-                save: 'Salvar alterações'
+                save: 'Salvar'
             }
         }
     }
