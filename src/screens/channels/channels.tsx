@@ -120,12 +120,12 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                   keyExtractor={(item) => item.id.toString()}
                   onEndReached={this.loadMoreChannels}
                   onEndReachedThreshold={0.5}
-                  ListFooterComponent={() => {
-                    return this.state.loadingMoreChannels? 
-                      <View style={styles.page.listFooter} >
-                        <ActivityIndicator size="large"/>
-                      </View>: null;
-                  }}
+                  // ListFooterComponent={() => {
+                  //   return this.state.loadingMoreChannels? 
+                  //     <View style={styles.page.listFooter} >
+                  //       <ActivityIndicator size="large"/>
+                  //     </View>: null;
+                  // }}
                   refreshControl={
                     <RefreshControl
                       refreshing={this.state.refreshing}
