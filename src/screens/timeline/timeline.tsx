@@ -78,7 +78,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       const response = await client.query<any>({
         query: gql(`
           {
-            posts(skip: 0, take: 10, channelId: ${channelId}) {
+            posts(limit: 10, channelId: ${channelId}) {
               id
               body
               distance
