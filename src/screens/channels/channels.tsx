@@ -8,6 +8,7 @@ import { Location, Permissions } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import NewChannelScreen from '../new-channel/new-channel';
+import { SearchBar } from 'react-native-elements';
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
   static navigationOptions = ({ navigation }) => {
@@ -31,7 +32,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   constructor(props) {
     super(props);
 
-    this.state = { channels: [], refreshing: false, showNewChannelModal: false, loadingMoreChannels: false };
+    this.state = { channels: [], refreshing: false, showNewChannelModal: false, loadingMoreChannels: false, searchString: '' };
 
     this.props.navigation.setParams({ newChannelTapped: this.newChannelTapped });
   }
@@ -72,7 +73,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     }
   }
 
-  fetchChannels = async(limit?: number, ignoreIds?: number[]) => {
+  fetchChannels = async(limit?: number, ignoreIds?: number[], searchString?: string) => {
     try {
       await Permissions.askAsync(Permissions.LOCATION);
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
@@ -80,11 +81,12 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
       const response = await client.query<any>({
         variables: {
           limit: limit || 20,
-          ignoreIds: ignoreIds || []
+          ignoreIds: ignoreIds || [],
+          searchString: searchString
         },
         query: gql(`
-          query Channels($limit: Int, $ignoreIds: [ID!]) {
-            channels(limit: $limit, ignoreIds: $ignoreIds) {
+          query Channels($limit: Int, $ignoreIds: [ID!], $searchString: String) {
+            channels(limit: $limit, ignoreIds: $ignoreIds, searchString: $searchString) {
               id,
               name,
               postsCount
@@ -113,9 +115,21 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     this.props.navigation.navigate('TimelineScreen', { channel: channel });
   }
 
+  handleSearch = (text) => {
+    this.setState({ searchString: text }, this.refresh);
+  }
+
   render() {
     return (
       <View style={styles.page.container}>
+        <SearchBar
+          placeholder="Type here..."
+          lightTheme
+          onChangeText={this.handleSearch}
+          autoCorrect={false}
+          autoCapitalize="none"
+          value={this.state.searchString}
+        />
         <FlatList data={this.state.channels}
                   keyExtractor={(item) => item.id.toString()}
                   onEndReached={this.loadMoreChannels}
@@ -204,7 +218,8 @@ interface ChannelsScreenState {
   channels: any[];
   refreshing: boolean;
   loadingMoreChannels: boolean;
-  showNewChannelModal: boolean
+  showNewChannelModal: boolean;
+  searchString: string;
 }
 
 interface ChannelsScreenProps {
