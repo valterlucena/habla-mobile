@@ -49,7 +49,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     await this.setState({ refreshing: true });
     
     try {
-      this.setState({ channels: await this.fetchChannels(20) });
+      this.setState({ channels: await this.fetchChannels(20, null, this.state.searchString) });
     } catch (error) {
       console.log(error);
     }
@@ -63,9 +63,9 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     this.setState({ loadingMoreChannels: true });
 
     try {
-      let channels = await this.fetchChannels(10, this.state.channels.map(c => c.id));
+      let channels = await this.fetchChannels(10, this.state.channels.map(c => c.id), this.state.searchString);
 
-      this.setState({ channels: [...this.state.channels, ...channels] });
+      this.setState({ channels: [...this.state.channels, ...channels]});
     } catch (error) {
       console.log(error);
     } finally {
@@ -116,7 +116,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   }
 
   handleSearch = (text) => {
-    this.setState({ searchString: text }, this.refresh);
+    this.setState({searchString: text, loadingMoreChannels: true}, this.refresh);
   }
 
   render() {
