@@ -49,7 +49,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     await this.setState({ refreshing: true });
     
     try {
-      this.setState({ channels: await this.fetchChannels(20, null, this.state.searchString) });
+      this.setState({ channels: await this.fetchChannels({limit: 20, searchString: this.state.searchString}) });
     } catch (error) {
       console.log(error);
     }
@@ -63,8 +63,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     this.setState({ loadingMoreChannels: true });
 
     try {
-      let channels = await this.fetchChannels(10, this.state.channels.map(c => c.id), this.state.searchString);
-
+      let channels = await this.fetchChannels({ limit: 10, ignoreIds: this.state.channels.map(c => c.id), searchString: this.state.searchString });
       this.setState({ channels: [...this.state.channels, ...channels]});
     } catch (error) {
       console.log(error);
@@ -73,16 +72,16 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     }
   }
 
-  fetchChannels = async(limit?: number, ignoreIds?: number[], searchString?: string) => {
+  fetchChannels = async(options: FetchChannelsOptions = {limit: 20, ignoreIds: []}) => {
     try {
       await Permissions.askAsync(Permissions.LOCATION);
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
       
       const response = await client.query<any>({
         variables: {
-          limit: limit || 20,
-          ignoreIds: ignoreIds || [],
-          searchString: searchString
+          limit: options.limit,
+          ignoreIds: options.ignoreIds,
+          searchString: options.searchString
         },
         query: gql(`
           query Channels($limit: Int, $ignoreIds: [ID!], $searchString: String) {
@@ -224,4 +223,10 @@ interface ChannelsScreenState {
 
 interface ChannelsScreenProps {
   navigation: any;
+}
+
+interface FetchChannelsOptions {
+  limit?: number;
+  ignoreIds?: number[]; 
+  searchString?: string;
 }
