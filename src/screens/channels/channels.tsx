@@ -60,12 +60,18 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
         reject(error);
       }
 
-      if (this.currentRefreshPromise = refreshPromise) {
+      if (this.currentRefreshPromise == refreshPromise) {
         this.setState({ channels, refreshing: false });
+      } else {
+        console.log('oi')
       }
 
       resolve();
-    })
+    });
+
+    this.currentRefreshPromise = refreshPromise;
+
+    return refreshPromise;
   }
 
   loadMoreChannels = async() => {
