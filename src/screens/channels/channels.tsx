@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, FlatList, RefreshControl, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, FlatList, RefreshControl, TouchableOpacity, View, Platform } from 'react-native';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
@@ -29,6 +29,8 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     }
   };
 
+  currentRefreshPromise: Promise<any>;
+
   constructor(props) {
     super(props);
 
@@ -45,16 +47,31 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     this.setState({ showNewChannelModal: true });
   }
 
-  refresh = async() => {
-    await this.setState({ refreshing: true });
+  refresh = () => {
+    let refreshPromise = new Promise(async(resolve, reject) => {
+      await this.setState({ refreshing: true });
+
+      let channels;
     
-    try {
-      this.setState({ channels: await this.fetchChannels({limit: 20, searchString: this.state.searchString}) });
-    } catch (error) {
-      console.log(error);
-    }
-      
-    this.setState({ refreshing: false });
+      try {
+        channels = await this.fetchChannels({ limit: 20, searchString: this.state.searchString });
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+
+      if (this.currentRefreshPromise == refreshPromise) {
+        this.setState({ channels, refreshing: false });
+      } else {
+        console.log('oi')
+      }
+
+      resolve();
+    });
+
+    this.currentRefreshPromise = refreshPromise;
+
+    return refreshPromise;
   }
 
   loadMoreChannels = async() => {
@@ -64,7 +81,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
 
     try {
       let channels = await this.fetchChannels({ limit: 10, ignoreIds: this.state.channels.map(c => c.id), searchString: this.state.searchString });
-      this.setState({ channels: [...this.state.channels, ...channels]});
+      this.setState({ channels: [...this.state.channels, ...channels] });
     } catch (error) {
       console.log(error);
     } finally {
@@ -72,7 +89,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     }
   }
 
-  fetchChannels = async(options: FetchChannelsOptions = {limit: 20, ignoreIds: []}) => {
+  fetchChannels = async(options: FetchChannelsOptions = { limit: 20, ignoreIds: [] }) => {
     try {
       await Permissions.askAsync(Permissions.LOCATION);
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
@@ -115,7 +132,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   }
 
   handleSearch = (text) => {
-    this.setState({searchString: text, loadingMoreChannels: true}, this.refresh);
+    this.setState({ searchString: text, loadingMoreChannels: true }, this.refresh);
   }
 
   render() {
@@ -123,25 +140,27 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
       <View style={styles.page.container}>
         <SearchBar
           placeholder="Type here..."
-          lightTheme
           onChangeText={this.handleSearch}
           autoCorrect={false}
           autoCapitalize="none"
           value={this.state.searchString}
+          showLoading={this.state.refreshing && !!this.state.searchString}
+          cancelButtonTitle={null}
+          platform={Platform.OS === 'ios'? 'ios' : 'android'}
         />
         <FlatList data={this.state.channels}
                   keyExtractor={(item) => item.id.toString()}
                   onEndReached={this.loadMoreChannels}
                   onEndReachedThreshold={0.5}
-                  ListFooterComponent={() => {
-                    return this.state.loadingMoreChannels? 
-                      <View style={styles.page.listFooter} >
-                        <ActivityIndicator size="large"/>
-                      </View>: null;
-                  }}
+                  // ListFooterComponent={() => {
+                  //   return this.state.loadingMoreChannels? 
+                  //     <View style={styles.page.listFooter} >
+                  //       <ActivityIndicator size="large"/>
+                  //     </View>: null;
+                  // }}
                   refreshControl={
                     <RefreshControl
-                      refreshing={this.state.refreshing}
+                      refreshing={this.state.refreshing && !this.state.searchString}
                       onRefresh={this.refresh}
                     />
                   }
@@ -182,9 +201,18 @@ const styles = {
     newChannelButton: {
       marginRight: 10
     },
-
     listFooter: {
       padding: 10
+    },
+    searchBarContainer: {
+      backgroundColor: '#fff',
+      borderBottomWidth: 0
+    },
+    searchBarInput: {
+      backgroundColor: '#eee'
+    },
+    searchBarText: {
+      color: '#000'
     }
   }),
   channel: StyleSheet.create({
