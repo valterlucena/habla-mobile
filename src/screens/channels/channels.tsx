@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, FlatList, RefreshControl, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, FlatList, RefreshControl, TouchableOpacity, View, Platform } from 'react-native';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
@@ -8,6 +8,7 @@ import { Location, Permissions } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import NewChannelScreen from '../new-channel/new-channel';
+import { SearchBar } from 'react-native-elements';
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
   static navigationOptions = ({ navigation }) => {
@@ -28,10 +29,12 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     }
   };
 
+  currentRefreshPromise: Promise<any>;
+
   constructor(props) {
     super(props);
 
-    this.state = { channels: [], refreshing: false, showNewChannelModal: false, loadingMoreChannels: false };
+    this.state = { channels: [], refreshing: false, showNewChannelModal: false, loadingMoreChannels: false, searchString: '' };
 
     this.props.navigation.setParams({ newChannelTapped: this.newChannelTapped });
   }
@@ -44,16 +47,31 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     this.setState({ showNewChannelModal: true });
   }
 
-  refresh = async() => {
-    await this.setState({ refreshing: true });
+  refresh = () => {
+    let refreshPromise = new Promise(async(resolve, reject) => {
+      await this.setState({ refreshing: true });
+
+      let channels;
     
-    try {
-      this.setState({ channels: await this.fetchChannels(20) });
-    } catch (error) {
-      console.log(error);
-    }
-      
-    this.setState({ refreshing: false });
+      try {
+        channels = await this.fetchChannels({ limit: 20, searchString: this.state.searchString });
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+
+      if (this.currentRefreshPromise == refreshPromise) {
+        this.setState({ channels, refreshing: false });
+      } else {
+        console.log('oi')
+      }
+
+      resolve();
+    });
+
+    this.currentRefreshPromise = refreshPromise;
+
+    return refreshPromise;
   }
 
   loadMoreChannels = async() => {
@@ -62,8 +80,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     this.setState({ loadingMoreChannels: true });
 
     try {
-      let channels = await this.fetchChannels(10, this.state.channels.map(c => c.id));
-
+      let channels = await this.fetchChannels({ limit: 10, ignoreIds: this.state.channels.map(c => c.id), searchString: this.state.searchString });
       this.setState({ channels: [...this.state.channels, ...channels] });
     } catch (error) {
       console.log(error);
@@ -72,19 +89,20 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     }
   }
 
-  fetchChannels = async(limit?: number, ignoreIds?: number[]) => {
+  fetchChannels = async(options: FetchChannelsOptions = { limit: 20, ignoreIds: [] }) => {
     try {
       await Permissions.askAsync(Permissions.LOCATION);
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
       
       const response = await client.query<any>({
         variables: {
-          limit: limit || 20,
-          ignoreIds: ignoreIds || []
+          limit: options.limit,
+          ignoreIds: options.ignoreIds,
+          searchString: options.searchString
         },
         query: gql(`
-          query Channels($limit: Int, $ignoreIds: [ID!]) {
-            channels(limit: $limit, ignoreIds: $ignoreIds) {
+          query Channels($limit: Int, $ignoreIds: [ID!], $searchString: String) {
+            channels(limit: $limit, ignoreIds: $ignoreIds, searchString: $searchString) {
               id,
               name,
               postsCount
@@ -113,9 +131,23 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     this.props.navigation.navigate('TimelineScreen', { channel: channel });
   }
 
+  handleSearch = (text) => {
+    this.setState({ searchString: text, loadingMoreChannels: true }, this.refresh);
+  }
+
   render() {
     return (
       <View style={styles.page.container}>
+        <SearchBar
+          placeholder="Type here..."
+          onChangeText={this.handleSearch}
+          autoCorrect={false}
+          autoCapitalize="none"
+          value={this.state.searchString}
+          showLoading={this.state.refreshing && !!this.state.searchString}
+          cancelButtonTitle={null}
+          platform={Platform.OS === 'ios'? 'ios' : 'android'}
+        />
         <FlatList data={this.state.channels}
                   keyExtractor={(item) => item.id.toString()}
                   onEndReached={this.loadMoreChannels}
@@ -128,7 +160,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
                   // }}
                   refreshControl={
                     <RefreshControl
-                      refreshing={this.state.refreshing}
+                      refreshing={this.state.refreshing && !this.state.searchString}
                       onRefresh={this.refresh}
                     />
                   }
@@ -169,9 +201,18 @@ const styles = {
     newChannelButton: {
       marginRight: 10
     },
-
     listFooter: {
       padding: 10
+    },
+    searchBarContainer: {
+      backgroundColor: '#fff',
+      borderBottomWidth: 0
+    },
+    searchBarInput: {
+      backgroundColor: '#eee'
+    },
+    searchBarText: {
+      color: '#000'
     }
   }),
   channel: StyleSheet.create({
@@ -204,9 +245,16 @@ interface ChannelsScreenState {
   channels: any[];
   refreshing: boolean;
   loadingMoreChannels: boolean;
-  showNewChannelModal: boolean
+  showNewChannelModal: boolean;
+  searchString: string;
 }
 
 interface ChannelsScreenProps {
   navigation: any;
+}
+
+interface FetchChannelsOptions {
+  limit?: number;
+  ignoreIds?: number[]; 
+  searchString?: string;
 }
