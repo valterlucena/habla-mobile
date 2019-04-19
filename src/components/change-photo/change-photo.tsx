@@ -69,7 +69,11 @@ const styles = {
             backgroundColor: '#fff'
         },
         button: {
-            backgroundColor: 'transparent'
+            paddingHorizontal: 14,
+            paddingVertical: 14,
+            backgroundColor: THEME.colors.primary.default,
+            width: '100%',
+            alignItems: "center"
         }
     })
 }
