@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, View, ScrollView, SafeAreaView, TextInput, Dimensions, StatusBar, TouchableOpacity, Picker, ActivityIndicator } from "react-native";
+import { Text, StyleSheet, View, ScrollView, SafeAreaView, TextInput, Dimensions, StatusBar, TouchableOpacity, Picker, ActivityIndicator, Button } from "react-native";
 import THEME from "../../theme/theme";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
@@ -117,7 +117,12 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         <ScrollView>
           <View>
             <AutoHeightImage width={Dimensions.get('window').width} source={this.state.photo || photoDefault} fallbackSource={photoDefault} style={styles.page.form.photo}/>
-            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving}/>
+            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving}>
+              <Text
+                    style={styles.page.form.textChangePhoto}>
+                    {i18n.t('screens.profile.changePhoto.title')}
+              </Text>
+            </ChangePhotoComponent>
           </View>
           <View style={styles.page.form.row}>
             <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.name')}</Text>
@@ -245,6 +250,12 @@ const styles = {
         textAlign: 'center',
         color: "#FFFFFF",
         fontWeight: "bold"
+      },
+      textChangePhoto: {
+        textAlign: 'center',
+        fontSize: 14,
+        fontWeight: 'bold',
+        paddingVertical: 10
       }
     })
   }

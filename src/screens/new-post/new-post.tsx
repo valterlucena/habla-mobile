@@ -7,11 +7,13 @@ import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 
+import ChangePhotoComponent from '../../components/change-photo/change-photo'
+
 export default class NewPostScreen extends React.Component<NewPostScreenProps, NewPostScreenState> {
   constructor(props: NewPostScreenProps) {
     super(props);
 
-    this.state = { post: { body: null }, posting: false };
+    this.state = { post: { body: null , photoURL: null}, posting: false, enabled: false};
   }
 
   componentWillMount() {
@@ -40,7 +42,8 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
               id,
               body,
               distance,
-              createdAt
+              createdAt,
+              photoURL,
               owner {
                 uid
                 username
@@ -81,6 +84,12 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
     this.props.onDismiss && this.props.onDismiss();
   }
 
+  importPhoto = async (photoURL) => {
+    if (!photoURL) return; 
+    
+    this.setState({ post: { ...this.state.post, photoURL  }})
+  }
+
   render() {
     return (
       <View style={styles.newPost.container}>
@@ -89,9 +98,9 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
           <TouchableOpacity onPress={this.dismiss}>
             <FontAwesome name="chevron-left" size={35} color={THEME.colors.primary.default}></FontAwesome>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <ChangePhotoComponent onPhotoSelected={this.importPhoto} enabled={!this.state.enabled}>
             <FontAwesome name="image" size={35} color={THEME.colors.primary.default}></FontAwesome>
-          </TouchableOpacity>
+          </ChangePhotoComponent>
         </View>
         <TextInput style={styles.newPost.input}
                   onChangeText={this.handlePostInput}
@@ -154,6 +163,7 @@ const styles = {
 
 interface NewPostScreenState {
   posting: boolean;
+  enabled: boolean;
   post: any;
 }
 
