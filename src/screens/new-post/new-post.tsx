@@ -13,7 +13,11 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   constructor(props: NewPostScreenProps) {
     super(props);
 
-    this.state = { post: { body: null , photoURL: null}, posting: false, enabled: false};
+    this.state = { 
+      post: { body: null }, 
+      posting: false, 
+      enabled: false, 
+      photo: null};
   }
 
   componentWillMount() {
@@ -34,11 +38,12 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
       const response = await client.mutate({
         variables: { 
           post: this.state.post,
-          channelId: this.props.channel? this.props.channel.id: null
+          channelId: this.props.channel? this.props.channel.id: null,
+          photo: this.state.photo && this.state.photo.uri && this.state.photo.uri.startsWith('data') && this.state.photo.uri
         },
         mutation: gql(`
-          mutation CreatePost ($channelId: ID, $post: PostInput!) {
-            createPost(channelId: $channelId, post: $post) {
+          mutation CreatePost ($channelId: ID, $post: PostInput!, $photo: Upload) {
+            createPost(channelId: $channelId, post: $post, photo: $photo) {
               id,
               body,
               distance,
@@ -84,10 +89,10 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
     this.props.onDismiss && this.props.onDismiss();
   }
 
-  importPhoto = async (photoURL) => {
-    if (!photoURL) return; 
+  importPhoto = async (photoPost) => {
+    if (!photoPost) return; 
     
-    this.setState({ post: { ...this.state.post, photoURL  }})
+    this.setState({ post: { uri: photoPost  }})
   }
 
   render() {
@@ -165,6 +170,7 @@ interface NewPostScreenState {
   posting: boolean;
   enabled: boolean;
   post: any;
+  photo: any;
 }
 
 interface NewPostScreenProps {
