@@ -67,6 +67,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             anonymous
             commentsCount
             rate
+            photoURL
             profilePostVote {
               type
             }
