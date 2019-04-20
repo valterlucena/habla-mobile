@@ -85,6 +85,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
               createdAt
               commentsCount
               rate
+              photoURL
               profilePostVote {
                 type
               }
