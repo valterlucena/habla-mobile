@@ -32,14 +32,18 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     }
   };
 
+  currentRefreshPromise: Promise<any>;
+
   constructor(props: TimelineProps) {
     super(props);
 
     this.state = { 
       posts: [],
       refreshing: false,
+      loadingMorePosts: false,
       showNewPostModal: false
     };
+
   }
 
   componentWillMount = async() => {
@@ -54,21 +58,49 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     await this.refresh();
   }
 
-  refresh = async() => {
-    this.setState({ refreshing: true  });
-    
-    try {
-      await this.fetchPosts();
-    } catch (error) {
-      console.log(error);
-    }
-      
-    this.setState({ refreshing: false });
+  refresh = () => {
+    let refreshPromise = new Promise(async(resolve, reject) => {
+      await this.setState({ refreshing: true });
 
-    if (this.isRoot()) await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
+      let posts;
+    
+      try {
+        posts = await this.fetchPosts({ limit: 20});
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+
+      if (this.currentRefreshPromise == refreshPromise) {
+        this.setState({ posts, refreshing: false });
+      } else {
+        console.log('oi')
+      }
+
+      resolve();
+    });
+
+    this.currentRefreshPromise = refreshPromise;
+
+    return refreshPromise;
   }
 
-  fetchPosts = async() => {
+  loadMorePosts = async() => {
+    if (this.state.loadingMorePosts) return;
+
+    this.setState({ loadingMorePosts: true });
+
+    try {
+      let posts = await this.fetchPosts({ limit: 10, ignoreIds: this.state.posts.map(c => c.id)});
+      this.setState({ posts: [...this.state.posts, ...posts] });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.setState({ loadingMorePosts: false });
+    }
+  }
+
+  fetchPosts = async(options: FetchPostsOptions = { limit: 20, ignoreIds: [] }) => {
     try {
       await Permissions.askAsync(Permissions.LOCATION);
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
@@ -76,30 +108,34 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       const channelId = this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null;
 
       const response = await client.query<any>({
+        variables: {
+          limit: options.limit,
+          ignoreIds: options.ignoreIds
+        },
         query: gql(`
-          {
-            posts(limit: 10, channelId: ${channelId}) {
-              id
-              body
-              distance
-              createdAt
-              commentsCount
-              rate
-              profilePostVote {
-                type
-              }
-              owner {
-                uid
-                username
-                photoURL
-              }
-              channel {
+         query Posts($limit: Int, $ignoreIds: [ID!]) {
+          posts(limit: $limit, ignoreIds: $ignoreIds, channelId: ${channelId}) {
                 id
-                name
+                body
+                distance
+                createdAt
+                commentsCount
+                rate
+                profilePostVote {
+                  type
+                }
+                owner {
+                  uid
+                  username
+                  photoURL
+                }
+                channel {
+                  id
+                  name
+                }
               }
             }
-          }
-        `),
+          `),
         context: {
           location: {
             latitude: location.coords.latitude,
@@ -109,11 +145,14 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
         fetchPolicy: 'no-cache'
       });
       
-      this.setState({ posts: response.data.posts, errorMessage: null });
+      return response.data.posts;
     } catch (error) {
       const errorMessage = error.networkError? i18n.t('screens.timeline.errors.fetchingPosts.connection'): i18n.t('screens.timeline.errors.fetchingPosts.unexpected');
 
       this.setState({ errorMessage });
+
+      console.log(error);
+      throw error;
     }
   }
 
@@ -157,8 +196,14 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
           </View>}
           <FlatList data={this.state.posts}
                     keyExtractor={(item) => item.id.toString()}
-                    refreshing={this.state.refreshing}
-                    onRefresh={this.refresh}
+                    onEndReached={this.loadMorePosts}
+                    onEndReachedThreshold={0.5}
+                    refreshControl={
+                      <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this.refresh}
+                      />
+                    }
                     renderItem={({item}) =>(
                     <TouchableOpacity onPress={() => this.openPost(item)}>
                       <PostComponent post={item}
@@ -221,10 +266,16 @@ const styles = {
 interface TimelineState {
   posts: any[];
   refreshing: boolean;
+  loadingMorePosts: boolean;
   showNewPostModal: boolean;
   errorMessage?: string;
 }
 
 interface TimelineProps {
   navigation: any;
+}
+
+interface FetchPostsOptions {
+  limit?: number;
+  ignoreIds?: number[]; 
 }
