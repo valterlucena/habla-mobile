@@ -113,7 +113,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
           ignoreIds: options.ignoreIds
         },
         query: gql(`
-         query Posts($limit: Int, $ignoreIds: [ID!], channelId: ${channelId}) {
+         query Posts($limit: Int, $ignoreIds: [ID!]) {
           posts(limit: $limit, ignoreIds: $ignoreIds, channelId: ${channelId}) {
                 id
                 body
