@@ -59,6 +59,8 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               phone
               gender
               photoURL
+              score
+              scoreBalance
 
               posts {
                 id
