@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, Dimensions } from 'react-native';
+import { Badge } from 'react-native-elements';
 import firebase from 'firebase';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
@@ -144,6 +145,30 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               <View style={styles.profileInfo.line}>
                 <Text style={styles.profileInfo.lineText}>{this.state.profile.name}</Text>
               </View>
+              <View style={styles.profileInfo.line}>
+                {!this.isSelfProfile() ? 
+                (
+                  <View style={styles.profileInfo.score}>
+                    <Badge 
+                      status="success"
+                      value={this.state.profile.score}
+                      containerStyle={styles.profileInfo.scoreInfoSelf} />
+                    <Badge 
+                      status="error"
+                      value={this.state.profile.scoreBalance}
+                      containerStyle={styles.profileInfo.scoreInfoSelf} />
+                  </View>
+                ) :
+                (
+                  <View style={styles.profileInfo.score}>
+                    <Badge 
+                      status="success"
+                      value={this.state.profile.score}
+                      containerStyle={styles.profileInfo.scoreInfoSelf} />
+                  </View>
+                )
+                }
+              </View>
               {this.state.profile.bio ? <View style={styles.profileInfo.line}>
                 <Text style={styles.profileInfo.lineText}>{this.state.profile.bio}</Text>
               </View> : null}
@@ -192,6 +217,18 @@ const styles = {
     },
     photo: {
       width: '100%',
+    },
+    score: {
+      flexDirection: "row",
+      justifyContent: "space-between"
+    },
+    scoreInfo: {
+      width: '100%',
+      textAlign: 'center'
+    },
+    scoreInfoSelf: {
+      textAlign: 'center',
+      width: '49%'
     }
   })
 };
