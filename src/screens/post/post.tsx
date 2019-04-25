@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import firebase from 'firebase';
 import PostComponent from '../../components/post/post';
 import moment from 'moment';
@@ -10,6 +11,7 @@ import { Location } from 'expo';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import { getTranslatedDistanceFromEnum } from '../../util';
+import ChangePhotoComponent from '../../components/change-photo/change-photo'
 
 export default class PostScreen extends React.Component<PostScreenProps, PostScreenState> {
   static navigationOptions = () => {
@@ -28,7 +30,10 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   constructor(props) {
     super(props);
 
-    this.state = { post: null, newComment: { body: null }, refreshing: false, postingComment: false };
+    this.state = { post: null,
+      newComment: { body: null }, 
+      refreshing: false, 
+      postingComment: false };
   }
 
   async componentWillMount() {
@@ -173,6 +178,12 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
     return this.props.navigation.state.params && (this.props.navigation.state.params.post && this.props.navigation.state.params.post.id || this.props.navigation.state.params.postId);
   }
 
+  importPhoto = async (photoPost) => {
+    if (!photoPost) return; 
+    
+    this.setState({ post: { uri: photoPost  }})
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
@@ -187,6 +198,10 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
                         showPostHeader={true}
                         onOpenProfile={this.openProfile}
                         onOpenChannel={this.openChannel}/> }
+        { this.state.post &&
+        <ChangePhotoComponent onPhotoSelected={this.importPhoto}>
+          <FontAwesome name="image" size={35} color={THEME.colors.primary.default}></FontAwesome>
+        </ChangePhotoComponent> }
         { this.state.post &&
         <View style={styles.newComment.container}>
           <TextInput style={styles.newComment.input}
