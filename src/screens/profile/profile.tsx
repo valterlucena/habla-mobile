@@ -155,7 +155,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
                       containerStyle={styles.profileInfo.scoreBadge}
                     />
                     <Ionicons name="ios-star" size={45}/>
-                    <Text style={styles.profileInfo.scoreText}>score</Text>
+                    <Text style={styles.profileInfo.scoreText}>{i18n.t('screens.profile.labels.score')}</Text>
                   </View>
                   {this.isSelfProfile() && <View style={styles.profileInfo.scoreInfo}>
                     <Badge
@@ -164,7 +164,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
                       containerStyle={styles.profileInfo.scoreBadge}
                     />
                     <Ionicons name="ios-star-half" size={45}/>
-                    <Text style={styles.profileInfo.scoreText}>score balance</Text>
+                    <Text style={styles.profileInfo.scoreText}>{i18n.t('screens.profile.labels.scoreBalance')}</Text>
                   </View>}
                 </View>
               </View>

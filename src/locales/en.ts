@@ -97,6 +97,10 @@ const en: AppTranslations = {
             buttons: {
                 signOut: 'Sign out',
                 editProfile: 'Edit profile'
+            },
+            labels: {
+                score: 'Score',
+                scoreBalance: 'Score balance'
             }
         },
         profileEdition: {

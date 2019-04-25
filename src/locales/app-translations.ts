@@ -97,6 +97,10 @@ export interface AppTranslations {
             buttons: {
                 signOut: string;
                 editProfile: string;
+            },
+            labels: {
+                score: string;
+                scoreBalance: string;
             }
         },
         profileEdition: {
