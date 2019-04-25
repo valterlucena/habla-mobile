@@ -97,6 +97,10 @@ const pt: AppTranslations = {
             buttons: {
                 signOut: 'Sair',
                 editProfile: 'Editar perfil'
+            },
+            labels: {
+                score: 'Pontos',
+                scoreBalance: 'Saldo de pontos'
             }
         },
         profileEdition: {
