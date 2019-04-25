@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, Dimensions } from 'react-native';
+import { Badge } from 'react-native-elements';
+import { Ionicons } from '@expo/vector-icons';
 import firebase from 'firebase';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
@@ -59,6 +61,8 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               phone
               gender
               photoURL
+              score
+              scoreBalance
 
               posts {
                 id
@@ -142,6 +146,28 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
               <View style={styles.profileInfo.line}>
                 <Text style={styles.profileInfo.lineText}>{this.state.profile.name}</Text>
               </View>
+              <View style={styles.profileInfo.line}>
+                <View style={styles.profileInfo.score}>
+                  <View style={styles.profileInfo.scoreInfo}>
+                    <Badge
+                      status='success'
+                      value={this.state.profile.score}
+                      containerStyle={styles.profileInfo.scoreBadge}
+                    />
+                    <Ionicons name="ios-star" size={45}/>
+                    <Text style={styles.profileInfo.scoreText}>{i18n.t('screens.profile.labels.score')}</Text>
+                  </View>
+                  {this.isSelfProfile() && <View style={styles.profileInfo.scoreInfo}>
+                    <Badge
+                      status='error'
+                      value={this.state.profile.scoreBalance}
+                      containerStyle={styles.profileInfo.scoreBadge}
+                    />
+                    <Ionicons name="ios-star-half" size={45}/>
+                    <Text style={styles.profileInfo.scoreText}>{i18n.t('screens.profile.labels.scoreBalance')}</Text>
+                  </View>}
+                </View>
+              </View>
               {this.state.profile.bio ? <View style={styles.profileInfo.line}>
                 <Text style={styles.profileInfo.lineText}>{this.state.profile.bio}</Text>
               </View> : null}
@@ -190,6 +216,23 @@ const styles = {
     },
     photo: {
       width: '100%',
+    },
+    score: {
+      flexDirection: 'row',
+      justifyContent: 'center'
+    },
+    scoreInfo: {
+      width: '49%',
+      alignItems: 'center',
+      flexDirection: 'column',
+      justifyContent: 'space-between'
+    },
+    scoreBadge: {
+      marginBottom: -15,
+      marginLeft: 35
+    },
+    scoreText: {
+      fontSize: 12
     }
   })
 };
