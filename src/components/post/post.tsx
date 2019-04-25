@@ -85,6 +85,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           <View style={styles.postLeft}>
             <View style={styles.middle}>
               <Text style={styles.bodyText}>{ this.state.post.body }</Text>
+              <Image source={{ uri: this.state.post.photoURL}}/>
             </View>
           </View>
           <View style={styles.postRight}>
