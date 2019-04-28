@@ -129,7 +129,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                   username
                   photoURL
                 }
-                channel {
+                channels {
                   id
                   name
                 }
