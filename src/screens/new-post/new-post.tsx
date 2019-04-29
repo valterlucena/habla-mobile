@@ -89,10 +89,10 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
     this.props.onDismiss && this.props.onDismiss();
   }
 
-  importPhoto = async (photoPost) => {
-    if (!photoPost) return; 
+  importPhoto = async (photo) => {
+    if (!photo) return; 
     
-    this.setState({ post: { uri: photoPost  }})
+    this.setState({ photo: { uri: photo  }})
   }
 
   render() {
