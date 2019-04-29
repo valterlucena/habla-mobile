@@ -87,7 +87,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             <View style={styles.middle}>
               <Text style={styles.bodyText}>{ this.state.post.body }</Text>
             </View>
-            {this.state.post.photoURL && <AutoHeightImage width={Dimensions.get('window').width - 66} source={{ uri: this.state.post.photoURL}}/>}
+            {this.state.post.photoURL && <AutoHeightImage width={Dimensions.get('window').width - 80} source={{ uri: this.state.post.photoURL}}/>}
           </View>
           <View style={styles.postRight}>
             <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")}>
