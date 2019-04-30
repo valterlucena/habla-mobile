@@ -72,9 +72,6 @@ const en: AppTranslations = {
             },
             anonymous: 'Anonymous'
         },
-        newChannel: {
-            inputPlaceholder: "#Channel"
-        },
         notifications: {
             title: 'Notifications',
             notificationTypes: {

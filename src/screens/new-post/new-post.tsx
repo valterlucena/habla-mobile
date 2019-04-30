@@ -33,12 +33,11 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
       const response = await client.mutate({
         variables: {
           post: this.state.post,
-          channelId: this.props.channel ? this.props.channel.id : null,
           anonymous: this.state.anonymous
         },
         mutation: gql(`
-          mutation CreatePost ($channelId: ID, $post: PostInput!, $anonymous: Boolean) {
-            createPost(channelId: $channelId, post: $post, anonymous: $anonymous) {
+          mutation CreatePost ($post: PostInput!, $anonymous: Boolean) {
+            createPost(post: $post, anonymous: $anonymous) {
               id,
               body,
               distance,
@@ -48,7 +47,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
                 username
                 photoURL
               }
-              channel {
+              channels {
                 id
                 name
               }
@@ -79,7 +78,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   resetPost() {
     this.setState({
       post: {
-
+        body: this.props.channel && `#${this.props.channel.name}`
       }
     });
   }
