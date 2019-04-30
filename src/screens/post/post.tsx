@@ -178,12 +178,6 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
     return this.props.navigation.state.params && (this.props.navigation.state.params.post && this.props.navigation.state.params.post.id || this.props.navigation.state.params.postId);
   }
 
-  importPhoto = async (photoPost) => {
-    if (!photoPost) return; 
-    
-    this.setState({ post: { uri: photoPost  }})
-  }
-
   render() {
     return (
       <ScrollView contentContainerStyle={styles.page.container}
@@ -198,10 +192,6 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
                         showPostHeader={true}
                         onOpenProfile={this.openProfile}
                         onOpenChannel={this.openChannel}/> }
-        { this.state.post &&
-        <ChangePhotoComponent onPhotoSelected={this.importPhoto}>
-          <FontAwesome name="image" size={35} color={THEME.colors.primary.default}></FontAwesome>
-        </ChangePhotoComponent> }
         { this.state.post &&
         <View style={styles.newComment.container}>
           <TextInput style={styles.newComment.input}

@@ -86,8 +86,8 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           <View style={styles.postLeft}>
             <View style={styles.middle}>
               <Text style={styles.bodyText}>{ this.state.post.body }</Text>
-              <Image source={{ uri: this.state.post.photoURL}}/>
             </View>
+            {this.state.post.photoURL && <AutoHeightImage width={Dimensions.get('window').width - 80} source={{ uri: this.state.post.photoURL}}/>}
           </View>
           <View style={styles.postRight}>
             <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")}>
@@ -122,11 +122,6 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             </Text>
           </View>
         </View>
-        <View>
-        {this.state.post.photoURL?  
-          <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.post.photoURL }} style={styles.postPhoto} />
-        :null}
-        </View>
       </View>)
   }
 }
@@ -134,9 +129,6 @@ export default class PostComponent extends React.Component<PostComponentProps, P
 const styles = StyleSheet.create({
   postBody: {
     flexDirection: 'row',
-  },
-  postPhoto: {
-    width: '100%',
   },
   container: { 
     backgroundColor: '#fff',
