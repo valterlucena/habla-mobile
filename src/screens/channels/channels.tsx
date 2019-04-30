@@ -35,7 +35,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
 
   refresh = () => {
     let refreshPromise = new Promise(async(resolve, reject) => {
-      await this.setState({ refreshing: true });
+      this.setState({ refreshing: true });
 
       let channels;
     
@@ -48,8 +48,6 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
 
       if (this.currentRefreshPromise == refreshPromise) {
         this.setState({ channels, refreshing: false });
-      } else {
-        console.log('oi')
       }
 
       resolve();
@@ -61,7 +59,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   }
 
   loadMoreChannels = async() => {
-    if (this.state.loadingMoreChannels) return;
+    if (this.state.refreshing || this.state.loadingMoreChannels) return;
 
     this.setState({ loadingMoreChannels: true });
 
