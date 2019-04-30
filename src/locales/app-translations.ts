@@ -66,7 +66,12 @@ export interface AppTranslations {
             inputPlaceholder: string;
             buttons: {
                 submit: string;
-            }
+            },
+            errors: {
+                insufficentScore: string;
+            },
+            anonymous: string;
+            
         },
         newChannel:{
             inputPlaceholder: string;
