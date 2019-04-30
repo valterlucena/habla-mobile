@@ -68,9 +68,6 @@ const pt: AppTranslations = {
                 submit: 'Enviar'
             }
         },
-        newChannel: {
-            inputPlaceholder: "#Canal",
-        },
         notifications: {
             title: 'Notificações',
             notificationTypes: {

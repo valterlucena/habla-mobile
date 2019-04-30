@@ -54,7 +54,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
                 username
                 photoURL
               }
-              channel {
+              channels {
                 id
                 name
               }
