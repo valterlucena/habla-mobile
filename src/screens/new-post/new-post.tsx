@@ -42,8 +42,8 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
           photo: this.state.photo && this.state.photo.uri && this.state.photo.uri.startsWith('data') && this.state.photo.uri
         },
         mutation: gql(`
-          mutation CreatePost ($channelId: ID, $post: PostInput!, $photo: Upload) {
-            createPost(channelId: $channelId, post: $post, photo: $photo) {
+          mutation CreatePost ($post: PostInput!, $photo: Upload) {
+            createPost(post: $post, photo: $photo) {
               id,
               body,
               distance,
@@ -80,7 +80,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   resetPost() {
     this.setState({
       post: {
-        
+        body: this.props.channel && `#${this.props.channel.name}`
       }
     });
   }
