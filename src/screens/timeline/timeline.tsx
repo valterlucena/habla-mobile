@@ -176,8 +176,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
   onPostSent = (post) => {
     this.setState({ showNewPostModal: false });
-    
-    this.setState({ posts: [post, ...this.state.posts]});
+
+    if (this.props.navigation.state.params && this.props.navigation.state.params.channel && post.channels.find(c => c.name == this.props.navigation.state.params.channel.name)) {
+      this.setState({ posts: [post, ...this.state.posts]});
+    }
   }
 
   isRoot() {

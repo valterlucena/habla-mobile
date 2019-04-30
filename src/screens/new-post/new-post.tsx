@@ -36,9 +36,9 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
         mutation: gql(`
           mutation CreatePost ($post: PostInput!) {
             createPost(post: $post) {
-              id,
-              body,
-              distance,
+              id
+              body
+              distance
               createdAt
               owner {
                 uid
@@ -71,7 +71,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   resetPost() {
     this.setState({
       post: {
-        
+        body: this.props.channel && `#${this.props.channel.name}`
       }
     });
   }
