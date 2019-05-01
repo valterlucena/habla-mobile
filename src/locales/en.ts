@@ -52,7 +52,7 @@ const en: AppTranslations = {
         },
         timeline: {
             title: 'Timeline',
-            errors: { 
+            errors: {
                 fetchingPosts: {
                     unexpected: 'An unexpected error ocurred while loading the posts.',
                     connection: 'There was a problem loading the posts. Please check your connection.'
@@ -66,7 +66,11 @@ const en: AppTranslations = {
             inputPlaceholder: "What's up?",
             buttons: {
                 submit: 'Send'
-            }
+            },
+            errors: {
+                insufficentScore: 'Insufficient score to make anonymous posts.'
+            },
+            anonymous: 'Anonymous'
         },
         notifications: {
             title: 'Notifications',
@@ -86,10 +90,10 @@ const en: AppTranslations = {
         profile: {
             title: 'Profile',
             changePhoto: {
-              title: 'Change photo',
-              option1: 'Camera',
-              option2: 'Gallery',
-              cancel: 'Cancel'
+                title: 'Change photo',
+                option1: 'Camera',
+                option2: 'Gallery',
+                cancel: 'Cancel'
             },
             buttons: {
                 signOut: 'Sign out',
