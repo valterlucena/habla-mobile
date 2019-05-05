@@ -52,7 +52,7 @@ const pt: AppTranslations = {
         },
         timeline: {
             title: 'Linha do tempo',
-            errors: { 
+            errors: {
                 fetchingPosts: {
                     unexpected: 'Um erro inesperado ocorreu ao carregar os posts.',
                     connection: 'Houve um erro de conexão ao carregar os posts. Verifique se está conectado à internet.'
@@ -66,7 +66,11 @@ const pt: AppTranslations = {
             inputPlaceholder: "O que está acontecendo?",
             buttons: {
                 submit: 'Enviar'
-            }
+            },
+            errors: {
+                insufficentScore: "Pontuação insuficiente para fazer posts anônimos."
+            },
+            anonymous: "Anônimo"
         },
         notifications: {
             title: 'Notificações',
@@ -89,7 +93,7 @@ const pt: AppTranslations = {
                 title: 'Editar foto',
                 option1: 'Câmera',
                 option2: 'Galeria',
-                cancel: 'Cancelar'  
+                cancel: 'Cancelar'
             },
             buttons: {
                 signOut: 'Sair',
