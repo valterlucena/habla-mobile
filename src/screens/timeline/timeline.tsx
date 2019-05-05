@@ -72,9 +72,9 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       }
 
       if (this.currentRefreshPromise == refreshPromise) {
-        this.setState({ posts, refreshing: false });
-
-        await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
+        this.setState({ posts, refreshing: false }, async() => {
+          await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
+        });
       }
 
       resolve();
@@ -177,7 +177,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   onPostSent = (post) => {
     this.setState({ showNewPostModal: false });
 
-    if (this.props.navigation.state.params && this.props.navigation.state.params.channel && post.channels.find(c => c.name == this.props.navigation.state.params.channel.name)) {
+    if ((this.props.navigation.state.params && !this.props.navigation.state.params.channel) || (this.props.navigation.state.params && this.props.navigation.state.params.channel && post.channels.find(c => c.name == this.props.navigation.state.params.channel.name))) {
       this.setState({ posts: [post, ...this.state.posts]});
     }
   }
