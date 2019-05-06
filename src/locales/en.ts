@@ -111,10 +111,18 @@ const en: AppTranslations = {
                 username: 'Username',
                 bio: 'Bio',
                 website: 'Website',
-                phone: 'Phone'
+                phone: 'Phone',
+                home: 'Home',
+                undefined: 'Undefined'
             },
             buttons: {
-                save: 'Save'
+                save: 'Save',
+                cancel: 'Cancel',
+                define: 'Define'
+            },
+            alert: {
+                title: 'Define current location as your home?',
+                message: "You will be able to see the posts from the region you defined as home even if you're not there."
             }
         }
     }

@@ -113,9 +113,17 @@ export interface AppTranslations {
                 bio: string;
                 website: string;
                 phone: string;
+                home: string;
+                undefined: string;
             },
             buttons: {
                 save: string,
+                cancel: string,
+                define: string
+            },
+            alert: {
+                title: string,
+                message: string
             }
         }
     }

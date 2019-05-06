@@ -111,10 +111,18 @@ const pt: AppTranslations = {
                 username: 'Usuário',
                 bio: 'Bio',
                 website: 'Website',
-                phone: 'Telefone'
+                phone: 'Telefone',
+                home: 'Casa',
+                undefined: 'Não definido'
             },
             buttons: {
-                save: 'Salvar'
+                save: 'Salvar',
+                cancel: 'Cancelar',
+                define: 'Definir'
+            },
+            alert: {
+                title: 'Definir a localização atual como sua casa?',
+                message: 'Você poderá ver os posts da região definida como casa mesmo quando não estiver nela.'
             }
         }
     }
