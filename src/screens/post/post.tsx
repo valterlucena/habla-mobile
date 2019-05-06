@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import firebase from 'firebase';
 import PostComponent from '../../components/post/post';
 import moment from 'moment';
@@ -10,6 +11,7 @@ import { Location } from 'expo';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import { getTranslatedDistanceFromEnum } from '../../util';
+import ChangePhotoComponent from '../../components/change-photo/change-photo'
 
 export default class PostScreen extends React.Component<PostScreenProps, PostScreenState> {
   static navigationOptions = () => {
@@ -28,7 +30,10 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   constructor(props) {
     super(props);
 
-    this.state = { post: null, newComment: { body: null }, refreshing: false, postingComment: false };
+    this.state = { post: null,
+      newComment: { body: null }, 
+      refreshing: false, 
+      postingComment: false };
   }
 
   async componentWillMount() {
@@ -67,6 +72,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             anonymous
             commentsCount
             rate
+            photoURL
             profilePostVote {
               type
             }

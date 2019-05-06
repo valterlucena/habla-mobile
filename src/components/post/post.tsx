@@ -1,17 +1,20 @@
 import * as React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import moment from 'moment';
 import { FontAwesome } from '@expo/vector-icons';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import i18n from 'i18n-js';
 import { getTranslatedDistanceFromEnum } from '../../util';
+import AutoHeightImage from 'react-native-auto-height-image';
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   constructor(props: PostComponentProps) {
     super(props);
 
-    this.state = { post: this.props.post };
+    this.state = { 
+      post: this.props.post
+    };
   }
 
   componentWillReceiveProps() {
@@ -68,7 +71,9 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       { this.props.showPostHeader? 
         (<View style={styles.header}>
           <TouchableOpacity style={styles.avatar} disabled={ !this.state.post.owner } onPress={() => this.props.onOpenProfile && this.props.onOpenProfile(this.state.post.owner)}>
-            { this.state.post.owner && this.state.post.owner.photoURL? <Image style={styles.avatarIconImage as any} source={{ uri: this.state.post.owner.photoURL }}/>: <FontAwesome style={styles.avatarIcon} name="user-circle"/>}
+            { this.state.post.owner && this.state.post.owner.photoURL?  
+            <Image style={styles.avatarIconImage as any} source={{ uri: this.state.post.owner.photoURL }}/>:
+            <FontAwesome style={styles.avatarIcon} name="user-circle"/>}
             {this.state.post.owner?
               <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>
             : <Text style={styles.headerText}>{ i18n.t('global.user.anonymousLabel') }</Text>}
@@ -82,6 +87,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             <View style={styles.middle}>
               <Text style={styles.bodyText}>{ this.state.post.body }</Text>
             </View>
+            {this.state.post.photoURL && <AutoHeightImage width={Dimensions.get('window').width - 80} source={{ uri: this.state.post.photoURL}}/>}
           </View>
           <View style={styles.postRight}>
             <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")}>
