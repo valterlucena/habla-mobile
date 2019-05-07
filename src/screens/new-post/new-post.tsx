@@ -14,8 +14,8 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   constructor(props: NewPostScreenProps) {
     super(props);
 
-    this.state = { 
-      post: { body: null }
+    this.state = {
+      post: { body: null, anonymous: false }
     };
   }
 
@@ -32,18 +32,16 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
 
     await Permissions.askAsync(Permissions.LOCATION);
     const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
-
     try {
       const response = await client.mutate({
-        variables: { 
+        variables: {
           post: this.state.post,
-          channelId: this.props.channel? this.props.channel.id: null,
+          channelId: this.props.channel ? this.props.channel.id : null,
           photo: this.state.photo && this.state.photo.uri && this.state.photo.uri.startsWith('data') && this.state.photo.uri,
-          anonymous: this.state.anonymous
         },
         mutation: gql(`
-          mutation CreatePost ($post: PostInput!, $photo: Upload, $anonymous: Boolean) {
-            createPost(post: $post, photo: $photo, anonymous: $anonymous) {
+          mutation CreatePost ($post: PostInput!, $photo: Upload) {
+            createPost(post: $post, photo: $photo) {
               id
               body
               distance
@@ -80,7 +78,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   resetPost() {
     this.setState({
       post: {
-        body: this.props.channel && `#${this.props.channel.name}`
+        body: this.props.channel && `#${this.props.channel.name}`, anonymous: false
       }
     });
   }
@@ -90,9 +88,9 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   }
 
   importPhoto = async (photo) => {
-    if (!photo) return; 
-    
-    this.setState({ photo: { uri: photo  }})
+    if (!photo) return;
+
+    this.setState({ photo: { uri: photo } })
   }
 
   render() {
@@ -110,12 +108,12 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
           </TouchableOpacity>
           <CheckBox
             title={i18n.t('screens.newPost.anonymous')}
-            checked={this.state.anonymous}
+            checked={this.state.post.anonymous}
             checkedColor={THEME.colors.primary.default}
             uncheckedColor={THEME.colors.primary.default}
             textStyle={styles.newPost.anonymousText}
             containerStyle={styles.newPost.anonymousButton}
-            onPress={() => this.setState({ anonymous: !this.state.anonymous })}
+            onPress={() => this.setState({ post: { ...this.state.post, anonymous: !this.state.post.anonymous } })}
           />
           <ChangePhotoComponent onPhotoSelected={this.importPhoto} enabled={true}>
             <FontAwesome name="image" size={35} color={THEME.colors.primary.default}></FontAwesome>
@@ -158,7 +156,7 @@ const styles = {
       backgroundColor: THEME.colors.secondary.light,
       borderWidth: 0
     },
-    anonymousText:{
+    anonymousText: {
       color: 'white'
     },
     errorView: {
@@ -201,7 +199,6 @@ interface NewPostScreenState {
   post: any;
   posting?: boolean;
   photo?: any;
-  anonymous?: boolean;
   errorMessage?: string;
 }
 
