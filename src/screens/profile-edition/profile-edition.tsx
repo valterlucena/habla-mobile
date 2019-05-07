@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, View, ScrollView, SafeAreaView, TextInput, Dimensions, StatusBar, TouchableOpacity, Picker, ActivityIndicator, Button } from "react-native";
+import { Text, StyleSheet, View, ScrollView, SafeAreaView, TextInput, Dimensions, StatusBar, TouchableOpacity, Picker, ActivityIndicator, Button, Alert } from "react-native";
 import THEME from "../../theme/theme";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
@@ -7,6 +7,7 @@ import i18n from 'i18n-js';
 import AutoHeightImage from 'react-native-auto-height-image';
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import { Permissions, Location } from 'expo';
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
@@ -30,7 +31,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
 
-    let propsProfile, photo;
+    let propsProfile, photo, home;
 
     if (this.props.navigation.state.params && this.props.navigation.state.params.profile) {
       propsProfile = {
@@ -45,6 +46,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       if (this.props.navigation.state.params.profile.photoURL) {
         photo = { uri: this.props.navigation.state.params.profile.photoURL };
       }
+      
+      if (this.props.navigation.state.params.profile.home) {
+        home = this.props.navigation.state.params.profile.home;
+      }
     }
 
     this.state = {
@@ -57,7 +62,9 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         gender: ""
       },
       photo: photo,
-      saving: false
+      saving: false,
+      home: home,
+      local: ""
     };
 
     this.props.navigation.setParams({ saveTapped: this.submit, state: this.state });
@@ -71,11 +78,12 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       const response = await client.mutate({
         variables: {
           profile: this.state.profile,
-          photo: this.state.photo && this.state.photo.uri && this.state.photo.uri.startsWith('data') && this.state.photo.uri
+          photo: this.state.photo && this.state.photo.uri && this.state.photo.uri.startsWith('data') && this.state.photo.uri,
+          updateHome: !!this.state.home
         },
         mutation: gql(`
-          mutation UpdateProfile ($profile: ProfileInput!, $photo: Upload) {
-            updateProfile(profile: $profile, photo: $photo) {
+          mutation UpdateProfile ($profile: ProfileInput!, $photo: Upload, $updateHome: Boolean) {
+            updateProfile(profile: $profile, photo: $photo, updateHome: $updateHome) {
               uid
               name
               username
@@ -86,7 +94,14 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
               gender
             }
           }
-        `)
+        `),
+        fetchPolicy: 'no-cache',
+        context: {
+          location: {
+            latitude: this.state.home[0],
+            longitude: this.state.home[1]
+          }
+        }
       });
 
       this.props.navigation.navigate("ProfileScreen");
@@ -105,6 +120,34 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     this.setState({ photo: { uri: profilePhoto }});
   }
 
+  changeHome = async () => {
+    await Permissions.askAsync(Permissions.LOCATION);
+    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+    const coords = location.coords;
+    this.setState({ home:[coords.latitude, coords.longitude] }, this.getLocalInfo);
+  }
+
+  componentWillMount() {
+    this.getLocalInfo();
+  }
+
+  getLocalInfo = async () => {
+    if (!this.state.home) return;
+    let local: any = await Location.reverseGeocodeAsync({ latitude: this.state.home[0], longitude: this.state.home[1] });
+    this.setState({ local: local[0].street});
+  }
+
+  showAlert = () => {
+    Alert.alert(
+      i18n.t('screens.profileEdition.alert.title'),
+      i18n.t('screens.profileEdition.alert.message'),
+      [
+        {text: i18n.t('screens.profileEdition.buttons.cancel'), onPress: () => {}},
+        {text: i18n.t('screens.profileEdition.buttons.define'), onPress: () => this.changeHome()}
+      ],
+      { cancelable: false}
+    )
+  }
 
   render() {
     const { name, username, bio, website, phone, gender } = this.state.profile;
@@ -124,6 +167,15 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
               </Text>
             </ChangePhotoComponent>
           </View>
+
+          <View style={styles.page.form.row}>
+            <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.home')}</Text>
+            <TouchableOpacity onPress={this.showAlert} style={styles.page.form.textInput}>
+              { this.state.home ? <Text style={styles.page.form.textLocal}>{this.state.local}</Text> 
+              : <Text style={styles.page.form.textLocal}>{i18n.t('screens.profileEdition.labels.undefined')}</Text>}
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.page.form.row}>
             <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.name')}</Text>
             <TextInput
@@ -233,6 +285,9 @@ const styles = {
       },
       textInput: {
         width: "70%",
+        fontSize: 18
+      },
+      textLocal: {
         fontSize: 18
       },
       picker: {
