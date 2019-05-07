@@ -32,8 +32,17 @@ export interface AppTranslations {
             }
         },
         login: {
+            inputs: {
+                email: {
+                    placeholder: string;
+                },
+                password: {
+                    placeholder: string;
+                }
+            }
             buttons: {
                 signInWithFacebook: string;
+                signInWithCredentials: string;
             }
         },
         profileCreation: {

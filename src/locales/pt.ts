@@ -32,8 +32,17 @@ const pt: AppTranslations = {
             }
         },
         login: {
+            inputs: {
+                email: {
+                    placeholder: 'Email'
+                },
+                password: {
+                    placeholder: 'Senha'
+                }
+            },
             buttons: {
-                signInWithFacebook: 'Entrar com o Facebook'
+                signInWithFacebook: 'Entrar com o Facebook',
+                signInWithCredentials: 'Entrar'
             }
         },
         profileCreation: {

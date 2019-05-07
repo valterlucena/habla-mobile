@@ -22,13 +22,13 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
         return (
             <View style={styles.page.container}>
                 <Text style={styles.login.headerText}>Habla!</Text>
-                <TextInput placeholder="Email"
+                <TextInput placeholder={i18n.t('screens.login.inputs.email.placeholder')}
                            style={styles.login.input}
                            editable={!(this.state.loadingWithCredentials || this.state.loadingWithFacebook)}
                            underlineColorAndroid='rgba(0,0,0,0)'
                            autoCapitalize="none"
                            onChangeText={text => this.setState({ credentials: { ...this.state.credentials, email: text }})}></TextInput>
-                <TextInput placeholder="Password"
+                <TextInput placeholder={i18n.t('screens.login.inputs.password.placeholder')}
                            style={styles.login.input}
                            editable={!(this.state.loadingWithCredentials || this.state.loadingWithFacebook)}
                            secureTextEntry={true}
@@ -40,7 +40,7 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
                     {this.state.loadingWithCredentials? 
                           (<ActivityIndicator color="white"
                                               size="small"/>)
-                        : (<Text style={styles.login.loginButtonText}>Sign in</Text>) }
+                        : (<Text style={styles.login.loginButtonText}>{i18n.t('screens.login.buttons.signInWithCredentials')}</Text>) }
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.login.loginButtonFacebook}
                                   onPress={this.signInWithFacebook}
