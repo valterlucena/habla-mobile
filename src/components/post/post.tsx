@@ -72,7 +72,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
 
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
-      const {channels} = this.state.post;    
+       
 
       return (
        
