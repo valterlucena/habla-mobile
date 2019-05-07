@@ -70,7 +70,8 @@ export interface AppTranslations {
             }
         },
         channels: {
-            title: string;
+            title: string;,
+            searchPlaceholder: string;
         },
         newPost: {
             inputPlaceholder: string;

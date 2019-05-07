@@ -70,7 +70,8 @@ const pt: AppTranslations = {
             }
         },
         channels: {
-            title: 'Canais'
+            title: 'Canais',
+            searchPlaceholder: 'Digite aqui...'
         },
         newPost: {
             inputPlaceholder: "O que está acontecendo?",

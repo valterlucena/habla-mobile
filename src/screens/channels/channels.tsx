@@ -123,7 +123,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     return (
       <View style={styles.page.container}>
         <SearchBar
-          placeholder="Type here..."
+          placeholder={i18n.t('screens.channels.searchPlaceholder')}
           onChangeText={this.handleSearch}
           autoCorrect={false}
           autoCapitalize="none"
