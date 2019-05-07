@@ -49,7 +49,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   componentWillMount = async() => {
     let cachedPosts;
     
-    if (this.isRoot()) {
+    if (!this.hasChannel()) {
       cachedPosts = await AsyncStorage.getItem('cached-timeline');
     }
 
@@ -73,7 +73,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
       if (this.currentRefreshPromise == refreshPromise) {
         this.setState({ posts, refreshing: false }, async() => {
-          await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
+          if (!this.hasChannel()) await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
         });
       }
 
@@ -158,9 +158,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   }
 
   openChannel = (channel) => {
-    if (!this.isRoot()) return;
-    
-    this.props.navigation.push('TimelineScreen', { channel: channel });
+    if (!this.hasChannel() || this.getCurrentChannel().id !== channel.id) this.props.navigation.push('TimelineScreen', { channel: channel });
   }
 
   openProfile = (profile) => {
@@ -183,8 +181,12 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     }
   }
 
-  isRoot() {
-    return !(this.props.navigation.state.params && this.props.navigation.state.params.channel);
+  hasChannel() {
+    return !!this.getCurrentChannel();
+  }
+
+  getCurrentChannel() {
+    return this.props.navigation.state.params && this.props.navigation.state.params.channel;
   }
 
   render() {

@@ -8,6 +8,7 @@ import i18n from 'i18n-js';
 import { getTranslatedDistanceFromEnum } from '../../util';
 import ParsedText from 'react-native-parsed-text';
 import AutoHeightImage from 'react-native-auto-height-image';
+import THEME from '../../theme/theme';
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   constructor(props: PostComponentProps) {
@@ -226,8 +227,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5
   },
   hashTag: {
-    fontStyle: 'italic',
-    color: 'blue',
+    color: THEME.colors.primary.default
   }
 });
 
