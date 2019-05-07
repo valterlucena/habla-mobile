@@ -160,7 +160,12 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         <ScrollView>
           <View>
             <AutoHeightImage width={Dimensions.get('window').width} source={this.state.photo || photoDefault} fallbackSource={photoDefault} style={styles.page.form.photo}/>
-            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving}/>
+            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving}>
+              <Text
+                    style={styles.page.form.textChangePhoto}>
+                    {i18n.t('screens.profile.changePhoto.title')}
+              </Text>
+            </ChangePhotoComponent>
           </View>
 
           <View style={styles.page.form.row}>
@@ -300,6 +305,12 @@ const styles = {
         textAlign: 'center',
         color: "#FFFFFF",
         fontWeight: "bold"
+      },
+      textChangePhoto: {
+        textAlign: 'center',
+        fontSize: 14,
+        fontWeight: 'bold',
+        paddingVertical: 10
       }
     })
   }

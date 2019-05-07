@@ -7,6 +7,7 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import ActionSheet from 'react-native-actionsheet'
 import i18n from 'i18n-js';
 import THEME from '../../theme/theme';
+import { Button } from 'react-native-elements';
 
 export default class ChangePhotoComponent extends React.Component<ChangePhotoProps, ChangePhotoState> {
     constructor(props: ChangePhotoProps) {
@@ -43,13 +44,11 @@ export default class ChangePhotoComponent extends React.Component<ChangePhotoPro
 
     render() {
         return (
-            <View>
-                
-                <Text
-                    style={styles.page.textChangePhoto}
-                    onPress={() => this.props.enabled && this.showActionSheet()}>
-                    {i18n.t('screens.profile.changePhoto.title')}
-                </Text>
+            <View style={styles.page.container}>
+                <Button onPress={() => this.props.enabled && this.showActionSheet()} style={styles.page.button}>
+                    {this.props.children}
+                </Button>
+        
                 <ActionSheet
                     tintColor={THEME.colors.primary.default}
                     ref={o => this.actionSheet = o}
@@ -69,11 +68,12 @@ const styles = {
             flexGrow: 1,
             backgroundColor: '#fff'
         },
-        textChangePhoto: {
-            textAlign: 'center',
-            fontSize: 14,
-            fontWeight: 'bold',
-            paddingVertical: 10
+        button: {
+            paddingHorizontal: 14,
+            paddingVertical: 14,
+            backgroundColor: THEME.colors.primary.default,
+            width: '100%',
+            alignItems: "center"
         }
     })
 }

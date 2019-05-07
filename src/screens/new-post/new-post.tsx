@@ -8,11 +8,15 @@ import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import { CheckBox } from 'react-native-elements';
 
+import ChangePhotoComponent from '../../components/change-photo/change-photo'
+
 export default class NewPostScreen extends React.Component<NewPostScreenProps, NewPostScreenState> {
   constructor(props: NewPostScreenProps) {
     super(props);
 
-    this.state = { post: { body: null }, anonymous: false, posting: false };
+    this.state = { 
+      post: { body: null }
+    };
   }
 
   componentWillMount() {
@@ -31,22 +35,20 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
 
     try {
       const response = await client.mutate({
-        variables: {
+        variables: { 
           post: this.state.post,
+          channelId: this.props.channel? this.props.channel.id: null,
+          photo: this.state.photo && this.state.photo.uri && this.state.photo.uri.startsWith('data') && this.state.photo.uri,
           anonymous: this.state.anonymous
         },
         mutation: gql(`
-          mutation CreatePost ($post: PostInput!, $anonymous: Boolean) {
-            createPost(post: $post, anonymous: $anonymous) {
-              id,
-              body,
-              distance,
+          mutation CreatePost ($post: PostInput!, $photo: Upload, $anonymous: Boolean) {
+            createPost(post: $post, photo: $photo, anonymous: $anonymous) {
+              id
+              body
+              distance
               createdAt
-              owner {
-                uid
-                username
-                photoURL
-              }
+              photoURL
               channels {
                 id
                 name
@@ -87,6 +89,12 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
     this.props.onDismiss && this.props.onDismiss();
   }
 
+  importPhoto = async (photo) => {
+    if (!photo) return; 
+    
+    this.setState({ photo: { uri: photo  }})
+  }
+
   render() {
     return (
       <View style={styles.newPost.container}>
@@ -109,9 +117,9 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
             containerStyle={styles.newPost.anonymousButton}
             onPress={() => this.setState({ anonymous: !this.state.anonymous })}
           />
-          <TouchableOpacity>
+          <ChangePhotoComponent onPhotoSelected={this.importPhoto} enabled={true}>
             <FontAwesome name="image" size={35} color={THEME.colors.primary.default}></FontAwesome>
-          </TouchableOpacity>
+          </ChangePhotoComponent>
         </View>
         <TextInput style={styles.newPost.input}
           onChangeText={this.handlePostInput}
@@ -190,9 +198,10 @@ const styles = {
 };
 
 interface NewPostScreenState {
-  posting: boolean;
   post: any;
-  anonymous: boolean;
+  posting?: boolean;
+  photo?: any;
+  anonymous?: boolean;
   errorMessage?: string;
 }
 
