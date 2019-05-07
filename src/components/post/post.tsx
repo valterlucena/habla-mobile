@@ -73,7 +73,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
 
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
-       
+      const photoDefault = require('../../../assets/avatar-placeholder.png');
 
       return (
        
@@ -82,11 +82,9 @@ export default class PostComponent extends React.Component<PostComponentProps, P
         (<View style={styles.header}>
           <TouchableOpacity style={styles.avatar} disabled={ !this.state.post.owner } onPress={() => this.props.onOpenProfile && this.props.onOpenProfile(this.state.post.owner)}>
             { this.state.post.owner && this.state.post.owner.photoURL?  
-            <Image style={styles.avatarIconImage as any} source={{ uri: this.state.post.owner.photoURL }}/>:
+            <Image style={styles.avatarIconImage as any} source={this.state.post.owner.photoURL? { uri: this.state.post.owner.photoURL }: photoDefault} width={40} height={40}/>:
             <FontAwesome style={styles.avatarIcon} name="user-circle"/>}
-            {this.state.post.owner?
-              <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>
-            : <Text style={styles.headerText}>{ i18n.t('global.user.anonymousLabel') }</Text>}
+            {this.state.post.anonymous? <Text style={styles.headerText}>{ i18n.t('global.user.anonymousLabel')}</Text>: <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>}
           </TouchableOpacity>
 
           <Text style={styles.headerText}>{getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
