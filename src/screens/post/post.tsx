@@ -121,8 +121,6 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   }
 
   openProfile = (profile) => {
-    this.state.post;
-    console.log("here");
     this.props.navigation.push('ProfileScreen', { profile: profile });
   }
 
