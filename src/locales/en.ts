@@ -38,7 +38,8 @@ const en: AppTranslations = {
         },
         profileCreation: {
             title: 'Profile',
-            subtitle: "You're almost ready to start using Habla, {{name}}! Let's create your public profile.",
+            subtitle: "You're almost ready to start using Habla! Let's create your public profile.",
+            subtitleWithName: "You're almost ready to start using Habla, {{name}}! Let's create your public profile.",
             labels: {
                 name: 'Name',
                 username: 'Username',

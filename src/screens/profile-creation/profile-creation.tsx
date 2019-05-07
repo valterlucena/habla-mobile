@@ -1,12 +1,12 @@
 import React from "react";
-import { Text, StyleSheet, View, SafeAreaView, StatusBar, Dimensions, TextInput, TouchableOpacity, ActivityIndicator, Image, Picker, ScrollView } from "react-native";
+import { Text, StyleSheet, View, SafeAreaView, StatusBar, Image, TextInput, TouchableOpacity, ActivityIndicator, Picker, ScrollView, Dimensions } from "react-native";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
 import THEME from "../../theme/theme";
 import i18n from 'i18n-js';
-import AutoHeightImage from 'react-native-auto-height-image';
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import { getTranslatedGenderFromEnum } from "../../util";
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   constructor(props: any) {
@@ -29,7 +29,8 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         phone: "",
         gender: ""
       },
-      loading: false
+      loading: false,
+      expandGenderPicker: false
     };
   }
 
@@ -65,32 +66,29 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
   }
 
   render() {
-    const photoDefault = require('../../../assets/icon-user-default.png');
+    const photoDefault = require('../../../assets/avatar-placeholder.png');
 
     return (
       <SafeAreaView>
         <StatusBar barStyle="dark-content" />
         <ScrollView style={styles.page.container.view}>
-          <View style={styles.page.header.row}>
-            <Text style={styles.page.header.viewTitle}>
-              {i18n.t('screens.profileCreation.title')}
-            </Text>
+          <View>
+            <View style={styles.page.header.row}>
+              <View style={styles.page.header.left}>
+                <Text style={styles.page.header.viewTitle}>
+                  {i18n.t('screens.profileCreation.title')}
+                </Text>
+                <Text style={styles.page.header.viewSubtitle}>
+                  {this.state.profile.name? i18n.t('screens.profileCreation.subtitleWithName', { name: this.state.profile.name }): i18n.t('screens.profileCreation.subtitle')}
+                </Text>
+              </View>
+              <View style={styles.page.header.right}>
+                <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving}>
+                  <Image width={100} height={100} source={this.state.photo || photoDefault} style={styles.page.form.photo} />
+                </ChangePhotoComponent>
+              </View>
+            </View>
           </View>
-
-          <Text style={styles.page.header.viewSubtitle}>
-            {i18n.t('screens.profileCreation.subtitle', { name: this.state.profile.name })}
-          </Text>
-
-          <View style={styles.page.form.photoContainer}>
-            <AutoHeightImage width={Dimensions.get('window').width} source={this.state.photo || photoDefault} fallbackSource={photoDefault} style={styles.page.form.photo} />
-            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving}>
-              <Text
-                    style={styles.page.form.textChangePhoto}>
-                    {i18n.t('screens.profile.changePhoto.title')}
-              </Text>
-            </ChangePhotoComponent>
-          </View>
-
           <View style={styles.page.form.row}>
             <Text style={styles.page.form.label}>{i18n.t('screens.profileCreation.labels.name')}</Text>
             <TextInput style={styles.page.form.textInput}
@@ -147,15 +145,23 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
 
           <View style={styles.page.form.row}>
             <Text style={styles.page.form.label}>{i18n.t('global.enums.gender.gender')}</Text>
-            <Picker
-              style={styles.page.form.picker}
-              selectedValue={this.state.profile.gender}
-              onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text } })}>
+            <View style={styles.page.form.textInput}>
+              <TextInput style={styles.page.form.textInput}
+                placeholder={i18n.t('global.enums.gender.gender')}
+                value={getTranslatedGenderFromEnum((this.state.profile.gender || 'MALE').toLowerCase())}   
+                underlineColorAndroid="rgba(0, 0, 0, 0)"
+                onTouchStart={() => this.setState({ expandGenderPicker: !this.state.expandGenderPicker })}
+                editable={false}/>
+              {this.state.expandGenderPicker && <Picker
+                style={styles.page.form.picker}
+                selectedValue={this.state.profile.gender}
+                onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text } })}>
 
-              <Picker.Item label={i18n.t('global.enums.gender.male')} value="MALE" />
-              <Picker.Item label={i18n.t('global.enums.gender.female')} value="FEMALE" />
-              <Picker.Item label={i18n.t('global.enums.gender.other')} value="OTHER" />
-            </Picker>
+                <Picker.Item label={i18n.t('global.enums.gender.male')} value="MALE" />
+                <Picker.Item label={i18n.t('global.enums.gender.female')} value="FEMALE"/>
+                <Picker.Item label={i18n.t('global.enums.gender.other')} value="OTHER"/>
+              </Picker>}
+            </View>
           </View>
 
           <TouchableOpacity style={styles.page.form.submitButton}
@@ -194,11 +200,10 @@ const styles = {
         fontSize: 18,
         fontWeight: "bold"
       },
-      photoContainer: {
-        marginTop: 16
-      },
       photo: {
-        width: '100%'
+        width: 100,
+        height: 100,
+        borderRadius: 50
       },
       textInput: {
         width: "70%",
@@ -229,20 +234,29 @@ const styles = {
         paddingVertical: 10
       }
     }),
-
     header: StyleSheet.create({
       row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 5
+        marginBottom: 5,
+        width: '100%'
       },
       viewTitle: {
         fontSize: 35,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        color: THEME.colors.primary.dark
       },
       viewSubtitle: {
         fontSize: 20,
         textAlign: 'justify'
+      },
+      right: {
+        marginTop: 16,
+        width: 100,
+        height: 100
+      },
+      left: {
+        width: Dimensions.get('screen').width - 150
       }
     })
   }

@@ -38,7 +38,8 @@ const pt: AppTranslations = {
         },
         profileCreation: {
             title: 'Perfil',
-            subtitle: "Você está quase lá, {{name}}! Vamos criar o seu perfil público.",
+            subtitle: "Você está quase lá! Vamos criar o seu perfil público.",
+            subtitleWithName: "Você está quase lá, {{name}}! Vamos criar o seu perfil público.",
             labels: {
                 name: 'Nome',
                 username: 'Usuário',

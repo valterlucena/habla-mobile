@@ -154,7 +154,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
   render() {
     const { name, username, bio, website, phone, gender } = this.state.profile;
 
-    const photoDefault = require('../../../assets/icon-user-default.png');
+    const photoDefault = require('../../../assets/avatar-placeholder.png');
 
     return (
       <SafeAreaView>

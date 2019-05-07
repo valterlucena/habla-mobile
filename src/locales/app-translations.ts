@@ -39,6 +39,7 @@ export interface AppTranslations {
         profileCreation: {
             title: string;
             subtitle: string;
+            subtitleWithName: string;
             labels: {
                 name: string;
                 username: string;

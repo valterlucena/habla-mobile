@@ -4,4 +4,8 @@ const getTranslatedDistanceFromEnum = (distance) => {
     return i18n.t(`global.enums.distance.${distance}`);
 }
 
-export { getTranslatedDistanceFromEnum };
+const getTranslatedGenderFromEnum = (gender) => {
+    return i18n.t(`global.enums.gender.${gender}`);
+}
+
+export { getTranslatedDistanceFromEnum, getTranslatedGenderFromEnum };

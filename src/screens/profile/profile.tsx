@@ -130,7 +130,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
 
 
   render() {
-    const photoDefault = require('../../../assets/icon-user-default.png');
+    const photoDefault = require('../../../assets/avatar-placeholder.png');
     return (
       <ScrollView contentContainerStyle={styles.page.container}
         refreshControl={
