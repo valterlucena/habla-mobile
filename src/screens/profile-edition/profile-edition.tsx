@@ -63,8 +63,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       },
       photo: photo,
       saving: false,
-      home: home,
-      local: ""
+      home: home
     };
 
     this.props.navigation.setParams({ saveTapped: this.submit, state: this.state });
@@ -92,6 +91,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
               website
               phone
               gender
+              home
             }
           }
         `),
@@ -133,8 +133,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
 
   getLocalInfo = async () => {
     if (!this.state.home) return;
+
     let local: any = await Location.reverseGeocodeAsync({ latitude: this.state.home[0], longitude: this.state.home[1] });
-    this.setState({ local: local[0].street});
+    
+    this.setState({ local: local[0].city || local[0].name });
   }
 
   showAlert = () => {
