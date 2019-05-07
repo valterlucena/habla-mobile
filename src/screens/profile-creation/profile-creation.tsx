@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, View, SafeAreaView, StatusBar, Image, TextInput, TouchableOpacity, ActivityIndicator, Picker, ScrollView, Dimensions } from "react-native";
+import { Text, StyleSheet, View, SafeAreaView, StatusBar, Image, TextInput, TouchableOpacity, ActivityIndicator, Picker, ScrollView, Dimensions, Platform } from "react-native";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
 import THEME from "../../theme/theme";
@@ -146,13 +146,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
           <View style={styles.page.form.row}>
             <Text style={styles.page.form.label}>{i18n.t('global.enums.gender.gender')}</Text>
             <View style={styles.page.form.textInput}>
-              <TextInput style={styles.page.form.textInput}
-                placeholder={i18n.t('global.enums.gender.gender')}
-                value={getTranslatedGenderFromEnum((this.state.profile.gender || 'MALE').toLowerCase())}   
-                underlineColorAndroid="rgba(0, 0, 0, 0)"
-                onTouchStart={() => this.setState({ expandGenderPicker: !this.state.expandGenderPicker })}
-                editable={false}/>
-              {this.state.expandGenderPicker && <Picker
+              {Platform.OS === 'ios' && <TouchableOpacity onPress={() => {Platform.OS === 'ios' && this.setState({ expandGenderPickerIOS: !this.state.expandGenderPickerIOS });}}>
+                <Text style={{ fontSize: 18 }}>{ getTranslatedGenderFromEnum((this.state.profile.gender || 'MALE').toLowerCase()) }</Text>
+              </TouchableOpacity>}
+              {(Platform.OS === 'android' || this.state.expandGenderPickerIOS) && <Picker
                 style={styles.page.form.picker}
                 selectedValue={this.state.profile.gender}
                 onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text } })}>
@@ -210,7 +207,8 @@ const styles = {
         fontSize: 18
       },
       picker: {
-        width: "70%"
+        flexGrow: 1,
+        marginTop: -12
       },
       submitButton: {
         paddingHorizontal: 14,

@@ -1,10 +1,9 @@
 import React from "react";
-import { Text, StyleSheet, View, ScrollView, SafeAreaView, TextInput, Dimensions, StatusBar, TouchableOpacity, Picker, ActivityIndicator, Button, Alert, Image } from "react-native";
+import { Text, StyleSheet, View, ScrollView, SafeAreaView, TextInput, StatusBar, TouchableOpacity, Picker, ActivityIndicator, Alert, Image, Platform } from "react-native";
 import THEME from "../../theme/theme";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
 import i18n from 'i18n-js';
-import AutoHeightImage from 'react-native-auto-height-image';
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Permissions, Location } from 'expo';
@@ -65,7 +64,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       photo: photo,
       saving: false,
       home: home,
-      expandGenderPicker: false
+      expandGenderPickerIOS: false
     };
 
     this.props.navigation.setParams({ saveTapped: this.submit, state: this.state });
@@ -243,13 +242,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
           <View style={styles.page.form.row}>
             <Text style={styles.page.form.label}>{i18n.t('global.enums.gender.gender')}</Text>
             <View style={styles.page.form.textInput}>
-              <TextInput style={styles.page.form.textInput}
-                placeholder={i18n.t('global.enums.gender.gender')}
-                value={getTranslatedGenderFromEnum((this.state.profile.gender || 'MALE').toLowerCase())}   
-                underlineColorAndroid="rgba(0, 0, 0, 0)"
-                onTouchStart={() => this.setState({ expandGenderPicker: !this.state.expandGenderPicker })}
-                editable={false}/>
-              {this.state.expandGenderPicker && <Picker
+              {Platform.OS === 'ios' && <TouchableOpacity onPress={() => {Platform.OS === 'ios' && this.setState({ expandGenderPickerIOS: !this.state.expandGenderPickerIOS }); console.log('oi')}}>
+                <Text style={{ fontSize: 18 }}>{ getTranslatedGenderFromEnum((this.state.profile.gender || 'MALE').toLowerCase()) }</Text>
+              </TouchableOpacity>}
+              {(Platform.OS === 'android' || this.state.expandGenderPickerIOS) && <Picker
                 style={styles.page.form.picker}
                 selectedValue={this.state.profile.gender}
                 onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text } })}>
@@ -305,7 +301,8 @@ const styles = {
         fontSize: 18
       },
       picker: {
-        width: "70%"
+        flexGrow: 1,
+        marginTop: -10
       },
       submitButton: {
         paddingHorizontal: 14,
