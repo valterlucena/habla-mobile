@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { Platform } from 'expo-core';
-import { Permissions, Location } from 'expo';
+import { Permissions } from 'expo';
 import { ImagePicker } from 'expo';
 import { FileSystem } from 'expo';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import ActionSheet from 'react-native-actionsheet'
 import i18n from 'i18n-js';
 import THEME from '../../theme/theme';
-import { Button } from 'react-native-elements';
 
 export default class ChangePhotoComponent extends React.Component<ChangePhotoProps, ChangePhotoState> {
     constructor(props: ChangePhotoProps) {
@@ -45,10 +44,9 @@ export default class ChangePhotoComponent extends React.Component<ChangePhotoPro
     render() {
         return (
             <View style={styles.page.container}>
-                <Button onPress={() => this.props.enabled && this.showActionSheet()} style={styles.page.button}>
+                <TouchableOpacity onPress={() => this.props.enabled && this.showActionSheet()}>
                     {this.props.children}
-                </Button>
-        
+                </TouchableOpacity>
                 <ActionSheet
                     tintColor={THEME.colors.primary.default}
                     ref={o => this.actionSheet = o}
@@ -67,13 +65,6 @@ const styles = {
         container: {
             flexGrow: 1,
             backgroundColor: '#fff'
-        },
-        button: {
-            paddingHorizontal: 14,
-            paddingVertical: 14,
-            backgroundColor: THEME.colors.primary.default,
-            width: '100%',
-            alignItems: "center"
         }
     })
 }
