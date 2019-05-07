@@ -6,7 +6,9 @@ import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import i18n from 'i18n-js';
 import { getTranslatedDistanceFromEnum } from '../../util';
+import ParsedText from 'react-native-parsed-text';
 import AutoHeightImage from 'react-native-auto-height-image';
+import THEME from '../../theme/theme';
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   constructor(props: PostComponentProps) {
@@ -63,10 +65,18 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     }
   }
 
+  handleHashTagPress(name, matchIndex) {
+    name = name.replace(/#/, "");
+    //console.log(this.state.post.channels.find(c => c.name === name));
+    return this.state.post.channels.find(c => c.name === name);
+  }
+
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
+       
 
       return (
+       
       <View style={styles.container}>
       { this.props.showPostHeader? 
         (<View style={styles.header}>
@@ -85,7 +95,15 @@ export default class PostComponent extends React.Component<PostComponentProps, P
         <View style={styles.postBody}>
           <View style={styles.postLeft}>
             <View style={styles.middle}>
-              <Text style={styles.bodyText}>{ this.state.post.body }</Text>
+              <ParsedText style={styles.bodyText}
+                          parse={ 
+                            [
+                              {pattern: /#(\w+)/, style: styles.hashTag, onPress:(name,matchIndex)=> this.props.onOpenChannel && this.props.onOpenChannel(this.handleHashTagPress(name,matchIndex))}, 
+                            ]
+                          }
+                          childrenProps={{allowFontScaling: false}}
+              >{ this.state.post.body }
+              </ParsedText>
             </View>
             {this.state.post.photoURL && <AutoHeightImage width={Dimensions.get('window').width - 80} source={{ uri: this.state.post.photoURL}}/>}
           </View>
@@ -109,7 +127,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
               •
             </Text>
             <TouchableOpacity onPress={() => this.props.onOpenChannel && this.props.onOpenChannel(this.state.post.channel)}>
-              <Text style={styles.channelTitle}>#{ this.state.post.channel.name }</Text>
+              <Text style={styles.channelTitle}>#{ this.state.post.channel.name } </Text>
             </TouchableOpacity>
           </View>): (null)}
           <Text style={styles.separator}>
@@ -207,6 +225,9 @@ const styles = StyleSheet.create({
   },
   separator: {
     marginHorizontal: 5
+  },
+  hashTag: {
+    color: THEME.colors.primary.default
   }
 });
 
