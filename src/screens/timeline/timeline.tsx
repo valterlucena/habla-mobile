@@ -158,7 +158,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   }
 
   openChannel = (channel) => {
-    if (!this.hasChannel() || this.getCurrentChannel().id !== channel.id) this.props.navigation.push('TimelineScreen', { channel: channel });
+    if (!this.hasChannel() || this.currentChannel.id !== channel.id) this.props.navigation.push('TimelineScreen', { channel: channel });
   }
 
   openProfile = (profile) => {
@@ -176,16 +176,16 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   onPostSent = (post) => {
     this.setState({ showNewPostModal: false });
 
-    if ((this.props.navigation.state.params && !this.props.navigation.state.params.channel) || (this.props.navigation.state.params && this.props.navigation.state.params.channel && post.channels.find(c => c.name == this.props.navigation.state.params.channel.name))) {
+    if (!this.hasChannel() || (post.channels.find(c => c.name == this.currentChannel.name))) {
       this.setState({ posts: [post, ...this.state.posts]});
     }
   }
 
   hasChannel() {
-    return !!this.getCurrentChannel();
+    return !!this.currentChannel;
   }
 
-  getCurrentChannel() {
+  get currentChannel() {
     return this.props.navigation.state.params && this.props.navigation.state.params.channel;
   }
 
