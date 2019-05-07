@@ -1,45 +1,53 @@
 import * as React from 'react';
-import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, Dimensions } from 'react-native';
-import { Badge } from 'react-native-elements';
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity } from 'react-native';
+import { Badge, Image } from 'react-native-elements';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import firebase from 'firebase';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
-import AutoHeightImage from 'react-native-auto-height-image';
 import PostComponent from '../../components/post/post';
 import i18n from 'i18n-js';
 import { Permissions, Location } from 'expo';
 
 export default class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
 
-  static navigationOptions = (navigation) => {
-    let params = navigation.navigation.state.params;
+  static navigationOptions = ({ navigation }) => {
+    const thisRef: ProfileScreen = navigation.getParam('thisRef');
 
     return {
-      title: params && params.profile ? `@${params.profile.username}` : i18n.t('screens.profile.title'),
+      title: thisRef && thisRef.state.profile? `@${thisRef.state.profile.username}`: i18n.t('screens.profile.title'),
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
       },
       headerTitleStyle: {
         color: '#F5F5F5'
-      }
+      },
+      headerRight: thisRef && thisRef.isSelfProfile()? (
+        <TouchableOpacity onPress={() => navigation.navigate('ProfileEditionScreen', { profile: thisRef.state.profile })} style={styles.page.editButton}>
+          <MaterialIcons name="edit" size={30} color="white"/>
+        </TouchableOpacity>
+      ): null
     }
   };
 
   constructor(props) {
     super(props);
 
+    this.props.navigation.setParams({ thisRef: this });
+
     this.state = { profile: null, refreshing: false };
   }
 
   componentWillMount() {
-    this.refresh();
+    return this.refresh();
   }
 
   refresh = async () => {
     let navProfile = this.props.navigation.state.params && this.props.navigation.state.params.profile;
+
+    this.props.navigation.setParams({ profile: navProfile });
 
     let profileUid = navProfile ? navProfile.uid : firebase.auth().currentUser.uid;
 
@@ -98,7 +106,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
       });
 
       this.setState({ profile: response.data.profile });
-
+      this.props.navigation.setParams({ profile: response.data.profile });
     } catch (error) {
       console.log(error);
     }
@@ -128,9 +136,9 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     }});
   }
 
-
   render() {
     const photoDefault = require('../../../assets/avatar-placeholder.png');
+
     return (
       <ScrollView contentContainerStyle={styles.page.container}
         refreshControl={
@@ -142,50 +150,35 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
         {this.state.profile ?
           (
             <View>
-              {this.state.profile && this.state.profile.photoURL && <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.profile.photoURL }} style={styles.profileInfo.photo} />}
-              
-              <View style={styles.profileInfo.line}>
-                <Text style={styles.profileInfo.lineText}>{this.state.profile.name}</Text>
-              </View>
-              <View style={styles.profileInfo.line}>
-                <View style={styles.profileInfo.score}>
-                  <View style={styles.profileInfo.scoreInfo}>
-                    <Badge
-                      status='success'
-                      value={this.state.profile.score}
-                      containerStyle={styles.profileInfo.scoreBadge}
-                    />
-                    <Ionicons name="ios-star" size={45}/>
-                    <Text style={styles.profileInfo.scoreText}>{i18n.t('screens.profile.labels.score')}</Text>
+              <View style={styles.profileInfo.row}>
+                <Image width={100} height={100} source={this.state.profile.photoURL? { uri: this.state.profile.photoURL }: photoDefault} style={styles.profileInfo.photo}/>
+                <View>
+                  <Text style={styles.profileInfo.name}>{this.state.profile.name}</Text>
+                  {this.state.profile.bio && <Text style={styles.profileInfo.bio}>{this.state.profile.bio}</Text>}
+                  {this.state.profile.website && <Text>{this.state.profile.website}</Text>}
+
+                  <View style={styles.profileInfo.score}>
+                    <View style={styles.profileInfo.scoreInfo}>
+                      <Badge
+                        status='success'
+                        value={this.state.profile.score}
+                        containerStyle={styles.profileInfo.scoreBadge}
+                      />
+                    </View>
+                    {this.isSelfProfile() && <View style={styles.profileInfo.scoreInfo}>
+                      <Badge
+                        status='error'
+                        value={this.state.profile.scoreBalance}
+                        containerStyle={styles.profileInfo.scoreBadge}
+                      />
+                    </View>}
                   </View>
-                  {this.isSelfProfile() && <View style={styles.profileInfo.scoreInfo}>
-                    <Badge
-                      status='error'
-                      value={this.state.profile.scoreBalance}
-                      containerStyle={styles.profileInfo.scoreBadge}
-                    />
-                    <Ionicons name="ios-star-half" size={45}/>
-                    <Text style={styles.profileInfo.scoreText}>{i18n.t('screens.profile.labels.scoreBalance')}</Text>
-                  </View>}
                 </View>
               </View>
-              {this.state.profile.bio ? <View style={styles.profileInfo.line}>
-                <Text style={styles.profileInfo.lineText}>{this.state.profile.bio}</Text>
-              </View> : null}
-              <View style={styles.profileInfo.line}>
-                <Text style={styles.profileInfo.lineText}>@{this.state.profile.username}</Text>
-              </View>
-              {this.isSelfProfile() && <View style={styles.profileInfo.line}>
-                <TouchableOpacity onPress={() => this.openProfileEdition(this.state.profile)}>
-                  <Text style={styles.profileInfo.lineText}>
-                    {i18n.t('screens.profile.buttons.editProfile')}
-                  </Text>
-                </TouchableOpacity>
-              </View>}
             </View>) : null}
-        {this.isSelfProfile() ? <TouchableOpacity style={styles.profileInfo.line}
+        {this.isSelfProfile() ? <TouchableOpacity style={styles.profileInfo.row}
           onPress={this.logout}>
-          <Text style={styles.profileInfo.lineText}>{i18n.t('screens.profile.buttons.signOut')}</Text>
+          <Text style={styles.profileInfo.rowText}>{i18n.t('screens.profile.buttons.signOut')}</Text>
         </TouchableOpacity> : null}
         {(this.state.profile && this.state.profile.posts || []).map(item => (
           <TouchableOpacity key={item.id} onPress={() => this.openPost(item)}>
@@ -204,36 +197,49 @@ const styles = {
     container: {
       flexGrow: 1,
       backgroundColor: '#fff'
+    },
+    editButton: {
+      marginRight: 10
     }
   }),
   profileInfo: StyleSheet.create({
-    line: {
+    row: {
       marginTop: 2,
       padding: 12,
-      backgroundColor: '#fff'
+      backgroundColor: '#fff',
+      flexDirection: 'row',
+      alignItems: 'center'
     },
-    lineText: {
+    rowText: {
       fontSize: 16
     },
     photo: {
-      width: '100%',
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      marginRight: 15
+    },
+    name: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 3
+    },
+    bio: {
+      fontSize: 16,
+      marginBottom: 3
     },
     score: {
-      flexDirection: 'row',
-      justifyContent: 'center'
+      flexDirection: 'row'
     },
     scoreInfo: {
-      width: '49%',
-      alignItems: 'center',
       flexDirection: 'column',
-      justifyContent: 'space-between'
     },
     scoreBadge: {
-      marginBottom: -15,
-      marginLeft: 35
+      marginTop: 3,
+      marginRight: 10
     },
     scoreText: {
-      fontSize: 12
+      fontSize: 15
     }
   })
 };
