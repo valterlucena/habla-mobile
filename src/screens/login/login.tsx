@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput } from "react-native";
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import firebase from 'firebase';
 import { Facebook } from "expo";
@@ -15,38 +15,38 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
     constructor(props) {
         super(props);
 
-        this.state = { loading: false, credentials: {} };
+        this.state = { loadingWithCredentials: false, loadingWithFacebook: false, credentials: {} };
     }
 
     render() {
         return (
             <View style={styles.page.container}>
                 <Text style={styles.login.headerText}>Habla!</Text>
-                {/* <TextInput placeholder="Email"
+                <TextInput placeholder="Email"
                            style={styles.login.input}
-                           editable={!this.state.loading}
+                           editable={!(this.state.loadingWithCredentials || this.state.loadingWithFacebook)}
                            underlineColorAndroid='rgba(0,0,0,0)'
                            autoCapitalize="none"
                            onChangeText={text => this.setState({ credentials: { ...this.state.credentials, email: text }})}></TextInput>
                 <TextInput placeholder="Password"
                            style={styles.login.input}
-                           editable={!this.state.loading}
+                           editable={!(this.state.loadingWithCredentials || this.state.loadingWithFacebook)}
                            secureTextEntry={true}
                            onChangeText={text => this.setState({ credentials: { ...this.state.credentials, password: text }})}></TextInput>
                 <TouchableOpacity style={styles.login.loginButton}
                                   onPress={this.signInWithEmailAndPassword}
-                                  disabled={this.state.loading}
+                                  disabled={this.state.loadingWithCredentials || this.state.loadingWithFacebook}
                                   activeOpacity={1}>
-                    {this.state.loading? 
+                    {this.state.loadingWithCredentials? 
                           (<ActivityIndicator color="white"
                                               size="small"/>)
                         : (<Text style={styles.login.loginButtonText}>Sign in</Text>) }
-                </TouchableOpacity> */}
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.login.loginButtonFacebook}
                                   onPress={this.signInWithFacebook}
-                                  disabled={this.state.loading}
+                                  disabled={this.state.loadingWithCredentials || this.state.loadingWithFacebook}
                                   activeOpacity={1}>
-                    {this.state.loading? 
+                    {this.state.loadingWithFacebook? 
                           (<ActivityIndicator color="white"
                                               size="small"/>)
                         : (<View style={styles.login.loginButtonInnerView}>
@@ -59,18 +59,18 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
     }
 
     signInWithEmailAndPassword = async() => {
-        this.setState({ loading: true });
+        this.setState({ loadingWithCredentials: true });
 
         try {
           await firebase.auth().signInWithEmailAndPassword(this.state.credentials.email, this.state.credentials.password);
         } catch (error) {
-          this.setState({ loading: false });
+          this.setState({ loadingWithCredentials: false });
           console.log(error);
         }
     };
 
     signInWithFacebook = async() => {
-        this.setState({ loading: true });
+        this.setState({ loadingWithFacebook: true });
         
         try {
             const result = await Facebook.logInWithReadPermissionsAsync('2136539466408117');
@@ -80,13 +80,14 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
         } catch (error) {
             console.log(error);
         } finally { 
-            this.setState({ loading: false });
+            this.setState({ loadingWithFacebook: false });
         }
     }
 }
 
 interface LoginState {
-    loading?: boolean;
+    loadingWithCredentials?: boolean;
+    loadingWithFacebook?: boolean;
     credentials?: { email?: string, password?: string };
 }
 
@@ -113,6 +114,15 @@ const styles = {
             paddingVertical: 14,
             marginBottom: 10,
             fontSize: 18,
+        },
+        loginButton: {
+            paddingHorizontal: 14,
+            paddingVertical: 14,
+            backgroundColor: THEME.colors.primary.default,
+            width: '100%',
+            borderRadius: 5,
+            alignItems: "center",
+            marginBottom: 12
         },
         loginButtonFacebook: {
             paddingHorizontal: 14,
