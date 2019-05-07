@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, View, ScrollView, SafeAreaView, TextInput, Dimensions, StatusBar, TouchableOpacity, Picker, ActivityIndicator, Button, Alert } from "react-native";
+import { Text, StyleSheet, View, ScrollView, SafeAreaView, TextInput, Dimensions, StatusBar, TouchableOpacity, Picker, ActivityIndicator, Button, Alert, Image } from "react-native";
 import THEME from "../../theme/theme";
 import { client } from "../../services/client";
 import gql from "graphql-tag";
@@ -8,6 +8,7 @@ import AutoHeightImage from 'react-native-auto-height-image';
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Permissions, Location } from 'expo';
+import { getTranslatedGenderFromEnum } from "../../util";
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
@@ -63,7 +64,8 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       },
       photo: photo,
       saving: false,
-      home: home
+      home: home,
+      expandGenderPicker: false
     };
 
     this.props.navigation.setParams({ saveTapped: this.submit, state: this.state });
@@ -160,22 +162,10 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       <SafeAreaView>
         <StatusBar barStyle="light-content"/>
         <ScrollView>
-          <View>
-            <AutoHeightImage width={Dimensions.get('window').width} source={this.state.photo || photoDefault} fallbackSource={photoDefault} style={styles.page.form.photo}/>
-            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving}>
-              <Text
-                    style={styles.page.form.textChangePhoto}>
-                    {i18n.t('screens.profile.changePhoto.title')}
-              </Text>
+          <View style={styles.page.header.avatarContainer}>
+            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving} style={styles.page.header.avatar}>
+              <Image width={150} height={150} source={this.state.photo || photoDefault} style={styles.page.header.avatar}/>
             </ChangePhotoComponent>
-          </View>
-
-          <View style={styles.page.form.row}>
-            <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.home')}</Text>
-            <TouchableOpacity onPress={this.showAlert} style={styles.page.form.textInput}>
-              { this.state.home ? <Text style={styles.page.form.textLocal}>{this.state.local}</Text> 
-              : <Text style={styles.page.form.textLocal}>{i18n.t('screens.profileEdition.labels.undefined')}</Text>}
-            </TouchableOpacity>
           </View>
 
           <View style={styles.page.form.row}>
@@ -217,6 +207,14 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
           </View>
 
           <View style={styles.page.form.row}>
+            <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.home')}</Text>
+            <TouchableOpacity onPress={this.showAlert} style={styles.page.form.textInput}>
+              { this.state.home ? <Text style={styles.page.form.textLocal}>{this.state.local}</Text> 
+              : <Text style={styles.page.form.textLocal}>{i18n.t('screens.profileEdition.labels.undefined')}</Text>}
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.page.form.row}>
             <Text style={styles.page.form.label}>{i18n.t('screens.profileEdition.labels.website')}</Text>
             <TextInput
               style={styles.page.form.textInput}
@@ -244,16 +242,23 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
 
           <View style={styles.page.form.row}>
             <Text style={styles.page.form.label}>{i18n.t('global.enums.gender.gender')}</Text>
-            <Picker
-              style={styles.page.form.picker}
-              selectedValue={gender}
-              onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text } })}
-              enabled={!this.state.saving}
-            >
-              <Picker.Item label={i18n.t('global.enums.gender.male')} value="MALE" />
-              <Picker.Item label={i18n.t('global.enums.gender.female')} value="FEMALE" />
-              <Picker.Item label={i18n.t('global.enums.gender.other')} value="OTHER" />
-            </Picker>
+            <View style={styles.page.form.textInput}>
+              <TextInput style={styles.page.form.textInput}
+                placeholder={i18n.t('global.enums.gender.gender')}
+                value={getTranslatedGenderFromEnum((this.state.profile.gender || 'MALE').toLowerCase())}   
+                underlineColorAndroid="rgba(0, 0, 0, 0)"
+                onTouchStart={() => this.setState({ expandGenderPicker: !this.state.expandGenderPicker })}
+                editable={false}/>
+              {this.state.expandGenderPicker && <Picker
+                style={styles.page.form.picker}
+                selectedValue={this.state.profile.gender}
+                onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text } })}>
+
+                <Picker.Item label={i18n.t('global.enums.gender.male')} value="MALE" />
+                <Picker.Item label={i18n.t('global.enums.gender.female')} value="FEMALE"/>
+                <Picker.Item label={i18n.t('global.enums.gender.other')} value="OTHER"/>
+              </Picker>}
+            </View>
           </View>
           <KeyboardSpacer/>
         </ScrollView>
@@ -267,6 +272,16 @@ const styles = {
     header: StyleSheet.create({
       saveButton: { 
         marginRight: 10
+      },
+      avatarContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16
+      },
+      avatar: {
+        width: 150,
+        height: 150,
+        borderRadius: 75
       }
     }),
     form: StyleSheet.create({
@@ -277,9 +292,6 @@ const styles = {
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
         paddingHorizontal: 16
-      },
-      photo: {
-        width: '100%'
       },
       label: {
         fontSize: 18,

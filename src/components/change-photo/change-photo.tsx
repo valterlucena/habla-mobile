@@ -63,14 +63,14 @@ export default class ChangePhotoComponent extends React.Component<ChangePhotoPro
 const styles = {
     page: StyleSheet.create({
         container: {
-            flexGrow: 1,
-            backgroundColor: '#fff'
+            flexGrow: 1
         }
     })
 }
 export interface ChangePhotoProps {
     onPhotoSelected: (photo: string) => void | Promise<void>;
     enabled?: boolean;
+    style?: any;
 }
 
 export interface ChangePhotoState {
