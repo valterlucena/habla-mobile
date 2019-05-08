@@ -83,7 +83,7 @@ const TabsNavigator = createBottomTabNavigator({
     headerTintColor: 'white',
     tabBarIcon: ({ focused, tintColor }) => {
       const { routeName } = navigation.state;
-      const size = focused? 35: 25;
+      const size = focused? 30: 25;
 
       if (routeName === 'TimelineStack') {
         return <FontAwesome name="home" size={size} color={tintColor}/>;
