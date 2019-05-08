@@ -47,6 +47,12 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
               distance
               createdAt
               photoURL
+              anonymous
+              owner {
+                uid
+                photoURL
+                username
+              }
               channels {
                 id
                 name
