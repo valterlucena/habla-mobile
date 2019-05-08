@@ -122,6 +122,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                 commentsCount
                 rate
                 photoURL
+                anonymous
                 profilePostVote {
                   type
                 }

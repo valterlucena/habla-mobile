@@ -81,6 +81,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
                 rate
                 distance
                 photoURL
+                anonymous
                 profilePostVote {
                   type
                 }
