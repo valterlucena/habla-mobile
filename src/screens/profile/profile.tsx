@@ -25,7 +25,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
         color: '#F5F5F5'
       },
       headerRight: thisRef && thisRef.isSelfProfile()? (
-        <TouchableOpacity onPress={() => navigation.navigate('ProfileEditionScreen', { profile: thisRef.state.profile })} style={styles.page.editButton}>
+        <TouchableOpacity onPress={thisRef.openProfileEdition} style={styles.page.editButton}>
           <MaterialIcons name="edit" size={30} color="white"/>
         </TouchableOpacity>
       ): null
@@ -131,8 +131,8 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     this.props.navigation.push('PostScreen', { post: post });
   }
 
-  openProfileEdition = (profile) => {
-    this.props.navigation.push('ProfileEditionScreen', { profile: profile, onProfileEdition: profile => {
+  openProfileEdition = () => {
+    this.props.navigation.push('ProfileEditionScreen', { profile: this.state.profile, onProfileEdition: profile => {
       this.setState({ profile: { ...this.state.profile, ...profile }});
     }});
   }

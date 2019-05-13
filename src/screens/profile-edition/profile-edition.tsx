@@ -106,7 +106,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       });
 
       this.props.navigation.navigate("ProfileScreen");
-      this.props.navigation.state.params.onProfileEdition && this.props.navigation.state.params.onProfileEdition(response.data.updateProfile);
+      this.props.navigation.getParam('onProfileEdition') && this.props.navigation.getParam('onProfileEdition')(response.data.updateProfile);
     } catch (error) {
       console.log(JSON.stringify(error));
     } finally {
@@ -247,7 +247,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
               </TouchableOpacity>}
               {(Platform.OS === 'android' || this.state.expandGenderPickerIOS) && <Picker
                 style={styles.page.form.picker}
-                selectedValue={this.state.profile.gender}
+                selectedValue={gender}
                 onValueChange={text => this.setState({ profile: { ...this.state.profile, gender: text } })}>
 
                 <Picker.Item label={i18n.t('global.enums.gender.male')} value="MALE" />
