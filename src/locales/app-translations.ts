@@ -88,6 +88,7 @@ export interface AppTranslations {
             title: string;
             notificationTypes: {
                 commentOnOwnedPost: string;
+                voteOnOwnedPost: string;
             }
         },
         post: {

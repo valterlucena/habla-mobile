@@ -86,7 +86,8 @@ const pt: AppTranslations = {
         notifications: {
             title: 'Notificações',
             notificationTypes: {
-                commentOnOwnedPost: '{{username}} comentou na sua publicação'
+                commentOnOwnedPost: '{{username}} comentou na sua publicação',
+                voteOnOwnedPost: '{{voteCount}} pessoas votaram na sua publicação'
             }
         },
         post: {
