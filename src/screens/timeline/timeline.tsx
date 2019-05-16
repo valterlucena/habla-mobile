@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Text, AsyncStorage, Button } from 'react-native';
+import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Text, AsyncStorage, Button, TouchableHighlight } from 'react-native';
 import PostComponent from '../../components/post/post';
 import ActionButton from 'react-native-action-button';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
+import ActionSheet from 'react-native-actionsheet';
 import NewPostScreen from '../new-post/new-post';
 import { Location, Permissions } from 'expo';
 import { client } from '../../services/client';
@@ -12,12 +13,18 @@ import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
-  static navigationOptions = (navigation) => {
-    let params = navigation.navigation.state.params;
-
+  static navigationOptions = ({ navigation }) => {
+    const thisRef: TimelineScreen = navigation.getParam('thisRef');
+    
     return {
-      title: params && params.channel? `#${params.channel.name}`: i18n.t('screens.timeline.title'), 
-      headerRight: !(params && params.channel)? (
+      headerTitle: (
+        <TouchableOpacity onPress={() => thisRef.showActionSheet()}>
+          <Text style={styles.page.title}>
+            {navigation.state.params && navigation.state.params.channel? `#${navigation.state.params.channel.name}`: i18n.t('screens.timeline.title')}
+          </Text>
+        </TouchableOpacity>
+      ),
+      headerRight: !(navigation.state.params && navigation.state.params.channel)? (
         <TouchableOpacity onPress={() => navigation.navigation.navigate('NotificationsScreen')} style={styles.page.notificationButton}>
           <MaterialIcons name="notifications" size={30} color="white"/>
         </TouchableOpacity>
@@ -37,6 +44,8 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   constructor(props: TimelineProps) {
     super(props);
 
+    this.props.navigation.setParams({ thisRef: this });
+
     this.state = { 
       posts: [],
       refreshing: false,
@@ -44,6 +53,12 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       showNewPostModal: false
     };
 
+  }
+
+  actionSheet: ActionSheet.ref;
+
+  showActionSheet = () => {
+    this.actionSheet.show()
   }
 
   componentWillMount = async() => {
@@ -236,6 +251,15 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                          onDismiss={() => this.setState({ showNewPostModal: false })}
                          channel={this.props.navigation.state.params && this.props.navigation.state.params.channel}/>
         </Modal>
+
+        <ActionSheet
+                    tintColor={THEME.colors.primary.default}
+                    ref={o => this.actionSheet = o}
+                    options={['localização casa','Localização Atual',
+                    i18n.t('screens.profile.changePhoto.cancel')]}
+                    cancelButtonIndex={2}
+                    onPress={() => {}}
+                />
       </View>
     );
   }
@@ -265,6 +289,12 @@ const styles = {
     },
     notificationButton: {
       marginRight: 10
+    },
+    title: {
+      marginLeft: 10,
+      color: 'white',
+      fontSize: 18,
+      fontWeight: 'bold'
     }
   }),
 };
