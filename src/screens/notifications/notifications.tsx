@@ -116,6 +116,19 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
         </View>
       </TouchableOpacity>
       );
+    } else if (notification.type === "COMMENT_ON_THIRD_PARTY_POST" && notification.post && notification.comment){
+      return (
+        <TouchableOpacity style={styles.notification.touchable}
+                          onPress={() => this.openPost(notification.post.id)}>
+          <View style={styles.notification.left}>
+          <Image style={styles.notification.avatar as any} source={notification.comment && notification.comment.owner && notification.comment.owner.photoURL? { uri: notification.comment.owner.photoURL }: photoDefault} width={40} height={40}/>
+            <Text>{ i18n.t('screens.notifications.notificationTypes.commentOnThirdPartyPost', {  username: notification.comment.owner.username, postOnwer: notification.post.owner.username }) }</Text>
+          </View>
+          <View style={styles.notification.right}>
+            <Text>{ moment(notification.updatedAt).fromNow(true) }</Text>
+          </View>
+        </TouchableOpacity>
+        );
     }
   
     return null;
