@@ -131,6 +131,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
             website
             phone
             gender
+            home
           }
         }
       `),
