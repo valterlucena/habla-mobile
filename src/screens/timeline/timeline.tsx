@@ -295,6 +295,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
           <NewPostScreen navigation={this.props.navigation} 
                          onSuccess={this.onPostSent}
                          onDismiss={() => this.setState({ showNewPostModal: false })}
+                         customLocation={this.state.currentLocation}
                          channel={this.props.navigation.state.params && this.props.navigation.state.params.channel}/>
         </Modal>
       </View>
