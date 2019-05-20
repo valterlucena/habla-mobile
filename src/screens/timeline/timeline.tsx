@@ -268,7 +268,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                     refreshControl={
                       <RefreshControl
                         refreshing={this.state.refreshing}
-                        onRefresh={this.refresh}
+                        onRefresh={() => this.refresh(false)}
                       />
                     }
                     renderItem={({item}) =>(
