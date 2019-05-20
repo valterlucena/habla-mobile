@@ -90,6 +90,7 @@ export interface AppTranslations {
                 commentOnOwnedPost: string;
                 voteOnOwnedPost: string;
                 commentOnThirdPartyPost:string;
+                commentOnThirdPartyPostAnonymous:string;
             }
         },
         post: {

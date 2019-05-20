@@ -123,7 +123,7 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
                           onPress={() => this.openPost(notification.post.id)}>
           <Image style={styles.notification.avatar as any} source={notification.comment && notification.comment.owner && notification.comment.owner.photoURL? { uri: notification.comment.owner.photoURL }: photoDefault} width={40} height={40}/>
           <View style={styles.notification.left}>
-            <Text>{ i18n.t('screens.notifications.notificationTypes.commentOnThirdPartyPost', {  username: notification.comment.owner.username, postOwner: notification.post.owner.username }) }</Text>
+            <Text> {notification.post.anonymous? i18n.t('screens.notifications.notificationTypes.commentOnThirdPartyPostAnonymous', {  username: notification.comment.owner.username}):i18n.t('screens.notifications.notificationTypes.commentOnThirdPartyPost', {  username: notification.comment.owner.username, postOwner: notification.post.owner.username })}</Text>
           </View>
           <View style={styles.notification.right}>
             <Text>{ moment(notification.updatedAt).fromNow(true) }</Text>
