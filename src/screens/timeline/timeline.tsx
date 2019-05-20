@@ -69,6 +69,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       } catch (error) {
         console.log(error);
         reject(error);
+        return;
       }
 
       if (this.currentRefreshPromise == refreshPromise) {
