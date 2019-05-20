@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import moment from 'moment';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import i18n from 'i18n-js';
@@ -67,7 +67,6 @@ export default class PostComponent extends React.Component<PostComponentProps, P
 
   handleHashTagPress(name, matchIndex) {
     name = name.replace(/#/, "");
-    //console.log(this.state.post.channels.find(c => c.name === name));
     return this.state.post.channels.find(c => c.name === name);
   }
 
@@ -80,10 +79,8 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       <View style={styles.container}>
       { this.props.showPostHeader? 
         (<View style={styles.header}>
-          <TouchableOpacity style={styles.avatar} disabled={ !this.state.post.owner } onPress={() => this.props.onOpenProfile && this.props.onOpenProfile(this.state.post.owner)}>
-            { this.state.post.owner && this.state.post.owner.photoURL?  
-            <Image style={styles.avatarIconImage as any} source={{ uri: this.state.post.owner.photoURL }} width={40} height={40}/>:
-            <FontAwesome style={styles.avatarIcon} name="user-circle"/>}
+          <TouchableOpacity style={styles.avatar} disabled={ !this.state.post.owner } onPress={() => this.props.onOpenProfile && this.props.onOpenProfile(this.state.post.owner)}> 
+            <Image style={styles.avatarIconImage as any} source={!this.state.post.anonymous && this.state.post.owner && this.state.post.owner.photoURL? { uri: this.state.post.owner.photoURL }: photoDefault} width={40} height={40}/>
             {this.state.post.anonymous? <Text style={styles.headerText}>{ i18n.t('global.user.anonymousLabel')}</Text>: <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>}
           </TouchableOpacity>
 
@@ -107,13 +104,13 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
           <View style={styles.postRight}>
             <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")}>
-              <FontAwesome style={styles.voteButton} name="chevron-up" color={vote === "UP"? "#777": null}/>
+              <FontAwesome5 style={styles.voteButton} name="chevron-up" color={vote === "UP"? "#777": null}/>
             </TouchableOpacity>
             <Text style={styles.postRate}>
               { this.state.post.rate || 0 }
             </Text>
             <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")}>
-              <FontAwesome style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
+              <FontAwesome5 style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
             </TouchableOpacity>
           </View>
         </View>
@@ -132,7 +129,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             •
           </Text>
           <View style={styles.footerItem}>
-            <FontAwesome style={styles.footerItemIcon} name="comments"/>
+            <FontAwesome5 style={styles.footerItemIcon} name="comments"/>
             <Text style={styles.bottomText}>
               { this.state.post.commentsCount }
             </Text>

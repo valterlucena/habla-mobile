@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { View, StyleSheet, AsyncStorage, FlatList, Text, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, AsyncStorage, FlatList, Text, TouchableOpacity, Image, Dimensions } from 'react-native';
 import THEME from '../../theme/theme';
 import { gql } from 'apollo-boost';
 import { client } from '../../services/client';
 import moment from 'moment';
 import i18n from 'i18n-js';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default class NotificationsScreen extends React.Component<NotificationsProps, NotificationsState> {
   static navigationOptions = (navigation) => {
@@ -30,7 +31,7 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
   }
 
   componentWillMount = async() => {
-    let cachedNotifications;
+    let cachedNotifications = await AsyncStorage.getItem('cached-notifications');
 
     this.setState({ notifications: cachedNotifications? JSON.parse(cachedNotifications): [] });
     
@@ -59,12 +60,19 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
             id
             type
             read
-            createdAt
+            updatedAt
             comment {
-              postId
               owner {
                 username
                 photoURL
+              }
+            }
+            post {
+              id
+              rate
+              voteCount
+              owner { 
+                username
               }
             }
           }
@@ -81,20 +89,47 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
   }
 
   getNotificationComponent = (notification) => {
-    if (notification.type === 'COMMENT_ON_OWNED_POST') {
+    const photoDefault = require('../../../assets/avatar-placeholder.png');
+    
+    if (notification.type === 'COMMENT_ON_OWNED_POST' && notification.post && notification.comment) {
       return (
-      <TouchableOpacity style={Object.assign({ backgroundColor: notification.read? '#f9f9f9': undefined }, styles.notification.touchable)}
-                        onPress={() => this.openPost(notification.comment.postId)}>
+      <TouchableOpacity style={styles.notification.touchable}
+                        onPress={() => this.openPost(notification.post.id)}>
+        <Image style={styles.notification.avatar as any} source={notification.comment && notification.comment.owner && notification.comment.owner.photoURL? { uri: notification.comment.owner.photoURL }: photoDefault} width={40} height={40}/>
         <View style={styles.notification.left}>
-          { notification.comment && notification.comment.owner  && <Image source={{ uri: notification.comment.owner.photoURL }}
-                                  style={styles.notification.avatar}/> }
           <Text> { i18n.t('screens.notifications.notificationTypes.commentOnOwnedPost', { username: notification.comment.owner.username }) }</Text>
         </View>
         <View style={styles.notification.right}>
-          <Text>{ moment(notification.createdAt).fromNow(true) }</Text>
+          <Text>{ moment(notification.updatedAt).fromNow(true) }</Text>
         </View>
       </TouchableOpacity>
       );
+    } else if (notification.type === 'VOTE_ON_OWNED_POST' && notification.post) {
+      return (
+      <TouchableOpacity style={styles.notification.touchable}
+                        onPress={() => this.openPost(notification.post.id)}>
+        <FontAwesome5 style={styles.notification.voteIcon} name="poll-h" size={30}/>
+        <View style={styles.notification.left}>
+          <Text>{ i18n.t('screens.notifications.notificationTypes.voteOnOwnedPost', { voteCount: notification.post.voteCount }) }</Text>
+        </View>
+        <View style={styles.notification.right}>
+          <Text>{ moment(notification.updatedAt).fromNow(true) }</Text>
+        </View>
+      </TouchableOpacity>
+      );
+    } else if (notification.type === "COMMENT_ON_THIRD_PARTY_POST" && notification.post && notification.comment){
+      return (
+        <TouchableOpacity style={styles.notification.touchable}
+                          onPress={() => this.openPost(notification.post.id)}>
+          <Image style={styles.notification.avatar as any} source={notification.comment && notification.comment.owner && notification.comment.owner.photoURL? { uri: notification.comment.owner.photoURL }: photoDefault} width={40} height={40}/>
+          <View style={styles.notification.left}>
+            <Text> {notification.post.anonymous? i18n.t('screens.notifications.notificationTypes.commentOnThirdPartyPostAnonymous', {  username: notification.comment.owner.username}):i18n.t('screens.notifications.notificationTypes.commentOnThirdPartyPost', {  username: notification.comment.owner.username, postOwner: notification.post.owner.username })}</Text>
+          </View>
+          <View style={styles.notification.right}>
+            <Text>{ moment(notification.updatedAt).fromNow(true) }</Text>
+          </View>
+        </TouchableOpacity>
+        );
     }
   
     return null;
@@ -123,25 +158,35 @@ const styles = {
   }),
   notification: StyleSheet.create({
     touchable: { 
-      padding: 12,
       borderBottomWidth: 1,
       borderBottomColor: '#eee',
       alignItems: 'center',
       flexDirection: 'row'
     },
     avatar: {
-      width: 40,
-      height: 40,
+      width: 30,
+      height: 30,
       borderRadius: 20,
-      marginRight: 12
+      margin: 12,
+      marginRight: 0
     },
     left: {
       flexDirection: 'row',
+      alignItems: 'center',
       flexGrow: 1,
-      alignItems: 'center'
+      margin: 12,
+      marginRight: 0,
+      width: Dimensions.get('screen').width - 158
     },
     right: {
-      marginLeft: 'auto'
+      marginLeft: 'auto',
+      alignItems: 'flex-end',
+      margin: 12,
+      width: 80
+    },
+    voteIcon: {
+      margin: 12, 
+      marginRight: 0
     }
   })
 };
