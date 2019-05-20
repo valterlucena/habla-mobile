@@ -32,7 +32,8 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
     let customLocation = this.props.customLocation;
 
     await Permissions.askAsync(Permissions.LOCATION);
-    const location = customLocation? customLocation: await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+    const local = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+    const location = customLocation? customLocation: [local.coords.latitude, local.coords.longitude];
     try {
       const response = await client.mutate({
         variables: {
@@ -63,8 +64,8 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
         `),
         context: {
           location: {
-            latitude: customLocation? location[0]: location.coords.latitude,
-            longitude: customLocation? location[1]: location.coords.longitude
+            latitude: location[0],
+            longitude: location[1]
           }
         }
       });
