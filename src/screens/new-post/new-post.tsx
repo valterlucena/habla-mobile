@@ -29,9 +29,11 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
 
   sendPost = async () => {
     this.setState({ posting: true });
+    let customLocation = this.props.customLocation;
 
     await Permissions.askAsync(Permissions.LOCATION);
-    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+    const local = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+    const location = customLocation? customLocation: [local.coords.latitude, local.coords.longitude];
     try {
       const response = await client.mutate({
         variables: {
@@ -62,8 +64,8 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
         `),
         context: {
           location: {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude
+            latitude: location[0],
+            longitude: location[1]
           }
         }
       });
@@ -213,4 +215,5 @@ interface NewPostScreenProps {
   onSuccess: Function;
   onDismiss: Function;
   channel: any;
+  customLocation: any;
 }

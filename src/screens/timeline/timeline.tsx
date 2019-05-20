@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Text, AsyncStorage, Button } from 'react-native';
+import { FlatList, View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, StatusBar, Text, AsyncStorage, Button, TouchableHighlight, ActivityIndicator } from 'react-native';
 import PostComponent from '../../components/post/post';
+import { Platform } from 'expo-core';
 import ActionButton from 'react-native-action-button';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
@@ -12,13 +13,26 @@ import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
-  static navigationOptions = (navigation) => {
-    let params = navigation.navigation.state.params;
+  static navigationOptions = ({navigation}) => {
+    let params = navigation.state.params || {};
+
+    let { changeLocation, availableLocations, loadingLocationInfo, currentLocationName } = params;
 
     return {
       title: params && params.channel? `#${params.channel.name}`: i18n.t('screens.timeline.title'), 
+      headerTitle:(
+        <TouchableOpacity style={styles.page.headerTouchable} onPress={changeLocation} disabled={!(availableLocations && availableLocations.length > 1)}>
+          {loadingLocationInfo? 
+            <ActivityIndicator size="small" style={styles.page.locationLoading} color="white"/>:
+            <View style={styles.page.headerTouchableLocation}>
+              <Ionicons name="md-pin" color="white" size={20}/>
+              <Text style={{color: 'white', marginLeft: 5, fontWeight: "400", fontSize: 18}}>{currentLocationName}</Text>
+            </View>
+          }
+        </TouchableOpacity>
+      ),
       headerRight: !(params && params.channel)? (
-        <TouchableOpacity onPress={() => navigation.navigation.navigate('NotificationsScreen')} style={styles.page.notificationButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('NotificationsScreen')} style={styles.page.notificationButton}>
           <MaterialIcons name="notifications" size={30} color="white"/>
         </TouchableOpacity>
       ): null,
@@ -27,40 +41,73 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
         borderBottomWidth: 0,
       },
       headerTitleStyle: {
-        color: '#F5F5F5'
+        color: '#F5F5F5',
+        alignSelf: 'center'
       }
     }
   };
 
   currentRefreshPromise: Promise<any>;
+  showHomePosts: boolean = false;
 
   constructor(props: TimelineProps) {
     super(props);
 
     this.state = { 
+      currentLocation: [],
+      availableLocations: [],
       posts: [],
       refreshing: false,
       loadingMorePosts: false,
       showNewPostModal: false
     };
 
+    this.props.navigation.setParams({ changeLocation: this.changeLocation, loadingLocationInfo: true });
   }
 
   componentWillMount = async() => {
-    let cachedPosts;
-    
-    if (!this.hasChannel()) {
-      cachedPosts = await AsyncStorage.getItem('cached-timeline');
+    let lastLocation: any = await AsyncStorage.getItem('last-location');
+
+    lastLocation = lastLocation? JSON.parse(lastLocation): null;
+
+    if (lastLocation) {
+      this.props.navigation.setParams({ currentLocationName: lastLocation.city || lastLocation.name });
     }
 
-    this.setState({ posts: cachedPosts? JSON.parse(cachedPosts): [] });
+    if (!this.hasChannel()) {
+      let cachedPosts: any = await AsyncStorage.getItem('cached-timeline');
+
+      this.setState({ posts: cachedPosts? JSON.parse(cachedPosts): [] });
+    }
     
     await this.refresh();
   }
 
-  refresh = () => {
+  refresh = (resetCurrentLocation = true) => {
     let refreshPromise = new Promise(async(resolve, reject) => {
       this.setState({ refreshing: true });
+
+      let cachedProfile: any = await AsyncStorage.getItem('cached-profile');
+
+      cachedProfile = cachedProfile && JSON.parse(cachedProfile);
+
+      await Permissions.askAsync(Permissions.LOCATION);
+      const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+      const currentLocation = [location.coords.latitude, location.coords.longitude];
+      const availableLocations = cachedProfile.home ? [currentLocation, cachedProfile.home] : [currentLocation];
+      
+      this.props.navigation.setParams({ availableLocations, currentLocation });
+
+      this.setState({ 
+        currentLocation: resetCurrentLocation? currentLocation: this.state.currentLocation,
+        availableLocations: availableLocations
+      }, async() => {
+        this.props.navigation.setParams({ loadingLocationInfo: true });
+
+        let currentLocationName = await this.getLocalInfo(this.state.currentLocation);
+
+        this.props.navigation.setParams({ currentLocationName, loadingLocationInfo: false });
+      });
 
       let posts;
     
@@ -69,15 +116,13 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       } catch (error) {
         console.log(error);
         reject(error);
-
         this.setState({ refreshing: false });
-        
         return;
       }
 
       if (this.currentRefreshPromise == refreshPromise) {
-        this.setState({ posts, refreshing: false }, async() => {
-          if (!this.hasChannel()) await AsyncStorage.setItem('cached-timeline', JSON.stringify(this.state.posts));
+        this.setState({ posts, refreshing: false, errorMessage: null }, async() => {
+          if (!this.hasChannel()) await AsyncStorage.setItem('cached-timeline', JSON.stringify(posts));
         });
       }
 
@@ -106,9 +151,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
   fetchPosts = async(options: FetchPostsOptions = { limit: 20, ignoreIds: [] }) => {
     try {
-      await Permissions.askAsync(Permissions.LOCATION);
-      const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
-
+      const location = this.state.currentLocation;
       const channelId = this.props.navigation.state.params && this.props.navigation.state.params.channel? this.props.navigation.state.params.channel.id: null;
 
       const response = await client.query<any>({
@@ -144,8 +187,8 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
           `),
         context: {
           location: {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude
+            latitude: location[0],
+            longitude: location[1]
           }
         },
         fetchPolicy: 'no-cache'
@@ -194,6 +237,21 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     return this.props.navigation.state.params && this.props.navigation.state.params.channel;
   }
 
+  getLocalInfo = async (location) => {
+    let local: any = await Location.reverseGeocodeAsync({ latitude: location[0], longitude: location[1] });
+    return local[0].city || local[0].name;
+  }
+
+  changeLocation = () => {
+    this.showHomePosts = !this.showHomePosts;
+    
+    if (this.showHomePosts) {
+      this.setState({ currentLocation: this.state.availableLocations[1]}, () => this.refresh(false));
+    } else {
+      this.setState({ currentLocation: this.state.availableLocations[0]}, () => this.refresh(false));
+    }
+  }
+
   render() {
     return (
       <View style={styles.page.container}>
@@ -211,7 +269,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                     refreshControl={
                       <RefreshControl
                         refreshing={this.state.refreshing}
-                        onRefresh={this.refresh}
+                        onRefresh={() => this.refresh(false)}
                       />
                     }
                     renderItem={({item}) =>(
@@ -238,6 +296,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
           <NewPostScreen navigation={this.props.navigation} 
                          onSuccess={this.onPostSent}
                          onDismiss={() => this.setState({ showNewPostModal: false })}
+                         customLocation={this.state.currentLocation}
                          channel={this.props.navigation.state.params && this.props.navigation.state.params.channel}/>
         </Modal>
       </View>
@@ -269,11 +328,28 @@ const styles = {
     },
     notificationButton: {
       marginRight: 10
+    },
+    locationLoading: {
+      margin: 5
+    },
+    headerTouchable: { 
+      flexDirection: 'row', 
+      alignItems: 'center', 
+      backgroundColor: THEME.colors.primary.dark, 
+      borderRadius: 10, 
+      paddingVertical: 5, 
+      paddingHorizontal: 10, 
+      marginLeft: Platform.OS === 'android'? 10: null
+    },
+    headerTouchableLocation: {
+      flexDirection: 'row'
     }
   }),
 };
 
 interface TimelineState {
+  currentLocation: any[];
+  availableLocations: any[];
   posts: any[];
   refreshing: boolean;
   loadingMorePosts: boolean;

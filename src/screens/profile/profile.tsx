@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Badge, Image } from 'react-native-elements';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import firebase from 'firebase';
@@ -108,6 +108,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
 
       this.setState({ profile: response.data.profile });
       this.props.navigation.setParams({ profile: response.data.profile });
+      await AsyncStorage.setItem('cached-profile', JSON.stringify(this.state.profile));
     } catch (error) {
       console.log(error);
     }
