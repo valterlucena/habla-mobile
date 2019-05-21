@@ -5,7 +5,7 @@ import { gql } from 'apollo-boost';
 import { client } from '../../services/client';
 import moment from 'moment';
 import i18n from 'i18n-js';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 export default class NotificationsScreen extends React.Component<NotificationsProps, NotificationsState> {
   static navigationOptions = (navigation) => {
@@ -108,7 +108,7 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
       return (
       <TouchableOpacity style={styles.notification.touchable}
                         onPress={() => this.openPost(notification.post.id)}>
-        <FontAwesome5 style={styles.notification.voteIcon} name="poll-h" size={30}/>
+        <FontAwesome style={styles.notification.voteIcon} name="line-chart" size={30}/>
         <View style={styles.notification.left}>
           <Text>{ i18n.t('screens.notifications.notificationTypes.voteOnOwnedPost', { voteCount: notification.post.voteCount }) }</Text>
         </View>

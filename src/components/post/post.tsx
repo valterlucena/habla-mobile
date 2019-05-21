@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import moment from 'moment';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import i18n from 'i18n-js';
@@ -104,13 +104,13 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
           <View style={styles.postRight}>
             <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")}>
-              <FontAwesome5 style={styles.voteButton} name="chevron-up" color={vote === "UP"? "#777": null}/>
+              <FontAwesome style={styles.voteButton} name="chevron-up" color={vote === "UP"? "#777": null}/>
             </TouchableOpacity>
             <Text style={styles.postRate}>
               { this.state.post.rate || 0 }
             </Text>
             <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")}>
-              <FontAwesome5 style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
+              <FontAwesome style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
             </TouchableOpacity>
           </View>
         </View>
@@ -129,7 +129,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             •
           </Text>
           <View style={styles.footerItem}>
-            <FontAwesome5 style={styles.footerItemIcon} name="comments"/>
+            <FontAwesome style={styles.footerItemIcon} name="comments"/>
             <Text style={styles.bottomText}>
               { this.state.post.commentsCount }
             </Text>

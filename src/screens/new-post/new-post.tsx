@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator, StatusBar } from 'react-native';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Permissions, Location } from 'expo';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
@@ -112,7 +112,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
           </View>}
         <View style={styles.header.container}>
           <TouchableOpacity onPress={this.dismiss}>
-            <FontAwesome5 name="chevron-left" size={35} color={THEME.colors.primary.default}></FontAwesome5>
+            <FontAwesome name="chevron-left" size={35} color={THEME.colors.primary.default}></FontAwesome>
           </TouchableOpacity>
           <CheckBox
             title={i18n.t('screens.newPost.anonymous')}
@@ -124,7 +124,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
             onPress={() => this.setState({ post: { ...this.state.post, anonymous: !this.state.post.anonymous } })}
           />
           <ChangePhotoComponent onPhotoSelected={this.importPhoto} enabled={true}>
-            <FontAwesome5 name="image" size={35} color={THEME.colors.primary.default}></FontAwesome5>
+            <FontAwesome name="image" size={35} color={THEME.colors.primary.default}></FontAwesome>
           </ChangePhotoComponent>
         </View>
         <TextInput style={styles.newPost.input}
