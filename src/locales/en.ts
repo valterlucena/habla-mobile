@@ -29,7 +29,14 @@ const en: AppTranslations = {
                 buttons: {
                     openSettings: 'Open settings'
                 }
+            },
+            errors: {
+                fetchingProfile: {
+                    unexpected: 'An unexpected error ocurred while loading app profile.',
+                    connection: 'There was a problem loading the app profile . Please check your connection.'
+                }
             }
+            
         },
         login: {
             inputs: {
@@ -71,7 +78,13 @@ const en: AppTranslations = {
         },
         channels: {
             title: 'Channels',
-            searchPlaceholder: 'Type here...'
+            searchPlaceholder: 'Type here...',
+            errors: {
+                fetchingChannels: {
+                    unexpected: 'An unexpected error ocurred while loading the channels.',
+                    connection: 'There was a problem loading the channels. Please check your connection.'
+                }
+            }
         },
         newPost: {
             inputPlaceholder: "What's up?",
@@ -90,6 +103,12 @@ const en: AppTranslations = {
                 voteOnOwnedPost: '{{voteCount}} people voted on your post',
                 commentOnThirdPartyPost: "{{username}} commented on {{postOwner}}'s post",
                 commentOnThirdPartyPostAnonymous: "{{username}} commented on a post that you follow"
+            },
+            errors: {
+                fetchingNotifications: {
+                    unexpected: 'An unexpected error ocurred while loading the notifications.',
+                    connection: 'There was a problem loading the notifications. Please check your connection.'
+                }
             }
         },
         post: {
@@ -98,6 +117,12 @@ const en: AppTranslations = {
                 newCommentInputPlaceholder: 'Type a comment...',
                 buttons: {
                     submit: 'Send'
+                }
+            },
+            errors: {
+                loadingPost: {
+                    unexpected: 'An unexpected error ocurred while loading the post.',
+                    connection: 'There was a problem loading the post. Please check your connection.'
                 }
             }
         },
@@ -116,6 +141,12 @@ const en: AppTranslations = {
             labels: {
                 score: 'Score',
                 scoreBalance: 'Score balance'
+            },
+            errors: {
+                loadingProfile: {
+                    unexpected: 'An unexpected error ocurred while loading the profile.',
+                    connection: 'There was a problem loading the profile. Please check your connection.'
+                }
             }
         },
         profileEdition: {

@@ -29,6 +29,12 @@ const pt: AppTranslations = {
                 buttons: {
                     openSettings: 'Abrir configurações'
                 }
+            },
+            errors: {
+                fetchingProfile: {
+                    unexpected: 'Um erro inesperado ocorreu ao carregar o perfil salvo no aplicativo.',
+                    connection: 'Houve um erro de conexão ao carregar o perfil salvo no aplicativo. Verifique se está conectado à internet.'
+                }
             }
         },
         login: {
@@ -71,7 +77,13 @@ const pt: AppTranslations = {
         },
         channels: {
             title: 'Canais',
-            searchPlaceholder: 'Digite aqui...'
+            searchPlaceholder: 'Digite aqui...',
+            errors: {
+                fetchingChannels: {
+                    unexpected: 'Um erro inesperado ocorreu ao carregar os canais.',
+                    connection: 'Houve um erro de conexão ao carregar os canais. Verifique se está conectado à internet.'
+                }
+            }
         },
         newPost: {
             inputPlaceholder: "O que está acontecendo?",
@@ -90,6 +102,12 @@ const pt: AppTranslations = {
                 voteOnOwnedPost: '{{voteCount}} pessoas votaram na sua publicação',
                 commentOnThirdPartyPost: '{{username}} comentou no post de {{postOwner}}',
                 commentOnThirdPartyPostAnonymous: "{{username}} comentou em um post que você segue"
+            },
+            errors: {
+                fetchingNotifications: {
+                    unexpected: 'Um erro inesperado ocorreu ao carregar as notificações.',
+                    connection: 'Houve um erro de conexão ao carregar as notificações. Verifique se está conectado à internet.'
+                }
             }
         },
         post: {
@@ -98,6 +116,12 @@ const pt: AppTranslations = {
                 newCommentInputPlaceholder: 'Escreva um comentário...',
                 buttons: {
                     submit: 'Enviar'
+                }
+            },
+            errors: {
+                loadingPost: {
+                    unexpected: 'Um erro inesperado ocorreu ao carregar o post.',
+                    connection: 'Houve um erro de conexão ao carregar o post. Verifique se está conectado à internet.'
                 }
             }
         },
@@ -116,6 +140,12 @@ const pt: AppTranslations = {
             labels: {
                 score: 'Pontos',
                 scoreBalance: 'Saldo de pontos'
+            },
+            errors: {
+                loadingProfile: {
+                    unexpected: 'Um erro inesperado ocorreu ao carregar o perfil.',
+                    connection: 'Houve um erro de conexão ao carregar o perfil. Verifique se está conectado à internet.'
+                }
             }
         },
         profileEdition: {

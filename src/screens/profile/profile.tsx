@@ -16,7 +16,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     const thisRef: ProfileScreen = navigation.getParam('thisRef');
 
     return {
-      title: thisRef && thisRef.state.profile? `@${thisRef.state.profile.username}`: i18n.t('screens.profile.title'),
+      title: thisRef && thisRef.state.profile ? `@${thisRef.state.profile.username}` : i18n.t('screens.profile.title'),
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
@@ -24,11 +24,11 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
       headerTitleStyle: {
         color: '#F5F5F5'
       },
-      headerRight: thisRef && thisRef.isSelfProfile()? (
+      headerRight: thisRef && thisRef.isSelfProfile() ? (
         <TouchableOpacity onPress={thisRef.openProfileEdition} style={styles.page.editButton}>
-          <MaterialIcons name="edit" size={30} color="white"/>
+          <MaterialIcons name="edit" size={30} color="white" />
         </TouchableOpacity>
-      ): null
+      ) : null
     }
   };
 
@@ -45,18 +45,18 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
   }
 
   refresh = async () => {
-    let navProfile = this.props.navigation.state.params && this.props.navigation.state.params.profile;
-
-    this.props.navigation.setParams({ profile: navProfile });
-
-    let profileUid = navProfile ? navProfile.uid : firebase.auth().currentUser.uid;
-
-    this.setState({ refreshing: true });
-
-    await Permissions.askAsync(Permissions.LOCATION);
-    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
-
     try {
+      let navProfile = this.props.navigation.state.params && this.props.navigation.state.params.profile;
+
+      this.props.navigation.setParams({ profile: navProfile });
+
+      let profileUid = navProfile ? navProfile.uid : firebase.auth().currentUser.uid;
+
+      this.setState({ refreshing: true });
+
+      await Permissions.askAsync(Permissions.LOCATION);
+      const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
+
       const response = await client.query<any>({
         query: gql(`
           {
@@ -110,7 +110,12 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
       this.props.navigation.setParams({ profile: response.data.profile });
       await AsyncStorage.setItem('cached-profile', JSON.stringify(this.state.profile));
     } catch (error) {
+      const errorMessage = error.networkError ? i18n.t('screens.profile.errors.loadingProfile.connection') : i18n.t('screens.profile.errors.loadingProfile.unexpected');
+
+      this.setState({ errorMessage });
+
       console.log(error);
+      throw error;
     }
 
     this.setState({ refreshing: false });
@@ -133,9 +138,11 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
   }
 
   openProfileEdition = () => {
-    this.props.navigation.push('ProfileEditionScreen', { profile: this.state.profile, onProfileEdition: profile => {
-      this.setState({ profile: { ...this.state.profile, ...profile }});
-    }});
+    this.props.navigation.push('ProfileEditionScreen', {
+      profile: this.state.profile, onProfileEdition: profile => {
+        this.setState({ profile: { ...this.state.profile, ...profile } });
+      }
+    });
   }
 
   render() {
@@ -153,7 +160,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
           (
             <View>
               <View style={styles.profileInfo.row}>
-                <Image width={100} height={100} source={this.state.profile.photoURL? { uri: this.state.profile.photoURL }: photoDefault} style={styles.profileInfo.photo}/>
+                <Image width={100} height={100} source={this.state.profile.photoURL ? { uri: this.state.profile.photoURL } : photoDefault} style={styles.profileInfo.photo} />
                 <View>
                   <Text style={styles.profileInfo.name}>{this.state.profile.name}</Text>
                   {this.state.profile.bio && <Text style={styles.profileInfo.bio}>{this.state.profile.bio}</Text>}
@@ -249,6 +256,7 @@ const styles = {
 interface ProfileScreenState {
   profile: any;
   refreshing: boolean;
+  errorMessage?: string;
 }
 
 interface ProfileScreenProps {

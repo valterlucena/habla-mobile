@@ -10,7 +10,7 @@ import { SearchBar } from 'react-native-elements';
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: i18n.t('screens.channels.title'), 
+      title: i18n.t('screens.channels.title'),
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
@@ -34,11 +34,11 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   }
 
   refresh = () => {
-    let refreshPromise = new Promise(async(resolve, reject) => {
+    let refreshPromise = new Promise(async (resolve, reject) => {
       this.setState({ refreshing: true });
 
       let channels;
-    
+
       try {
         channels = await this.fetchChannels({ limit: 20, searchString: this.state.searchString });
       } catch (error) {
@@ -58,7 +58,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     return refreshPromise;
   }
 
-  loadMoreChannels = async() => {
+  loadMoreChannels = async () => {
     if (this.state.refreshing || this.state.loadingMoreChannels) return;
 
     this.setState({ loadingMoreChannels: true });
@@ -73,11 +73,11 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
     }
   }
 
-  fetchChannels = async(options: FetchChannelsOptions = { limit: 20, ignoreIds: [] }) => {
+  fetchChannels = async (options: FetchChannelsOptions = { limit: 20, ignoreIds: [] }) => {
     try {
       await Permissions.askAsync(Permissions.LOCATION);
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
-      
+
       const response = await client.query<any>({
         variables: {
           limit: options.limit,
@@ -104,6 +104,10 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
 
       return response.data.channels;
     } catch (error) {
+      const errorMessage = error.networkError ? i18n.t('screens.channels.errors.fetchingChannels.connection') : i18n.t('screens.channels.errors.fetchingChannels.unexpected');
+
+      this.setState({ errorMessage });
+
       console.log(error);
       throw error;
     }
@@ -111,7 +115,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
 
   onChannelCreated = (channel) => {
     this.setState({ channels: [channel, ...this.state.channels] });
-    
+
     this.props.navigation.navigate('TimelineScreen', { channel: channel });
   }
 
@@ -130,33 +134,33 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
           value={this.state.searchString}
           showLoading={this.state.refreshing && !!this.state.searchString}
           cancelButtonTitle={null}
-          platform={Platform.OS === 'ios'? 'ios' : 'android'}
+          platform={Platform.OS === 'ios' ? 'ios' : 'android'}
         />
         <FlatList data={this.state.channels}
-                  keyExtractor={(item) => item.id.toString()}
-                  onEndReached={this.loadMoreChannels}
-                  onEndReachedThreshold={0.5}
-                  // ListFooterComponent={() => {
-                  //   return this.state.loadingMoreChannels? 
-                  //     <View style={styles.page.listFooter} >
-                  //       <ActivityIndicator size="large"/>
-                  //     </View>: null;
-                  // }}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={this.state.refreshing && !this.state.searchString}
-                      onRefresh={this.refresh}
-                    />
-                  }
-                  renderItem={({item}) =>(
-                    <TouchableOpacity style={styles.channel.container}
-                                      onPress={() => this.props.navigation.navigate('TimelineScreen', { channel: item })}>
-                      <Text style={styles.channel.channelTitle}>#{ item.name }</Text>
-                      <View style={styles.channel.channelBadge}>
-                        <Text style={styles.channel.channelBadgeText}>{ item.postsCount }</Text>
-                      </View>
-                    </TouchableOpacity>
-        )}/>
+          keyExtractor={(item) => item.id.toString()}
+          onEndReached={this.loadMoreChannels}
+          onEndReachedThreshold={0.5}
+          // ListFooterComponent={() => {
+          //   return this.state.loadingMoreChannels? 
+          //     <View style={styles.page.listFooter} >
+          //       <ActivityIndicator size="large"/>
+          //     </View>: null;
+          // }}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing && !this.state.searchString}
+              onRefresh={this.refresh}
+            />
+          }
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.channel.container}
+              onPress={() => this.props.navigation.navigate('TimelineScreen', { channel: item })}>
+              <Text style={styles.channel.channelTitle}>#{item.name}</Text>
+              <View style={styles.channel.channelBadge}>
+                <Text style={styles.channel.channelBadgeText}>{item.postsCount}</Text>
+              </View>
+            </TouchableOpacity>
+          )} />
       </View>
     );
   }
@@ -202,7 +206,7 @@ const styles = {
       backgroundColor: '#eee',
       borderRadius: 10
     },
-    channelBadgeText: { 
+    channelBadgeText: {
       fontWeight: 'bold'
     }
   })
@@ -213,6 +217,7 @@ interface ChannelsScreenState {
   refreshing: boolean;
   loadingMoreChannels: boolean;
   searchString: string;
+  errorMessage?: string;
 }
 
 interface ChannelsScreenProps {
@@ -221,6 +226,6 @@ interface ChannelsScreenProps {
 
 interface FetchChannelsOptions {
   limit?: number;
-  ignoreIds?: number[]; 
+  ignoreIds?: number[];
   searchString?: string;
 }

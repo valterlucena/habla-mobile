@@ -10,7 +10,7 @@ import { FontAwesome } from '@expo/vector-icons';
 export default class NotificationsScreen extends React.Component<NotificationsProps, NotificationsState> {
   static navigationOptions = (navigation) => {
     return {
-      title: i18n.t('screens.notifications.title'), 
+      title: i18n.t('screens.notifications.title'),
       headerStyle: {
         backgroundColor: THEME.colors.primary.default,
         borderBottomWidth: 0,
@@ -24,64 +24,73 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
   constructor(props: NotificationsProps) {
     super(props);
 
-    this.state = { 
+    this.state = {
       refreshing: false,
       notifications: []
     };
   }
 
-  componentWillMount = async() => {
+  componentWillMount = async () => {
     let cachedNotifications = await AsyncStorage.getItem('cached-notifications');
 
-    this.setState({ notifications: cachedNotifications? JSON.parse(cachedNotifications): [] });
-    
+    this.setState({ notifications: cachedNotifications ? JSON.parse(cachedNotifications) : [] });
+
     await this.refresh();
   }
 
-  refresh = async() => {
-    this.setState({ refreshing: true  });
-    
+  refresh = async () => {
+    this.setState({ refreshing: true });
+
     try {
       await this.fetchNotifications();
     } catch (error) {
       console.log(error);
     }
-      
+
     this.setState({ refreshing: false });
 
-     await AsyncStorage.setItem('cached-notifications', JSON.stringify(this.state.notifications));
+    await AsyncStorage.setItem('cached-notifications', JSON.stringify(this.state.notifications));
   }
 
-  fetchNotifications = async() => {
-    const response = await client.query<any>({
-      query: gql(`
-        {
-          notifications {
-            id
-            type
-            read
-            updatedAt
-            comment {
-              owner {
-                username
-                photoURL
-              }
-            }
-            post {
+  fetchNotifications = async () => {
+    try {
+      const response = await client.query<any>({
+        query: gql(`
+          {
+            notifications {
               id
-              rate
-              voteCount
-              owner { 
-                username
+              type
+              read
+              updatedAt
+              comment {
+                owner {
+                  username
+                  photoURL
+                }
+              }
+              post {
+                id
+                rate
+                voteCount
+                owner { 
+                  username
+                }
               }
             }
           }
-        }
-      `),
-      fetchPolicy: 'no-cache'
-    });
+        `),
+        fetchPolicy: 'no-cache'
+      });
 
-    this.setState({ notifications: response.data.notifications });
+      this.setState({ notifications: response.data.notifications });
+    } catch (error) {
+      const errorMessage = error.networkError ? i18n.t('screens.notifications.errors.fetchingNotifications.connection') : i18n.t('screens.notifications.errors.fetchingNotifications.unexpected');
+
+      this.setState({ errorMessage });
+
+      console.log(error);
+      throw error;
+    }
   }
 
   openPost = (postId) => {
@@ -90,48 +99,48 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
 
   getNotificationComponent = (notification) => {
     const photoDefault = require('../../../assets/avatar-placeholder.png');
-    
+
     if (notification.type === 'COMMENT_ON_OWNED_POST' && notification.post && notification.comment) {
       return (
-      <TouchableOpacity style={styles.notification.touchable}
-                        onPress={() => this.openPost(notification.post.id)}>
-        <Image style={styles.notification.avatar as any} source={notification.comment && notification.comment.owner && notification.comment.owner.photoURL? { uri: notification.comment.owner.photoURL }: photoDefault} width={40} height={40}/>
-        <View style={styles.notification.left}>
-          <Text> { i18n.t('screens.notifications.notificationTypes.commentOnOwnedPost', { username: notification.comment.owner.username }) }</Text>
-        </View>
-        <View style={styles.notification.right}>
-          <Text>{ moment(notification.updatedAt).fromNow(true) }</Text>
-        </View>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.notification.touchable}
+          onPress={() => this.openPost(notification.post.id)}>
+          <Image style={styles.notification.avatar as any} source={notification.comment && notification.comment.owner && notification.comment.owner.photoURL ? { uri: notification.comment.owner.photoURL } : photoDefault} width={40} height={40} />
+          <View style={styles.notification.left}>
+            <Text> {i18n.t('screens.notifications.notificationTypes.commentOnOwnedPost', { username: notification.comment.owner.username })}</Text>
+          </View>
+          <View style={styles.notification.right}>
+            <Text>{moment(notification.updatedAt).fromNow(true)}</Text>
+          </View>
+        </TouchableOpacity>
       );
     } else if (notification.type === 'VOTE_ON_OWNED_POST' && notification.post) {
       return (
-      <TouchableOpacity style={styles.notification.touchable}
-                        onPress={() => this.openPost(notification.post.id)}>
-        <FontAwesome style={styles.notification.voteIcon} name="line-chart" size={30}/>
-        <View style={styles.notification.left}>
-          <Text>{ i18n.t('screens.notifications.notificationTypes.voteOnOwnedPost', { voteCount: notification.post.voteCount }) }</Text>
-        </View>
-        <View style={styles.notification.right}>
-          <Text>{ moment(notification.updatedAt).fromNow(true) }</Text>
-        </View>
-      </TouchableOpacity>
-      );
-    } else if (notification.type === "COMMENT_ON_THIRD_PARTY_POST" && notification.post && notification.comment){
-      return (
         <TouchableOpacity style={styles.notification.touchable}
-                          onPress={() => this.openPost(notification.post.id)}>
-          <Image style={styles.notification.avatar as any} source={notification.comment && notification.comment.owner && notification.comment.owner.photoURL? { uri: notification.comment.owner.photoURL }: photoDefault} width={40} height={40}/>
+          onPress={() => this.openPost(notification.post.id)}>
+          <FontAwesome style={styles.notification.voteIcon} name="line-chart" size={30} />
           <View style={styles.notification.left}>
-            <Text> {notification.post.anonymous? i18n.t('screens.notifications.notificationTypes.commentOnThirdPartyPostAnonymous', {  username: notification.comment.owner.username}):i18n.t('screens.notifications.notificationTypes.commentOnThirdPartyPost', {  username: notification.comment.owner.username, postOwner: notification.post.owner.username })}</Text>
+            <Text>{i18n.t('screens.notifications.notificationTypes.voteOnOwnedPost', { voteCount: notification.post.voteCount })}</Text>
           </View>
           <View style={styles.notification.right}>
-            <Text>{ moment(notification.updatedAt).fromNow(true) }</Text>
+            <Text>{moment(notification.updatedAt).fromNow(true)}</Text>
           </View>
         </TouchableOpacity>
-        );
+      );
+    } else if (notification.type === "COMMENT_ON_THIRD_PARTY_POST" && notification.post && notification.comment) {
+      return (
+        <TouchableOpacity style={styles.notification.touchable}
+          onPress={() => this.openPost(notification.post.id)}>
+          <Image style={styles.notification.avatar as any} source={notification.comment && notification.comment.owner && notification.comment.owner.photoURL ? { uri: notification.comment.owner.photoURL } : photoDefault} width={40} height={40} />
+          <View style={styles.notification.left}>
+            <Text> {notification.post.anonymous ? i18n.t('screens.notifications.notificationTypes.commentOnThirdPartyPostAnonymous', { username: notification.comment.owner.username }) : i18n.t('screens.notifications.notificationTypes.commentOnThirdPartyPost', { username: notification.comment.owner.username, postOwner: notification.post.owner.username })}</Text>
+          </View>
+          <View style={styles.notification.right}>
+            <Text>{moment(notification.updatedAt).fromNow(true)}</Text>
+          </View>
+        </TouchableOpacity>
+      );
     }
-  
+
     return null;
   }
 
@@ -139,10 +148,10 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
     return (
       <View style={styles.page.container}>
         <FlatList data={this.state.notifications}
-                    keyExtractor={(item) => item.id.toString()}
-                    refreshing={this.state.refreshing}
-                    onRefresh={this.refresh}
-                    renderItem={({item}) => this.getNotificationComponent(item) }/>
+          keyExtractor={(item) => item.id.toString()}
+          refreshing={this.state.refreshing}
+          onRefresh={this.refresh}
+          renderItem={({ item }) => this.getNotificationComponent(item)} />
       </View>
     );
   }
@@ -157,7 +166,7 @@ const styles = {
     }
   }),
   notification: StyleSheet.create({
-    touchable: { 
+    touchable: {
       borderBottomWidth: 1,
       borderBottomColor: '#eee',
       alignItems: 'center',
@@ -185,7 +194,7 @@ const styles = {
       width: 80
     },
     voteIcon: {
-      margin: 12, 
+      margin: 12,
       marginRight: 0
     }
   })
@@ -193,7 +202,8 @@ const styles = {
 
 interface NotificationsState {
   refreshing: boolean;
-  notifications: any[]
+  notifications: any[];
+  errorMessage?: string;
 }
 
 interface NotificationsProps {

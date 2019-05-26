@@ -22,16 +22,16 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     };
   }
 
-  componentWillMount = async() => {
+  componentWillMount = async () => {
     await this.init();
   }
 
-  init = async() => {
+  init = async () => {
     try {
       await this.checkLocationServices();
     } catch (error) {
       console.log(error)
-      let handler = async(event) => {
+      let handler = async (event) => {
         if (event === 'active') {
           AppState.removeEventListener('change', handler);
           await this.init();
@@ -46,7 +46,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     await this.checkAuthentication();
   }
 
-  checkLocationServices = async() => {
+  checkLocationServices = async () => {
     let lastLocation = await AsyncStorage.getItem('last-location');
 
     if (lastLocation) {
@@ -70,11 +70,11 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     const coords = (await Location.getCurrentPositionAsync({ enableHighAccuracy: true })).coords;
 
     // handle timeout
-    
+
     let location: any = await Location.reverseGeocodeAsync({ latitude: coords.latitude, longitude: coords.longitude });
 
     console.log(location);
-    
+
     if (location && location[0]) {
       location = location[0];
     }
@@ -84,15 +84,15 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     this.setState({ location: location });
   }
 
-  checkAuthentication = async() => {
+  checkAuthentication = async () => {
     firebase.auth().onAuthStateChanged(async user => {
       if (user) {
         let token = await firebase.auth().currentUser.getIdToken();
         console.log(token)
 
         const storedProfile = await AsyncStorage.getItem('userProfile');
-        
-        let profile = storedProfile? JSON.parse(await AsyncStorage.getItem('userProfile')): null;
+
+        let profile = storedProfile ? JSON.parse(await AsyncStorage.getItem('userProfile')) : null;
 
         if (profile) {
           await this.handleSuccessProfileFetch(profile);
@@ -104,10 +104,12 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
           await this.handleSuccessProfileFetch(profile);
         } catch (error) {
           if (error.graphQLErrors.find(e => e.code === 'NOT_FOUND_ERROR')) {
-            this.props.navigation.navigate('ProfileCreationScreen', { profile: {
-              name: user.displayName,
-              photoURL: user.photoURL
-            }});
+            this.props.navigation.navigate('ProfileCreationScreen', {
+              profile: {
+                name: user.displayName,
+                photoURL: user.photoURL
+              }
+            });
 
             await AsyncStorage.removeItem('userProfile');
           }
@@ -118,40 +120,49 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
       }
     });
   }
-  
-  fetchProfile = async(firebaseUser) => {
-    const response = await client.query({
-      query: gql(`
-        {
-          profile(uid: "${firebaseUser.uid}") {
-            uid
-            name
-            username
-            bio
-            website
-            phone
-            gender
-            home
+
+  fetchProfile = async (firebaseUser) => {
+    try {
+      const response = await client.query({
+        query: gql(`
+          {
+            profile(uid: "${firebaseUser.uid}") {
+              uid
+              name
+              username
+              bio
+              website
+              phone
+              gender
+              home
+            }
           }
-        }
-      `),
-      fetchPolicy: 'no-cache'
-    });
+        `),
+        fetchPolicy: 'no-cache'
+      });
+      const profile = (response.data as any).profile;
 
-    const profile = (response.data as any).profile;
+      return profile;
 
-    return profile;
+    } catch (error) {
+      const errorMessage = error.networkError ? i18n.t('screens.appLoading.errors.fetchingProfile.connection') : i18n.t('screens.appLoading.errors.fetchingProfile.unexpected');
+
+      this.setState({ errorMessage });
+
+      console.log(error);
+      throw error;
+    }
   }
 
-  handleSuccessProfileFetch = async(profile) => {
+  handleSuccessProfileFetch = async (profile) => {
     await AsyncStorage.setItem('userProfile', JSON.stringify(profile));
-    
+
     this.props.navigation.navigate('TabsNavigator');
 
     await this.registerForNotifications();
   }
 
-  registerForNotifications = async() => {
+  registerForNotifications = async () => {
     if (this.props.exp && this.props.exp.notification) {
       console.log("notification in props")
       console.log(this.props.exp.notification);
@@ -160,9 +171,9 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS
     );
-    
+
     let finalStatus = existingStatus;
-  
+
     // only ask if permissions have not already been determined, because
     // iOS won't necessarily prompt the user a second time.
     if (existingStatus !== 'granted') {
@@ -171,18 +182,18 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
       finalStatus = status;
     }
-  
+
     // Stop here if the user did not grant permissions
     if (finalStatus !== 'granted') {
       return;
     }
-  
+
     // Get the token that uniquely identifies this device
     let token = await Notifications.getExpoPushTokenAsync();
-  
+
     // POST the token to your backend server from where you can retrieve it to send push notifications.
     const response = await client.mutate({
-      variables: { 
+      variables: {
         token: token
       },
       mutation: gql(`
@@ -199,22 +210,22 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     this._notificationsSubscription = Notifications.addListener(this.handleNotification);
   }
 
-  handleNotification = async(notification) => {
+  handleNotification = async (notification) => {
     console.log(notification);
   }
 
   render() {
     return (
       <View style={styles.page.container}>
-        <StatusBar barStyle="light-content"/>
-        { this.state.loading && <ActivityIndicator color="white" size="large"/>}
-        { this.state.location && !this.state.locationNotAuthorized && <Text style={styles.page.text}>{ i18n.t('screens.appLoading.greeting', { location: this.state.location.city || this.state.location.name }) }</Text> }
-        { this.state.locationNotAuthorized && 
+        <StatusBar barStyle="light-content" />
+        {this.state.loading && <ActivityIndicator color="white" size="large" />}
+        {this.state.location && !this.state.locationNotAuthorized && <Text style={styles.page.text}>{i18n.t('screens.appLoading.greeting', { location: this.state.location.city || this.state.location.name })}</Text>}
+        {this.state.locationNotAuthorized &&
           <View style={styles.page.locationNotAuthorizedView}>
-            <Ionicons name="ios-sad" size={100} color="white"/>
-            <Text style={styles.page.text}>{ i18n.t('screens.appLoading.locationNotAuthorized.message') }</Text>
+            <Ionicons name="ios-sad" size={100} color="white" />
+            <Text style={styles.page.text}>{i18n.t('screens.appLoading.locationNotAuthorized.message')}</Text>
             <TouchableOpacity style={styles.button.touchable} onPress={() => Linking.openURL('app-settings:')}>
-              <Text style={styles.button.text}>{ i18n.t('screens.appLoading.locationNotAuthorized.buttons.openSettings') }</Text>
+              <Text style={styles.button.text}>{i18n.t('screens.appLoading.locationNotAuthorized.buttons.openSettings')}</Text>
             </TouchableOpacity>
           </View>}
       </View>
@@ -261,4 +272,5 @@ interface AppLoadingState {
   loading: boolean;
   location?: any;
   locationNotAuthorized?: boolean;
+  errorMessage?: string;
 }

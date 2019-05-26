@@ -29,7 +29,14 @@ export interface AppTranslations {
                 buttons: {
                     openSettings: string;
                 }
-            }
+            };
+            errors: { 
+                fetchingProfile: {
+                    unexpected: string;
+                    connection: string;
+                }
+            };
+
         },
         login: {
             inputs: {
@@ -72,6 +79,12 @@ export interface AppTranslations {
         channels: {
             title: string;
             searchPlaceholder: string;
+            errors: { 
+                fetchingChannels: {
+                    unexpected: string;
+                    connection: string;
+                }
+            }
         },
         newPost: {
             inputPlaceholder: string;
@@ -91,6 +104,12 @@ export interface AppTranslations {
                 voteOnOwnedPost: string;
                 commentOnThirdPartyPost:string;
                 commentOnThirdPartyPostAnonymous:string;
+            };
+            errors: { 
+                fetchingNotifications: {
+                    unexpected: string;
+                    connection: string;
+                }
             }
         },
         post: {
@@ -99,6 +118,12 @@ export interface AppTranslations {
                 newCommentInputPlaceholder: string;
                 buttons: {
                     submit: string;
+                }
+            },
+            errors: { 
+                loadingPost: {
+                    unexpected: string;
+                    connection: string;
                 }
             }
         },
@@ -117,6 +142,12 @@ export interface AppTranslations {
             labels: {
                 score: string;
                 scoreBalance: string;
+            },
+            errors: { 
+                loadingProfile: {
+                    unexpected: string;
+                    connection: string;
+                }
             }
         },
         profileEdition: {
