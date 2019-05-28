@@ -105,9 +105,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
       return response.data.channels;
     } catch (error) {
       const errorMessage = error.networkError ? i18n.t('screens.channels.errors.fetchingChannels.connection') : i18n.t('screens.channels.errors.fetchingChannels.unexpected');
-
       this.setState({ errorMessage });
-
       console.log(error);
       throw error;
     }

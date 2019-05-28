@@ -34,6 +34,9 @@ export interface AppTranslations {
                 fetchingProfile: {
                     unexpected: string;
                     connection: string;
+                };
+                updateExpoPushToken:{
+                    internalServerError: string;
                 }
             };
 
@@ -65,6 +68,10 @@ export interface AppTranslations {
             },
             buttons: {
                 next: string
+            },
+            errors:{
+                unexpected: string;
+                connection: string;
             }
         },
         timeline: {
@@ -93,6 +100,9 @@ export interface AppTranslations {
             },
             errors: {
                 insufficentScore: string;
+                internalServerError: string;
+                connection: string;
+                unexpected: string;
             },
             anonymous: string;
             
@@ -122,6 +132,14 @@ export interface AppTranslations {
             },
             errors: { 
                 loadingPost: {
+                    unexpected: string;
+                    connection: string;
+                },
+                commentingPost:{
+                    unexpected: string;
+                    connection: string;
+                },
+                votingPost:{
                     unexpected: string;
                     connection: string;
                 }
@@ -169,6 +187,10 @@ export interface AppTranslations {
             alert: {
                 title: string,
                 message: string
+            },
+            errors:{
+                unexpected: string;
+                connection: string;
             }
         }
     }

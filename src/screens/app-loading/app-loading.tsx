@@ -146,9 +146,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
 
     } catch (error) {
       const errorMessage = error.networkError ? i18n.t('screens.appLoading.errors.fetchingProfile.connection') : i18n.t('screens.appLoading.errors.fetchingProfile.unexpected');
-
       this.setState({ errorMessage });
-
       console.log(error);
       throw error;
     }
@@ -192,22 +190,31 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     let token = await Notifications.getExpoPushTokenAsync();
 
     // POST the token to your backend server from where you can retrieve it to send push notifications.
-    const response = await client.mutate({
-      variables: {
-        token: token
-      },
-      mutation: gql(`
-        mutation UpdateExpoPushToken ($token: String) {
-          updateExpoPushToken(token: $token)
-        }
-      `)
-    });
+    try{
+      const response = await client.mutate({
+        variables: {
+          token: token
+        },
+        mutation: gql(`
+          mutation UpdateExpoPushToken ($token: String) {
+            updateExpoPushToken(token: $token)
+          }
+        `)
+      });
 
-    if (response.data.updateExpoPushToken) {
-      console.log("Expo push token updated.");
+      if (response.data.updateExpoPushToken) {
+        console.log("Expo push token updated.");
+      }
+  
+      this._notificationsSubscription = Notifications.addListener(this.handleNotification);
+  
+    }catch(error){
+      if(error.graphQlErrors.find(e => e.code == 'INTERNAL_SERVER_ERROR')){
+        const errorMessage = i18n.t('screens.appLoading.errors.updateExpoPushToken.internalServerError');
+        this.setState({ errorMessage });
+        console.log(error);
+      }
     }
-
-    this._notificationsSubscription = Notifications.addListener(this.handleNotification);
   }
 
   handleNotification = async (notification) => {

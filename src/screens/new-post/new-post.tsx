@@ -74,7 +74,14 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
     } catch (error) {
       if (error.graphQLErrors.find(e => e.code == 'INSUFFICENT_SCORE_ERROR')) {
         const errorMessage = i18n.t('screens.newPost.errors.insufficentScore');
-
+        this.setState({ errorMessage });
+        console.log(error);
+      }else if(error.graphQlErrors.find(e => e.code == 'INTERNAL_SERVER_ERROR')){
+        const errorMessage = i18n.t('screens.newPost.errors.internalServerError');
+        this.setState({ errorMessage });
+        console.log(error);
+      }else{
+        const errorMessage = error.networkError? i18n.t('screens.newPost.errors.connection'):i18n.t('screens.newPost.errors.unexpected');
         this.setState({ errorMessage });
         console.log(error);
       }

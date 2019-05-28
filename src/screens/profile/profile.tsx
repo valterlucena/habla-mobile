@@ -111,9 +111,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
       await AsyncStorage.setItem('cached-profile', JSON.stringify(this.state.profile));
     } catch (error) {
       const errorMessage = error.networkError ? i18n.t('screens.profile.errors.loadingProfile.connection') : i18n.t('screens.profile.errors.loadingProfile.unexpected');
-
       this.setState({ errorMessage });
-
       console.log(error);
       throw error;
     }

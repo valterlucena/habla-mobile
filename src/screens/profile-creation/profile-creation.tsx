@@ -55,6 +55,8 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       this.props.navigation.navigate("TabsNavigator");
     } catch (error) {
       this.setState({ loading: false });
+      const errorMessage = error.networkError? i18n.t('screens.profileCreation.errors.connection'):i18n.t('screens.profileCreation.errors.unexpected');
+      this.setState({ errorMessage });
       console.log(JSON.stringify(error));
     }
   }

@@ -115,9 +115,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
       this.setState({ post: response.data.post });
     } catch (error) {
       const errorMessage = error.networkError ? i18n.t('screens.post.errors.loadingPost.connection') : i18n.t('screens.post.errors.loadingPost.unexpected');
-
       this.setState({ errorMessage });
-
       console.log(error);
       throw error;
     }
@@ -179,7 +177,9 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
       this.setState({ post: { ...this.state.post, comments: [response.data.createComment, ...this.state.post.comments], commentsCount: this.state.post.commentsCount + 1 } });
       this.setState({ newComment: { body: null } });
     } catch (error) {
-      console.log(error);
+        const errorMessage = error.networkError? i18n.t('screens.post.errors.commentingPost.connection'):i18n.t('screens.post.errors.commentingPost.unexpected');
+        this.setState({ errorMessage });
+        console.log(error);
     }
 
     this.setState({ postingComment: false });

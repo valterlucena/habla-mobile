@@ -108,6 +108,8 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       this.props.navigation.navigate("ProfileScreen");
       this.props.navigation.getParam('onProfileEdition') && this.props.navigation.getParam('onProfileEdition')(response.data.updateProfile);
     } catch (error) {
+      const errorMessage = error.networkError? i18n.t('screens.profileEdition.errors.connection'):i18n.t('screens.profileEdition.errors.unexpected');
+      this.setState({ errorMessage });      
       console.log(JSON.stringify(error));
     } finally {
       this.setState({ saving: false });
