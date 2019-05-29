@@ -106,6 +106,19 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     return this.state.post.channels.find(c => c.name === name);
   }
 
+  deletePost = async(id) => {
+    await client.mutate({
+      variables: {
+        postId : id
+      },
+      mutation: gql(`
+        mutation deletePost ($postId: ID!) {          
+          deletePost (postId: $postId)
+        }
+      `)
+    })
+  }
+
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
       const photoDefault = require('../../../assets/avatar-placeholder.png');
