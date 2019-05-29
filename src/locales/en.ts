@@ -32,7 +32,7 @@ const en: AppTranslations = {
             },
             errors: {
                 fetchingProfile: {
-                    unexpected: 'An unexpected error ocurred while loading app profile.',
+                    unexpected: 'An unexpected error occurred while loading app profile.',
                     connection: 'There was a problem loading the app profile. Please check your connection.'
                 },
                 updateExpoPushToken:{
@@ -53,6 +53,10 @@ const en: AppTranslations = {
             buttons: {
                 signInWithFacebook: 'Sign in with Facebook',
                 signInWithCredentials: 'Sign in'
+            },
+            errors:{
+                signInWithFacebook: "Error occurred while login whith facebook. Incorrect email or password.",
+                signInWithCredentials: "Error occurred while login with credentials. Incorrect email or password."
             }
         },
         profileCreation: {
@@ -70,7 +74,7 @@ const en: AppTranslations = {
                 next: 'Next'
             },
             errors:{
-                unexpected: 'An unexpected error ocurred while creating the profile.',
+                unexpected: 'An unexpected error occurred while creating the profile.',
                 connection: 'There was a problem creating the profile. Please check your connection.'
             }
         },
@@ -78,7 +82,7 @@ const en: AppTranslations = {
             title: 'Timeline',
             errors: {
                 fetchingPosts: {
-                    unexpected: 'An unexpected error ocurred while loading the posts.',
+                    unexpected: 'An unexpected error occurred while loading the posts.',
                     connection: 'There was a problem loading the posts. Please check your connection.'
                 }
             }
@@ -88,7 +92,7 @@ const en: AppTranslations = {
             searchPlaceholder: 'Type here...',
             errors: {
                 fetchingChannels: {
-                    unexpected: 'An unexpected error ocurred while loading the channels.',
+                    unexpected: 'An unexpected error occurred while loading the channels.',
                     connection: 'There was a problem loading the channels. Please check your connection.'
                 }
             }
@@ -102,7 +106,7 @@ const en: AppTranslations = {
                 insufficentScore: 'Insufficient score to make anonymous posts.',
                 internalServerError: 'Post picture could not be saved.',
                 connection: 'There was a problem creating the post. Please check your connection.',
-                unexpected: 'An unexpected error ocurred while creating the post.'
+                unexpected: 'An unexpected error occurred while creating the post.'
             },
             anonymous: 'Anonymous'
         },
@@ -116,7 +120,7 @@ const en: AppTranslations = {
             },
             errors: {
                 fetchingNotifications: {
-                    unexpected: 'An unexpected error ocurred while loading the notifications.',
+                    unexpected: 'An unexpected error occurred while loading the notifications.',
                     connection: 'There was a problem loading the notifications. Please check your connection.'
                 }
             }
@@ -131,15 +135,15 @@ const en: AppTranslations = {
             },
             errors: {
                 loadingPost: {
-                    unexpected: 'An unexpected error ocurred while loading the post.',
+                    unexpected: 'An unexpected error occurred while loading the post.',
                     connection: 'There was a problem loading the post. Please check your connection.'
                 },
                 commentingPost:{
-                    unexpected: 'An unexpected error ocurred while commenting the post.',
+                    unexpected: 'An unexpected error occurred while commenting the post.',
                     connection: 'There was a problem commenting the post. Please check your connection.'
                 },
                 votingPost:{
-                    unexpected: 'An unexpected error ocurred while voting the post.',
+                    unexpected: 'An unexpected error occurred while voting the post.',
                     connection: 'There was a problem voting the post. Please check your connection.'
                 }
             }
@@ -162,7 +166,7 @@ const en: AppTranslations = {
             },
             errors: {
                 loadingProfile: {
-                    unexpected: 'An unexpected error ocurred while loading the profile.',
+                    unexpected: 'An unexpected error occurred while loading the profile.',
                     connection: 'There was a problem loading the profile. Please check your connection.'
                 }
             }
@@ -188,7 +192,7 @@ const en: AppTranslations = {
                 message: "You will be able to see the posts from the region you defined as home even if you're not there."
             },
             errors:{
-                unexpected: 'An unexpected error ocurred while editing the profile.',
+                unexpected: 'An unexpected error occurred while editing the profile.',
                 connection: 'There was a problem editing the profile. Please check your connection.'
             }
         }

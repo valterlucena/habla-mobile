@@ -65,6 +65,8 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
           await firebase.auth().signInWithEmailAndPassword(this.state.credentials.email, this.state.credentials.password);
         } catch (error) {
           this.setState({ loadingWithCredentials: false });
+          const errorMessage = i18n.t('screens.login.errors.signInWithCredentials');
+          this.setState({ errorMessage });
           console.log(error);
         }
     };
@@ -78,6 +80,8 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
             
             await firebase.auth().signInAndRetrieveDataWithCredential(credential);
         } catch (error) {
+            const errorMessage = i18n.t('screens.login.errors.signInWithFacebook');
+            this.setState({ errorMessage });
             console.log(error);
         } finally { 
             this.setState({ loadingWithFacebook: false });
@@ -89,6 +93,7 @@ interface LoginState {
     loadingWithCredentials?: boolean;
     loadingWithFacebook?: boolean;
     credentials?: { email?: string, password?: string };
+    errorMessage?: string;
 }
 
 const styles = {

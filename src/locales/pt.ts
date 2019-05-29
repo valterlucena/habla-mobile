@@ -52,6 +52,10 @@ const pt: AppTranslations = {
             buttons: {
                 signInWithFacebook: 'Entrar com o Facebook',
                 signInWithCredentials: 'Entrar'
+            },
+            errors:{
+                signInWithFacebook: "Um erro ocorreu ao logar com o facebook. Email ou senha incorreta.",
+                signInWithCredentials: "Um erro ocorreu ao logar com as credenciais. Email ou senha incorreta."
             }
         },
         profileCreation: {
