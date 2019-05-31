@@ -90,9 +90,9 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
         let token = await firebase.auth().currentUser.getIdToken();
         console.log(token)
 
-        const storedProfile = await AsyncStorage.getItem('userProfile');
+        const storedProfile = await AsyncStorage.getItem('cached-profile');
         
-        let profile = storedProfile? JSON.parse(await AsyncStorage.getItem('userProfile')): null;
+        let profile = storedProfile? JSON.parse(await AsyncStorage.getItem('cached-profile')): null;
 
         if (profile) {
           await this.handleSuccessProfileFetch(profile);
@@ -109,12 +109,12 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
               photoURL: user.photoURL
             }});
 
-            await AsyncStorage.removeItem('userProfile');
+            await AsyncStorage.removeItem('cached-profile');
           }
         }
       } else {
         this.props.navigation.navigate('LoginScreen');
-        await AsyncStorage.removeItem('userProfile');
+        await AsyncStorage.removeItem('cached-profile');
       }
     });
   }
@@ -144,7 +144,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
   }
 
   handleSuccessProfileFetch = async(profile) => {
-    await AsyncStorage.setItem('userProfile', JSON.stringify(profile));
+    await AsyncStorage.setItem('cached-profile', JSON.stringify(profile));
     
     this.props.navigation.navigate('TabsNavigator');
 

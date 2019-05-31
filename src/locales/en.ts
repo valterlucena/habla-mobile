@@ -67,6 +67,10 @@ const en: AppTranslations = {
                     unexpected: 'An unexpected error ocurred while loading the posts.',
                     connection: 'There was a problem loading the posts. Please check your connection.'
                 }
+            },
+            tabs: {
+                recent: 'Recent',
+                trending: 'Trending'
             }
         },
         channels: {
