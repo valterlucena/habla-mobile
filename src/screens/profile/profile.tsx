@@ -154,6 +154,11 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
             onRefresh={this.refresh}
           />
         }>
+        {this.state.errorMessage &&
+          <View style={styles.page.errorView}>
+            <Ionicons name="ios-sad" size={100} color="white" />
+            <Text style={styles.page.errorText}>{this.state.errorMessage}</Text>
+          </View>}
         {this.state.profile ?
           (
             <View>
@@ -207,6 +212,16 @@ const styles = {
     },
     editButton: {
       marginRight: 10
+    },
+    errorView: {
+      padding: 20,
+      backgroundColor: THEME.colors.error.default,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    errorText: {
+      color: 'white',
+      textAlign: 'center'
     }
   }),
   profileInfo: StyleSheet.create({

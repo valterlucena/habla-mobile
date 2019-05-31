@@ -12,6 +12,7 @@ import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import { getTranslatedDistanceFromEnum } from '../../util';
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
+import { Ionicons } from '@expo/vector-icons';
 
 export default class PostScreen extends React.Component<PostScreenProps, PostScreenState> {
   static navigationOptions = () => {
@@ -177,9 +178,9 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
       this.setState({ post: { ...this.state.post, comments: [response.data.createComment, ...this.state.post.comments], commentsCount: this.state.post.commentsCount + 1 } });
       this.setState({ newComment: { body: null } });
     } catch (error) {
-        const errorMessage = error.networkError? i18n.t('screens.post.errors.commentingPost.connection'):i18n.t('screens.post.errors.commentingPost.unexpected');
-        this.setState({ errorMessage });
-        console.log(error);
+      const errorMessage = error.networkError ? i18n.t('screens.post.errors.commentingPost.connection') : i18n.t('screens.post.errors.commentingPost.unexpected');
+      this.setState({ errorMessage });
+      console.log(error);
     }
 
     this.setState({ postingComment: false });
@@ -198,6 +199,11 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             onRefresh={this.refresh}
           />
         }>
+        {this.state.errorMessage &&
+          <View style={styles.page.errorView}>
+            <Ionicons name="ios-sad" size={100} color="white" />
+            <Text style={styles.page.errorText}>{this.state.errorMessage}</Text>
+          </View>}
         {this.state.post &&
           <PostComponent post={this.state.post}
             showPostHeader={true}
@@ -244,6 +250,16 @@ const styles = {
     container: {
       flex: 1,
       backgroundColor: '#fff',
+    },
+    errorView: {
+      padding: 20,
+      backgroundColor: THEME.colors.error.default,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    errorText: {
+      color: 'white',
+      textAlign: 'center'
     }
   }),
   comment: StyleSheet.create({

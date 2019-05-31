@@ -190,7 +190,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     let token = await Notifications.getExpoPushTokenAsync();
 
     // POST the token to your backend server from where you can retrieve it to send push notifications.
-    try{
+    try {
       const response = await client.mutate({
         variables: {
           token: token
@@ -205,11 +205,11 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
       if (response.data.updateExpoPushToken) {
         console.log("Expo push token updated.");
       }
-  
+
       this._notificationsSubscription = Notifications.addListener(this.handleNotification);
-  
-    }catch(error){
-      if(error.graphQlErrors.find(e => e.code == 'INTERNAL_SERVER_ERROR')){
+
+    } catch (error) {
+      if (error.graphQlErrors.find(e => e.code == 'INTERNAL_SERVER_ERROR')) {
         const errorMessage = i18n.t('screens.appLoading.errors.updateExpoPushToken.internalServerError');
         this.setState({ errorMessage });
         console.log(error);
@@ -225,6 +225,11 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     return (
       <View style={styles.page.container}>
         <StatusBar barStyle="light-content" />
+        {this.state.errorMessage &&
+          <View style={styles.page.errorView}>
+            <Ionicons name="ios-sad" size={100} color="white" />
+            <Text style={styles.page.errorText}>{this.state.errorMessage}</Text>
+          </View>}
         {this.state.loading && <ActivityIndicator color="white" size="large" />}
         {this.state.location && !this.state.locationNotAuthorized && <Text style={styles.page.text}>{i18n.t('screens.appLoading.greeting', { location: this.state.location.city || this.state.location.name })}</Text>}
         {this.state.locationNotAuthorized &&
@@ -259,6 +264,16 @@ const styles = {
     locationNotAuthorizedView: {
       justifyContent: 'center',
       alignItems: 'center'
+    },
+    errorView: {
+      padding: 20,
+      backgroundColor: THEME.colors.error.default,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    errorText: {
+      color: 'white',
+      textAlign: 'center'
     }
   }),
   button: StyleSheet.create({

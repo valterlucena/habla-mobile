@@ -6,6 +6,7 @@ import { client } from '../../services/client';
 import moment from 'moment';
 import i18n from 'i18n-js';
 import { FontAwesome } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class NotificationsScreen extends React.Component<NotificationsProps, NotificationsState> {
   static navigationOptions = (navigation) => {
@@ -145,6 +146,11 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
   render() {
     return (
       <View style={styles.page.container}>
+        {this.state.errorMessage &&
+          <View style={styles.page.errorView}>
+            <Ionicons name="ios-sad" size={100} color="white" />
+            <Text style={styles.page.errorText}>{this.state.errorMessage}</Text>
+          </View>}
         <FlatList data={this.state.notifications}
           keyExtractor={(item) => item.id.toString()}
           refreshing={this.state.refreshing}
@@ -161,6 +167,16 @@ const styles = {
       flex: 1,
       backgroundColor: '#fff',
       flexGrow: 1
+    },
+    errorView: {
+      padding: 20,
+      backgroundColor: THEME.colors.error.default,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    errorText: {
+      color: 'white',
+      textAlign: 'center'
     }
   }),
   notification: StyleSheet.create({

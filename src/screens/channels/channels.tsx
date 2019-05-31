@@ -6,6 +6,7 @@ import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import { Location, Permissions } from 'expo';
 import { SearchBar } from 'react-native-elements';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class ChannelsScreen extends React.Component<ChannelsScreenProps, ChannelsScreenState> {
   static navigationOptions = ({ navigation }) => {
@@ -124,6 +125,11 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   render() {
     return (
       <View style={styles.page.container}>
+        {this.state.errorMessage &&
+          <View style={styles.page.errorView}>
+            <Ionicons name="ios-sad" size={100} color="white" />
+            <Text style={styles.page.errorText}>{this.state.errorMessage}</Text>
+          </View>}
         <SearchBar
           placeholder={i18n.t('screens.channels.searchPlaceholder')}
           onChangeText={this.handleSearch}
@@ -182,6 +188,16 @@ const styles = {
     },
     searchBarText: {
       color: '#000'
+    },
+    errorView: {
+      padding: 20,
+      backgroundColor: THEME.colors.error.default,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    errorText: {
+      color: 'white',
+      textAlign: 'center'
     }
   }),
   channel: StyleSheet.create({
