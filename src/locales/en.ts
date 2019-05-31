@@ -23,7 +23,7 @@ const en: AppTranslations = {
     },
     screens: {
         appLoading: {
-            greeting: 'See what people are talking about in {{location}}!',
+            greeting: 'See what people are talking about near {{location}}!',
             locationNotAuthorized: {
                 message: 'You need to allow access to your location information to use Habla.',
                 buttons: {

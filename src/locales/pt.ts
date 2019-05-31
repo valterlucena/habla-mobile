@@ -23,7 +23,7 @@ const pt: AppTranslations = {
     },
     screens: {
         appLoading: {
-            greeting: 'Saiba o que está em alta em {{location}}!',
+            greeting: 'Saiba o que está em alta perto de {{location}}!',
             locationNotAuthorized: {
                 message: 'Você precisa permitir o acesso à sua localização para usar o Habla.',
                 buttons: {

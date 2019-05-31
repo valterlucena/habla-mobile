@@ -230,9 +230,10 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
             <Ionicons name="ios-sad" size={100} color="white" />
             <Text style={styles.page.errorText}>{this.state.errorMessage}</Text>
           </View>}
-        {this.state.loading && <ActivityIndicator color="white" size="large" />}
-        {this.state.location && !this.state.locationNotAuthorized && <Text style={styles.page.text}>{i18n.t('screens.appLoading.greeting', { location: this.state.location.city || this.state.location.name })}</Text>}
-        {this.state.locationNotAuthorized &&
+        <StatusBar barStyle="light-content"/>
+        { this.state.loading && <ActivityIndicator color="white" size="large"/>}
+        { this.state.location && !this.state.locationNotAuthorized && <Text style={styles.page.text}>{ i18n.t('screens.appLoading.greeting', { location: this.state.location.city || this.state.location.street }) }</Text> }
+        { this.state.locationNotAuthorized &&
           <View style={styles.page.locationNotAuthorizedView}>
             <Ionicons name="ios-sad" size={100} color="white" />
             <Text style={styles.page.text}>{i18n.t('screens.appLoading.locationNotAuthorized.message')}</Text>

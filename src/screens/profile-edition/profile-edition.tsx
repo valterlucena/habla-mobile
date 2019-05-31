@@ -140,7 +140,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
 
     let local: any = await Location.reverseGeocodeAsync({ latitude: this.state.home[0], longitude: this.state.home[1] });
     
-    this.setState({ local: local[0].city || local[0].name });
+    this.setState({ local: local[0].city || local[0].street });
   }
 
   showAlert = () => {
