@@ -191,7 +191,8 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
         <PostComponent post={this.state.post}
                         showPostHeader={true}
                         onOpenProfile={this.openProfile}
-                        onOpenChannel={this.openChannel}/> }
+                        onOpenChannel={this.openChannel}
+                        navigation={this.props.navigation}/> }
         { this.state.post &&
         <View style={styles.newComment.container}>
           <TextInput style={styles.newComment.input}
