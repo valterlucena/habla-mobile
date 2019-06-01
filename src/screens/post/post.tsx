@@ -230,7 +230,8 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
           <PostComponent post={this.state.post}
             showPostHeader={true}
             onOpenProfile={this.openProfile}
-            onOpenChannel={this.openChannel} />}
+            onOpenChannel={this.openChannel}
+            navigation={this.props.navigation} />}
         {this.state.post &&
           <View style={styles.newComment.container}>
             <TextInput style={styles.newComment.input}
@@ -248,6 +249,35 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
                 {this.state.postingComment ? <ActivityIndicator color="white" /> : <Text style={styles.newComment.sendButtonText}>{i18n.t('screens.post.comments.buttons.submit')}</Text>}
               </TouchableOpacity>}
           </View>}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={this.state.refreshing}
+                      onRefresh={this.refresh}
+                    />
+                  }>
+        { this.state.post && 
+        <PostComponent post={this.state.post}
+                        showPostHeader={true}
+                        onOpenProfile={this.openProfile}
+                        onOpenChannel={this.openChannel}
+                        navigation={this.props.navigation}/> }
+        { this.state.post &&
+        <View style={styles.newComment.container}>
+          <TextInput style={styles.newComment.input}
+                     onChangeText={this.handleCommentInput}
+                     value={this.state.newComment.body}
+                     placeholderTextColor="black"
+                     placeholder={i18n.t('screens.post.comments.newCommentInputPlaceholder')}
+                     editable={!this.state.postingComment}
+                     underlineColorAndroid="rgba(0,0,0,0)"/>
+          {(this.state.newComment.body && this.state.newComment.body.trim() !== '') &&
+          <TouchableOpacity style={styles.newComment.sendButton}
+            onPress={this.sendComment}
+            disabled={this.state.postingComment}
+            activeOpacity={1}>
+          {this.state.postingComment? <ActivityIndicator color="white"/>: <Text style={styles.newComment.sendButtonText}>{i18n.t('screens.post.comments.buttons.submit')}</Text>}
+          </TouchableOpacity>}
+        </View> }
         {this.state.post && this.state.post.comments && <FlatList data={this.state.post.comments as any[]}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (

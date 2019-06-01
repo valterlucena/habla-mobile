@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions, TouchableHighlight } from 'react-native';
 import moment from 'moment';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { client } from '../../services/client';
@@ -117,6 +117,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
         }
       `)
     })
+    this.props.navigation.navigate("TimelineScreen");
   }
 
   render() {
@@ -160,7 +161,10 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             </Text>
             <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")}>
               <FontAwesome style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
-            </TouchableOpacity> 
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.deletePost(this.state.post.id)}>
+              <Text>Deletar</Text>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.bottom}>
@@ -294,7 +298,7 @@ export interface PostComponentProps {
   showPostHeader: boolean;
   onOpenProfile?: (profile) => void;
   onOpenChannel?: (channel) => void;
-  
+  navigation: any;
 }
 
 export interface PostComponentState {
