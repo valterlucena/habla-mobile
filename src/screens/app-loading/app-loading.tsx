@@ -200,7 +200,10 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
   }
 
   handleNotification = async(notification) => {
-    if (notification.origin == "selected"){
+    let postNotifications = ["COMMENT_ON_OWNED_POST", "VOTE_ON_OWNED_POST", 
+                              "COMMENT_ON_THIRD_PARTY_POST", "COMMENT_ON_THIRD_PARTY_POST_ANONYMOUS"]
+    let notificationType = Object.values(notification.data.type)[0]
+    if (notification.origin == "selected" && postNotifications.includes(notificationType)){
       this.props.navigation.navigate("PostScreen", { postId: notification.data.postId });
     }
   }
