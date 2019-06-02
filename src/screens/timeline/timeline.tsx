@@ -71,7 +71,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     lastLocation = lastLocation? JSON.parse(lastLocation): null;
 
     if (lastLocation) {
-      this.props.navigation.setParams({ currentLocationName: lastLocation.city || lastLocation.name });
+      this.props.navigation.setParams({ currentLocationName: lastLocation.city || lastLocation.street });
     }
 
     if (!this.hasChannel()) {
@@ -239,7 +239,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
   getLocalInfo = async (location) => {
     let local: any = await Location.reverseGeocodeAsync({ latitude: location[0], longitude: location[1] });
-    return local[0].city || local[0].name;
+    return local[0].city || local[0].street;
   }
 
   changeLocation = () => {
