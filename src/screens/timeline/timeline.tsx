@@ -173,6 +173,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                 profilePostVote {
                   type
                 }
+                profileFollowPost{
+                  postId
+                  profileUid
+                }
                 owner {
                   uid
                   username

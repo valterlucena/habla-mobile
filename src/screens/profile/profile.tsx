@@ -85,6 +85,10 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
                 profilePostVote {
                   type
                 }
+                profileFollowPost{
+                  postId
+                  profileUid
+                }
                 owner {
                   uid
                   username
