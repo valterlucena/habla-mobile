@@ -136,11 +136,8 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
     });
   }
 
-
-
   sendComment = async() => {
   
-    
     this.setState({ postingComment: true });
 
     const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
@@ -172,7 +169,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
           }
         }
       });
-      console.log(response)
+      
       this.setState({ post: { ...this.state.post, comments: [response.data.createComment, ...this.state.post.comments], commentsCount: this.state.post.commentsCount + 1 }});
       this.setState({ newComment: { body: null }});
     } catch (error) {
@@ -198,7 +195,6 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
         { this.state.post && 
         <PostComponent post={this.state.post}
                         showPostHeader={true}
-                        onFollowPost={this.followPost}
                         onOpenProfile={this.openProfile}
                         onOpenChannel={this.openChannel}
                         /> }

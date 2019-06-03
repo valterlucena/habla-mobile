@@ -45,18 +45,14 @@ export default class PostComponent extends React.Component<PostComponentProps, P
         
       });
 
-     console.log(response)
-
       this.setState({
         post: {
           ... this.state.post,
           profileFollowPost: response.data.togglePostFollow,
         }
       });
-
-      console.log(this.state.post)
     } catch (error) {
-      console.log("something wrong")
+     
     }
   }
   
