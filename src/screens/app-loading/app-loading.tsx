@@ -208,7 +208,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
       this._notificationsSubscription = Notifications.addListener(this.handleNotification);
 
     } catch (error) {
-      if (error.graphQlErrors.find(e => e.code == 'INTERNAL_SERVER_ERROR')) {
+      if (error.graphQLErrors.find(e => e.code == 'INTERNAL_SERVER_ERROR')) {
         const errorMessage = i18n.t('screens.appLoading.errors.updateExpoPushToken.internalServerError');
         this.setState({ errorMessage });
         console.log(error);

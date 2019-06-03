@@ -76,7 +76,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
         const errorMessage = i18n.t('screens.newPost.errors.insufficentScore');
         this.setState({ errorMessage });
         console.log(error);
-      } else if (error.graphQlErrors.find(e => e.code == 'INTERNAL_SERVER_ERROR')) {
+      } else if (error.graphQLErrors.find(e => e.code == 'INTERNAL_SERVER_ERROR')) {
         const errorMessage = i18n.t('screens.newPost.errors.internalServerError');
         this.setState({ errorMessage });
         console.log(error);
@@ -111,11 +111,6 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   render() {
     return (
       <View style={styles.newPost.container}>
-        {this.state.errorMessage &&
-          <View style={styles.newPost.errorView}>
-            <Ionicons name="ios-sad" size={100} color="white" />
-            <Text style={styles.newPost.errorText}>{this.state.errorMessage}</Text>
-          </View>}
         <StatusBar hidden={true}></StatusBar>
         {this.state.errorMessage &&
           <View style={styles.newPost.errorView}>

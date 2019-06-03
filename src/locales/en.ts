@@ -55,8 +55,8 @@ const en: AppTranslations = {
                 signInWithCredentials: 'Sign in'
             },
             errors:{
-                signInWithFacebook: "Error occurred while login whith facebook. Incorrect email or password.",
-                signInWithCredentials: "Error occurred while login with credentials. Incorrect email or password."
+                signInWithFacebook: "An error occurred while logging in with facebook.",
+                signInWithCredentials: "Error occurred while login with credentials. Invalid email or password."
             }
         },
         profileCreation: {
