@@ -6,6 +6,7 @@ import { Facebook } from "expo";
 import { FontAwesome } from '@expo/vector-icons';
 import THEME from "../../theme/theme";
 import i18n from 'i18n-js';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class LoginScreen extends React.Component<{}, LoginState> {
     static navigationOptions = {
@@ -21,65 +22,74 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
     render() {
         return (
             <View style={styles.page.container}>
+                {this.state.errorMessage &&
+                    <View style={styles.page.errorView}>
+                        <Ionicons name="ios-sad" size={100} color="white" />
+                        <Text style={styles.page.errorText}>{this.state.errorMessage}</Text>
+                    </View>}
                 <Text style={styles.login.headerText}>Habla!</Text>
                 <TextInput placeholder={i18n.t('screens.login.inputs.email.placeholder')}
-                           style={styles.login.input}
-                           editable={!(this.state.loadingWithCredentials || this.state.loadingWithFacebook)}
-                           underlineColorAndroid='rgba(0,0,0,0)'
-                           autoCapitalize="none"
-                           onChangeText={text => this.setState({ credentials: { ...this.state.credentials, email: text }})}></TextInput>
+                    style={styles.login.input}
+                    editable={!(this.state.loadingWithCredentials || this.state.loadingWithFacebook)}
+                    underlineColorAndroid='rgba(0,0,0,0)'
+                    autoCapitalize="none"
+                    onChangeText={text => this.setState({ credentials: { ...this.state.credentials, email: text } })}></TextInput>
                 <TextInput placeholder={i18n.t('screens.login.inputs.password.placeholder')}
-                           style={styles.login.input}
-                           editable={!(this.state.loadingWithCredentials || this.state.loadingWithFacebook)}
-                           secureTextEntry={true}
-                           onChangeText={text => this.setState({ credentials: { ...this.state.credentials, password: text }})}></TextInput>
+                    style={styles.login.input}
+                    editable={!(this.state.loadingWithCredentials || this.state.loadingWithFacebook)}
+                    secureTextEntry={true}
+                    onChangeText={text => this.setState({ credentials: { ...this.state.credentials, password: text } })}></TextInput>
                 <TouchableOpacity style={styles.login.loginButton}
-                                  onPress={this.signInWithEmailAndPassword}
-                                  disabled={this.state.loadingWithCredentials || this.state.loadingWithFacebook}
-                                  activeOpacity={1}>
-                    {this.state.loadingWithCredentials? 
-                          (<ActivityIndicator color="white"
-                                              size="small"/>)
-                        : (<Text style={styles.login.loginButtonText}>{i18n.t('screens.login.buttons.signInWithCredentials')}</Text>) }
+                    onPress={this.signInWithEmailAndPassword}
+                    disabled={this.state.loadingWithCredentials || this.state.loadingWithFacebook}
+                    activeOpacity={1}>
+                    {this.state.loadingWithCredentials ?
+                        (<ActivityIndicator color="white"
+                            size="small" />)
+                        : (<Text style={styles.login.loginButtonText}>{i18n.t('screens.login.buttons.signInWithCredentials')}</Text>)}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.login.loginButtonFacebook}
-                                  onPress={this.signInWithFacebook}
-                                  disabled={this.state.loadingWithCredentials || this.state.loadingWithFacebook}
-                                  activeOpacity={1}>
-                    {this.state.loadingWithFacebook? 
-                          (<ActivityIndicator color="white"
-                                              size="small"/>)
+                    onPress={this.signInWithFacebook}
+                    disabled={this.state.loadingWithCredentials || this.state.loadingWithFacebook}
+                    activeOpacity={1}>
+                    {this.state.loadingWithFacebook ?
+                        (<ActivityIndicator color="white"
+                            size="small" />)
                         : (<View style={styles.login.loginButtonInnerView}>
-                            <FontAwesome name="facebook" style={styles.login.facebookIcon}/><Text style={styles.login.loginButtonText}>{ i18n.t('screens.login.buttons.signInWithFacebook') }</Text>
-                           </View>) }
+                            <FontAwesome name="facebook" style={styles.login.facebookIcon} /><Text style={styles.login.loginButtonText}>{i18n.t('screens.login.buttons.signInWithFacebook')}</Text>
+                        </View>)}
                 </TouchableOpacity>
-                <KeyboardSpacer/>
+                <KeyboardSpacer />
             </View>
         )
     }
 
-    signInWithEmailAndPassword = async() => {
+    signInWithEmailAndPassword = async () => {
         this.setState({ loadingWithCredentials: true });
 
         try {
-          await firebase.auth().signInWithEmailAndPassword(this.state.credentials.email, this.state.credentials.password);
+            await firebase.auth().signInWithEmailAndPassword(this.state.credentials.email, this.state.credentials.password);
         } catch (error) {
-          this.setState({ loadingWithCredentials: false });
-          console.log(error);
+            this.setState({ loadingWithCredentials: false });
+            const errorMessage = i18n.t('screens.login.errors.signInWithCredentials');
+            this.setState({ errorMessage });
+            console.log(error);
         }
     };
 
-    signInWithFacebook = async() => {
+    signInWithFacebook = async () => {
         this.setState({ loadingWithFacebook: true });
-        
+
         try {
             const result = await Facebook.logInWithReadPermissionsAsync('2136539466408117');
             const credential = firebase.auth.FacebookAuthProvider.credential(result.token);
-            
+
             await firebase.auth().signInAndRetrieveDataWithCredential(credential);
         } catch (error) {
+            const errorMessage = i18n.t('screens.login.errors.signInWithFacebook');
+            this.setState({ errorMessage });
             console.log(error);
-        } finally { 
+        } finally {
             this.setState({ loadingWithFacebook: false });
         }
     }
@@ -89,6 +99,7 @@ interface LoginState {
     loadingWithCredentials?: boolean;
     loadingWithFacebook?: boolean;
     credentials?: { email?: string, password?: string };
+    errorMessage?: string;
 }
 
 const styles = {
@@ -99,7 +110,17 @@ const styles = {
             justifyContent: "center",
             backgroundColor: "#FFFFFF",
             padding: 12
-      }
+        },
+        errorView: {
+            padding: 20,
+            backgroundColor: THEME.colors.error.default,
+            justifyContent: 'center',
+            alignItems: 'center'
+        },
+        errorText: {
+            color: 'white',
+            textAlign: 'center'
+        }
     }),
     login: StyleSheet.create({
         headerText: {

@@ -7,6 +7,7 @@ import i18n from 'i18n-js';
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { getTranslatedGenderFromEnum } from "../../util";
+import { Ionicons } from '@expo/vector-icons';
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   constructor(props: any) {
@@ -55,6 +56,8 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       this.props.navigation.navigate("TabsNavigator");
     } catch (error) {
       this.setState({ loading: false });
+      const errorMessage = error.networkError? i18n.t('screens.profileCreation.errors.connection'):i18n.t('screens.profileCreation.errors.unexpected');
+      this.setState({ errorMessage });
       console.log(JSON.stringify(error));
     }
   }
@@ -71,6 +74,11 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     return (
       <SafeAreaView>
         <StatusBar barStyle="dark-content" />
+        {this.state.errorMessage &&
+          <View style={styles.page.error.errorView}>
+            <Ionicons name="ios-sad" size={100} color="white" />
+            <Text style={styles.page.error.errorText}>{this.state.errorMessage}</Text>
+          </View>}
         <ScrollView style={styles.page.container.view}>
           <View>
             <View style={styles.page.header.row}>
@@ -183,6 +191,18 @@ const styles = {
     container: StyleSheet.create({
       view: {
         padding: 16
+      },
+    }),
+    error: StyleSheet.create({
+      errorView: {
+        padding: 20,
+        backgroundColor: THEME.colors.error.default,
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      errorText: {
+        color: 'white',
+        textAlign: 'center'
       }
     }),
     form: StyleSheet.create({

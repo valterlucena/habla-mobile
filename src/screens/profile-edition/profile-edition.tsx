@@ -8,6 +8,7 @@ import ChangePhotoComponent from '../../components/change-photo/change-photo'
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Permissions, Location } from 'expo';
 import { getTranslatedGenderFromEnum } from "../../util";
+import { Ionicons } from '@expo/vector-icons';
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
   static navigationOptions = ({ navigation }) => {
@@ -108,6 +109,8 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
       this.props.navigation.navigate("ProfileScreen");
       this.props.navigation.getParam('onProfileEdition') && this.props.navigation.getParam('onProfileEdition')(response.data.updateProfile);
     } catch (error) {
+      const errorMessage = error.networkError? i18n.t('screens.profileEdition.errors.connection'):i18n.t('screens.profileEdition.errors.unexpected');
+      this.setState({ errorMessage });      
       console.log(JSON.stringify(error));
     } finally {
       this.setState({ saving: false });
@@ -160,6 +163,11 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
     return (
       <SafeAreaView>
         <StatusBar barStyle="light-content"/>
+        {this.state.errorMessage &&
+          <View style={styles.page.header.errorView}>
+            <Ionicons name="ios-sad" size={100} color="white" />
+            <Text style={styles.page.header.errorText}>{this.state.errorMessage}</Text>
+          </View>}
         <ScrollView>
           <View style={styles.page.header.avatarContainer}>
             <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving} style={styles.page.header.avatar}>
@@ -278,6 +286,16 @@ const styles = {
         width: 150,
         height: 150,
         borderRadius: 75
+      },
+      errorView: {
+        padding: 20,
+        backgroundColor: THEME.colors.error.default,
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      errorText: {
+        color: 'white',
+        textAlign: 'center'
       }
     }),
     form: StyleSheet.create({
