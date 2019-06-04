@@ -9,6 +9,7 @@ import { getTranslatedDistanceFromEnum } from '../../util';
 import ParsedText from 'react-native-parsed-text';
 import AutoHeightImage from 'react-native-auto-height-image';
 import THEME from '../../theme/theme';
+import firebase from 'firebase';
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   constructor(props: PostComponentProps) {
@@ -171,9 +172,9 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             </Text>
           </View>
           <View style={styles.followButton} >
-            <TouchableOpacity  onPress={() => this.followPost()}>
-                <MaterialIcons  name="notifications" size={30} color={profileFollowPost ? THEME.colors.primary.dark: '#777'}/>
-            </TouchableOpacity>
+            {this.state.post.owner && this.state.post.owner.uid !== firebase.auth().currentUser.uid && <TouchableOpacity  onPress={() => this.followPost()}>
+                <MaterialIcons name="notifications" size={30} color={profileFollowPost ? THEME.colors.primary.dark: '#000'}/>
+            </TouchableOpacity>}
           </View>
         </View>
       </View>)
