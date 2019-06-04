@@ -29,7 +29,17 @@ export interface AppTranslations {
                 buttons: {
                     openSettings: string;
                 }
-            }
+            };
+            errors: { 
+                fetchingProfile: {
+                    unexpected: string;
+                    connection: string;
+                };
+                updateExpoPushToken:{
+                    internalServerError: string;
+                }
+            };
+
         },
         login: {
             inputs: {
@@ -41,6 +51,10 @@ export interface AppTranslations {
                 }
             }
             buttons: {
+                signInWithFacebook: string;
+                signInWithCredentials: string;
+            }
+            errors:{
                 signInWithFacebook: string;
                 signInWithCredentials: string;
             }
@@ -58,6 +72,10 @@ export interface AppTranslations {
             },
             buttons: {
                 next: string
+            },
+            errors:{
+                unexpected: string;
+                connection: string;
             }
         },
         timeline: {
@@ -76,6 +94,12 @@ export interface AppTranslations {
         channels: {
             title: string;
             searchPlaceholder: string;
+            errors: { 
+                fetchingChannels: {
+                    unexpected: string;
+                    connection: string;
+                }
+            }
         },
         newPost: {
             inputPlaceholder: string;
@@ -84,6 +108,9 @@ export interface AppTranslations {
             },
             errors: {
                 insufficentScore: string;
+                internalServerError: string;
+                connection: string;
+                unexpected: string;
             },
             anonymous: string;
             
@@ -95,6 +122,12 @@ export interface AppTranslations {
                 voteOnOwnedPost: string;
                 commentOnThirdPartyPost:string;
                 commentOnThirdPartyPostAnonymous:string;
+            };
+            errors: { 
+                fetchingNotifications: {
+                    unexpected: string;
+                    connection: string;
+                }
             }
         },
         post: {
@@ -103,6 +136,20 @@ export interface AppTranslations {
                 newCommentInputPlaceholder: string;
                 buttons: {
                     submit: string;
+                }
+            },
+            errors: { 
+                loadingPost: {
+                    unexpected: string;
+                    connection: string;
+                },
+                commentingPost:{
+                    unexpected: string;
+                    connection: string;
+                },
+                votingPost:{
+                    unexpected: string;
+                    connection: string;
                 }
             }
         },
@@ -121,6 +168,12 @@ export interface AppTranslations {
             labels: {
                 score: string;
                 scoreBalance: string;
+            },
+            errors: { 
+                loadingProfile: {
+                    unexpected: string;
+                    connection: string;
+                }
             }
         },
         profileEdition: {
@@ -142,6 +195,10 @@ export interface AppTranslations {
             alert: {
                 title: string,
                 message: string
+            },
+            errors:{
+                unexpected: string;
+                connection: string;
             }
         }
     }

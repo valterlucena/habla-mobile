@@ -95,7 +95,9 @@ export default class PostComponent extends React.Component<PostComponentProps, P
         }
       });
     } catch (error) {
-      // handle
+      const errorMessage = error.networkError? i18n.t('screens.post.errors.votingPost.connection'):i18n.t('screens.post.errors.votingPost.unexpected');
+      this.setState({ errorMessage });
+      console.log(error);
     }
   }
 
@@ -284,4 +286,5 @@ export interface PostComponentProps {
 
 export interface PostComponentState {
   post: any;
+  errorMessage?: string;
 }
