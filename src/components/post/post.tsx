@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import moment from 'moment';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import i18n from 'i18n-js';
@@ -21,7 +21,41 @@ export default class PostComponent extends React.Component<PostComponentProps, P
 
   componentWillReceiveProps() {
     this.setState({ post: this.props.post });
+    
   }
+
+
+  followPost = async() => {
+    this.setState({ post: { ... this.state.post }});
+
+    try {
+      const response = await client.mutate({
+        variables: { 
+          postId: this.state.post.id
+        },
+        mutation: gql(`
+          mutation FollowPost ($postId: ID!) {
+            togglePostFollow(postId: $postId) {
+              postId
+              profileUid
+            }
+          }
+  
+        `),
+        
+      });
+
+      this.setState({
+        post: {
+          ... this.state.post,
+          profileFollowPost: response.data.togglePostFollow,
+        }
+      });
+    } catch (error) {
+     
+    }
+  }
+  
 
   vote = async(type: "UP" | "DOWN") => {
     if (!(type === "UP" || type === "DOWN")) return;
@@ -73,7 +107,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
       const photoDefault = require('../../../assets/avatar-placeholder.png');
-
+      const {profileFollowPost} = this.state.post;
       return (
        
       <View style={styles.container}>
@@ -111,7 +145,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             </Text>
             <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")}>
               <FontAwesome style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
-            </TouchableOpacity>
+            </TouchableOpacity> 
           </View>
         </View>
         <View style={styles.bottom}>
@@ -134,6 +168,11 @@ export default class PostComponent extends React.Component<PostComponentProps, P
               { this.state.post.commentsCount }
             </Text>
           </View>
+          <View style={styles.followButton} >
+            <TouchableOpacity  onPress={() => this.followPost()}>
+                <MaterialIcons  name="notifications" size={30} color={profileFollowPost ? THEME.colors.primary.dark: '#777'}/>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>)
   }
@@ -150,6 +189,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#F5F5F5',
     borderBottomWidth: 2
   }, 
+  notificationButton: {
+    marginRight: 10
+  },
   header: {
     flexDirection: 'row',
     marginBottom: 2,
@@ -201,6 +243,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  followButton: {
+    flexGrow: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    marginRight: 1
+  },
   voteButton: {
     fontSize: 25
   },
@@ -231,6 +279,7 @@ export interface PostComponentProps {
   showPostHeader: boolean;
   onOpenProfile?: (profile) => void;
   onOpenChannel?: (channel) => void;
+  
 }
 
 export interface PostComponentState {

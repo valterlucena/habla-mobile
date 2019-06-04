@@ -76,6 +76,10 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             profilePostVote {
               type
             }
+            profileFollowPost{
+              postId
+              profileUid
+            }
             owner {
               uid
               username
@@ -133,6 +137,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   }
 
   sendComment = async() => {
+  
     this.setState({ postingComment: true });
 
     const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
@@ -164,7 +169,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
           }
         }
       });
-
+      
       this.setState({ post: { ...this.state.post, comments: [response.data.createComment, ...this.state.post.comments], commentsCount: this.state.post.commentsCount + 1 }});
       this.setState({ newComment: { body: null }});
     } catch (error) {
@@ -191,7 +196,8 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
         <PostComponent post={this.state.post}
                         showPostHeader={true}
                         onOpenProfile={this.openProfile}
-                        onOpenChannel={this.openChannel}/> }
+                        onOpenChannel={this.openChannel}
+                        /> }
         { this.state.post &&
         <View style={styles.newComment.container}>
           <TextInput style={styles.newComment.input}
