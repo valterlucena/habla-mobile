@@ -64,11 +64,32 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   loadPost = async () => {
     try {
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
-
-      const response = await client.query<any>({
-        query: gql(`
-          {
-            post(id: ${this.postId}) {
+    const response = await client.query<any>({
+      query: gql(`
+        {
+          post(id: ${this.postId}) {
+            id
+            body
+            distance
+            createdAt
+            anonymous
+            commentsCount
+            rate
+            photoURL
+            profilePostVote {
+              type
+            }
+            profileFollowPost{
+              postId
+              profileUid
+            }
+            owner {
+              uid
+              username
+              name
+              photoURL
+            }
+            channels {
               id
               body
               distance
@@ -175,8 +196,9 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
         }
       });
 
-      this.setState({ post: { ...this.state.post, comments: [response.data.createComment, ...this.state.post.comments], commentsCount: this.state.post.commentsCount + 1 } });
-      this.setState({ newComment: { body: null } });
+      
+      this.setState({ post: { ...this.state.post, comments: [response.data.createComment, ...this.state.post.comments], commentsCount: this.state.post.commentsCount + 1 }});
+      this.setState({ newComment: { body: null }});
     } catch (error) {
       const errorMessage = error.networkError ? i18n.t('screens.post.errors.commentingPost.connection') : i18n.t('screens.post.errors.commentingPost.unexpected');
       this.setState({ errorMessage });

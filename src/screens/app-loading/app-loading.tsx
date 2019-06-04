@@ -216,8 +216,13 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     }
   }
 
-  handleNotification = async (notification) => {
-    console.log(notification);
+
+  handleNotification = async(notification) => {
+    let postNotifications = ["COMMENT_ON_OWNED_POST", "VOTE_ON_OWNED_POST", 
+                              "COMMENT_ON_THIRD_PARTY_POST", "COMMENT_ON_THIRD_PARTY_POST_ANONYMOUS"]
+    if (notification.origin == "selected" && postNotifications.includes(notification.data.type)){
+      this.props.navigation.navigate("PostScreen", { postId: notification.data.postId });
+    }
   }
 
   render() {
