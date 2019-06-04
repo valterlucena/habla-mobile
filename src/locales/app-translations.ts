@@ -67,6 +67,10 @@ export interface AppTranslations {
                     unexpected: string;
                     connection: string;
                 }
+            },
+            tabs: {
+                recent: string;
+                trending: string;
             }
         },
         channels: {

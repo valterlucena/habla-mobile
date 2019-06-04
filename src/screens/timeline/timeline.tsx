@@ -11,6 +11,9 @@ import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
+import SegmentedControlTab from 'react-native-segmented-control-tab';
+import { sortPostsByPopularity } from '../../util';
+import _ from 'lodash';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
   static navigationOptions = ({navigation}) => {
@@ -59,7 +62,9 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       posts: [],
       refreshing: false,
       loadingMorePosts: false,
-      showNewPostModal: false
+      showNewPostModal: false,
+      canLoadMorePosts: false,
+      selectedIndex: 0
     };
 
     this.props.navigation.setParams({ changeLocation: this.changeLocation, loadingLocationInfo: true });
@@ -80,10 +85,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       this.setState({ posts: cachedPosts? JSON.parse(cachedPosts): [] });
     }
     
-    await this.refresh();
+    await this.refresh({ resetCurrentLocation: true });
   }
 
-  refresh = (resetCurrentLocation = true) => {
+  refresh = (options: RefreshOptions = {}) => {
     let refreshPromise = new Promise(async(resolve, reject) => {
       this.setState({ refreshing: true });
 
@@ -92,21 +97,32 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       cachedProfile = cachedProfile && JSON.parse(cachedProfile);
 
       await Permissions.askAsync(Permissions.LOCATION);
+
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
       const currentLocation = [location.coords.latitude, location.coords.longitude];
+
+      const locationHasChanged = options.setLocation || options.resetCurrentLocation;
+
       const availableLocations = cachedProfile.home ? [currentLocation, cachedProfile.home] : [currentLocation];
-      
-      this.props.navigation.setParams({ availableLocations, currentLocation });
+
+      this.props.navigation.setParams({ availableLocations });
 
       this.setState({ 
-        currentLocation: resetCurrentLocation? currentLocation: this.state.currentLocation,
-        availableLocations: availableLocations
+        currentLocation: options.resetCurrentLocation? currentLocation: (options.setLocation || this.state.currentLocation),
+        availableLocations: availableLocations,
+        canLoadMorePosts: true
       }, async() => {
-        this.props.navigation.setParams({ loadingLocationInfo: true });
+        if (locationHasChanged) {
+          this.props.navigation.setParams({ loadingLocationInfo: true });
 
-        let currentLocationName = await this.getLocalInfo(this.state.currentLocation);
+          let currentLocationName;
 
-        this.props.navigation.setParams({ currentLocationName, loadingLocationInfo: false });
+          try {
+            currentLocationName = await this.getLocalInfo(this.state.currentLocation);
+          } finally {
+            this.props.navigation.setParams({ currentLocationName, loadingLocationInfo: false });
+          }
+        }
       });
 
       let posts;
@@ -122,7 +138,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
       if (this.currentRefreshPromise == refreshPromise) {
         this.setState({ posts, refreshing: false, errorMessage: null }, async() => {
-          if (!this.hasChannel()) await AsyncStorage.setItem('cached-timeline', JSON.stringify(posts));
+          if (!this.hasChannel() && !this.showHomePosts) await AsyncStorage.setItem('cached-timeline', JSON.stringify(posts));
         });
       }
 
@@ -141,6 +157,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
     try {
       let posts = await this.fetchPosts({ limit: 10, ignoreIds: this.state.posts.map(c => c.id)});
+      
       this.setState({ posts: [...this.state.posts, ...posts] });
     } catch (error) {
       console.log(error);
@@ -194,7 +211,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
         fetchPolicy: 'no-cache'
       });
       
-      return response.data.posts;
+      return this.state.selectedIndex === 1? sortPostsByPopularity(response.data.posts): response.data.posts;
     } catch (error) {
       const errorMessage = error.networkError? i18n.t('screens.timeline.errors.fetchingPosts.connection'): i18n.t('screens.timeline.errors.fetchingPosts.unexpected');
 
@@ -246,10 +263,16 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     this.showHomePosts = !this.showHomePosts;
     
     if (this.showHomePosts) {
-      this.setState({ currentLocation: this.state.availableLocations[1]}, () => this.refresh(false));
+      return this.refresh({ resetCurrentLocation: false, setLocation: this.state.availableLocations[1] });
     } else {
-      this.setState({ currentLocation: this.state.availableLocations[0]}, () => this.refresh(false));
+      return this.refresh({ resetCurrentLocation: false, setLocation: this.state.availableLocations[0] });
     }
+  }
+
+  handleSelectedIndex = (index) => {
+    this.setState({ selectedIndex: index });
+
+    return this.refresh({ resetCurrentLocation: false });
   }
 
   render() {
@@ -266,12 +289,22 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                     keyExtractor={(item) => item.id.toString()}
                     onEndReached={this.loadMorePosts}
                     onEndReachedThreshold={0.5}
+                    refreshing={this.state.refreshing}
                     refreshControl={
                       <RefreshControl
                         refreshing={this.state.refreshing}
-                        onRefresh={() => this.refresh(false)}
+                        onRefresh={() => this.refresh({ resetCurrentLocation: false })}
                       />
                     }
+                    ListHeaderComponent={<SegmentedControlTab
+                      values={[i18n.t("screens.timeline.tabs.recent"), i18n.t("screens.timeline.tabs.trending")]}
+                      selectedIndex={this.state.selectedIndex}
+                      onTabPress={this.handleSelectedIndex}
+                      tabsContainerStyle={styles.page.tabsContainer}
+                      tabStyle={styles.page.tabStyle}
+                      activeTabStyle={styles.page.activeTabStyle}
+                      tabTextStyle={styles.page.tabTextStyle}
+                    />}
                     renderItem={({item}) =>(
                     <TouchableOpacity onPress={() => this.openPost(item)}>
                       <PostComponent post={item}
@@ -281,7 +314,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                     </TouchableOpacity>
           )}/>
         </View>
-        <ActionButton buttonColor={THEME.colors.secondary.default}
+        <ActionButton buttonColor={THEME.colors.secondary.light}
                       position="center"
                       hideShadow={true}
                       offsetY={10}
@@ -310,6 +343,21 @@ const styles = {
       flex: 1,
       backgroundColor: '#fff',
       flexGrow: 1
+    },
+    tabsContainer: {
+      padding: 16
+    },
+    tabStyle: {
+      borderColor: THEME.colors.secondary.default
+    },
+    activeTabStyle: {
+      backgroundColor: THEME.colors.secondary.light,
+      borderColor: THEME.colors.secondary.default
+    },
+    tabTextStyle: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: THEME.colors.secondary.default
     },
     newPostModal: {
       width: '100%',
@@ -354,6 +402,8 @@ interface TimelineState {
   refreshing: boolean;
   loadingMorePosts: boolean;
   showNewPostModal: boolean;
+  canLoadMorePosts: boolean;
+  selectedIndex: number;
   errorMessage?: string;
 }
 
@@ -364,4 +414,9 @@ interface TimelineProps {
 interface FetchPostsOptions {
   limit?: number;
   ignoreIds?: number[]; 
+}
+
+interface RefreshOptions {
+  resetCurrentLocation?: boolean;
+  setLocation?: number[];
 }

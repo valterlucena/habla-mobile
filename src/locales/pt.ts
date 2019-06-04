@@ -67,6 +67,10 @@ const pt: AppTranslations = {
                     unexpected: 'Um erro inesperado ocorreu ao carregar os posts.',
                     connection: 'Houve um erro de conexão ao carregar os posts. Verifique se está conectado à internet.'
                 }
+            },
+            tabs: {
+                recent: 'Recente',
+                trending: 'Em alta'
             }
         },
         channels: {
