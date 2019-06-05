@@ -58,3 +58,4 @@ buck-out/
 output/
 
 firebase.json
+geocoding.json

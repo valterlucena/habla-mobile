@@ -7,7 +7,7 @@ import i18n from 'i18n-js';
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { Permissions, Location } from 'expo';
-import { getTranslatedGenderFromEnum } from "../../util";
+import { getTranslatedGenderFromEnum, getReverseLocationFromCoords } from "../../util";
 import { Ionicons } from '@expo/vector-icons';
 
 export default class ProfileCreationScreen extends React.Component<any, any> {
@@ -138,7 +138,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
   getLocalInfo = async () => {
     if (!this.state.home) return;
 
-    let local: any = await Location.reverseGeocodeAsync({ latitude: this.state.home[0], longitude: this.state.home[1] });
+    let local: any = await getReverseLocationFromCoords({ latitude: this.state.home[0], longitude: this.state.home[1] });
     
     this.setState({ local: local[0].city || local[0].street });
   }

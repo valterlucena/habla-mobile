@@ -12,7 +12,7 @@ import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
-import { sortPostsByPopularity } from '../../util';
+import { sortPostsByPopularity, getReverseLocationFromCoords } from '../../util';
 import _ from 'lodash';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
@@ -259,7 +259,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   }
 
   getLocalInfo = async (location) => {
-    let local: any = await Location.reverseGeocodeAsync({ latitude: location[0], longitude: location[1] });
+    let local: any = await getReverseLocationFromCoords({ latitude: location[0], longitude: location[1] });
     return local[0].city || local[0].street;
   }
 
