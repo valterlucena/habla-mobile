@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions} from 'react-native';
+import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger} from 'react-native-popup-menu';
 import moment from 'moment';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { client } from '../../services/client';
@@ -23,7 +24,6 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     this.setState({ post: this.props.post });
     
   }
-
 
   followPost = async() => {
     this.setState({ post: { ... this.state.post }});
@@ -106,6 +106,19 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     return this.state.post.channels.find(c => c.name === name);
   }
 
+  deletePost = async(id) => {
+    await client.mutate({
+      variables: {
+        postId : id
+      },
+      mutation: gql(`
+        mutation deletePost ($postId: ID!) {          
+          deletePost (postId: $postId)
+        }
+      `)
+    })
+  }
+  
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
       const photoDefault = require('../../../assets/avatar-placeholder.png');
@@ -170,10 +183,25 @@ export default class PostComponent extends React.Component<PostComponentProps, P
               { this.state.post.commentsCount }
             </Text>
           </View>
-          <View style={styles.followButton} >
-            <TouchableOpacity  onPress={() => this.followPost()}>
-                <MaterialIcons  name="notifications" size={30} color={profileFollowPost ? THEME.colors.primary.dark: '#777'}/>
-            </TouchableOpacity>
+          
+          <View style={styles.postOptions}>
+            <MenuProvider skipInstanceCheck={true} backHandler={true}>
+              <Menu>
+                <MenuTrigger customStyles={{triggerWrapper: {padding: 10, width: 100, height: 50, alignItems: 'flex-end', justifyContent: 'flex-end' }}}>
+                  <FontAwesome name="ellipsis-h" size={20}/>
+                </MenuTrigger>
+
+                <MenuOptions customStyles={{optionsWrapper: {marginLeft: 10}, optionTouchable: {padding: 10, backgroundColor: THEME.colors.secondary}}}>
+                  <MenuOption onSelect={() => this.followPost()} disableTouchable={profileFollowPost}>
+                    { profileFollowPost ? <Text>following post</Text> : <Text>follow post</Text>}
+                  </MenuOption>
+                  <MenuOption onSelect={() => this.deletePost(this.state.post.id)}> 
+                    <Text>delete post</Text>
+                  </MenuOption>
+                </MenuOptions>
+
+              </Menu>
+            </MenuProvider>
           </View>
         </View>
       </View>)
@@ -245,11 +273,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  followButton: {
+  postOptions: {
     flexGrow: 1,
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
-    marginRight: 1
+    paddingVertical: 10,
+    marginRight: 5,
+    marginTop: -5
   },
   voteButton: {
     fontSize: 25
