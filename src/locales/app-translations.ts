@@ -201,5 +201,15 @@ export interface AppTranslations {
                 connection: string;
             }
         }
+    },
+    components: {
+        post: {
+            actionSheet: {
+                follow: string;
+                unfollow: string;
+                delete: string;
+                cancel: string;
+            }
+        }
     }
 }

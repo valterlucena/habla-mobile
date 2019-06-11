@@ -200,6 +200,16 @@ const en: AppTranslations = {
                 connection: 'There was a problem editing the profile. Please check your connection.'
             }
         }
+    },
+    components: {
+        post: {
+            actionSheet: {
+                follow: 'Follow',
+                unfollow: 'Unfollow',
+                delete: 'Delete',
+                cancel: 'Cancel'
+            }
+        }
     }
 };
 

@@ -199,6 +199,16 @@ const pt: AppTranslations = {
                 connection: 'Houve um erro de conexão ao editar o perfil. Verifique se está conectado à internet.'
             }
         }
+    },
+    components: {
+        post: {
+            actionSheet: {
+                follow: 'Seguir',
+                unfollow: 'Deixar de seguir',
+                delete: 'Deletar',
+                cancel: 'Cancelar'
+            }
+        }
     }
 };
 

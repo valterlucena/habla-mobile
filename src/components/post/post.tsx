@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions} from 'react-native';
+import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger} from 'react-native-popup-menu';
 import moment from 'moment';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import i18n from 'i18n-js';
@@ -11,7 +12,11 @@ import AutoHeightImage from 'react-native-auto-height-image';
 import THEME from '../../theme/theme';
 import firebase from 'firebase';
 
+import ActionSheet from 'react-native-actionsheet'
+
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
+  actionSheet;
+
   constructor(props: PostComponentProps) {
     super(props);
 
@@ -24,7 +29,6 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     this.setState({ post: this.props.post });
     
   }
-
 
   followPost = async() => {
     this.setState({ post: { ... this.state.post }});
@@ -107,10 +111,39 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     return this.state.post.channels.find(c => c.name === name);
   }
 
+  deletePost = async() => {
+    await client.mutate({
+      variables: {
+        postId : this.state.post.id
+      },
+      mutation: gql(`
+        mutation deletePost ($postId: ID!) {          
+          deletePost (postId: $postId)
+        }
+      `)
+    });
+
+    this.props.onPostDeleted && await this.props.onPostDeleted(this.state.post);
+  }
+  
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
       const photoDefault = require('../../../assets/avatar-placeholder.png');
-      const {profileFollowPost} = this.state.post;
+      const { profileFollowPost } = this.state.post;
+      const actionSheetOptions = [
+        { 
+          title: !profileFollowPost ? i18n.t('components.post.actionSheet.follow'): i18n.t('components.post.actionSheet.unfollow'),
+          handler: this.followPost
+        },
+        this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid && {
+          title: i18n.t('components.post.actionSheet.delete'), 
+          handler: this.deletePost
+        },
+        { 
+          title: i18n.t('components.post.actionSheet.cancel')
+        }
+      ].filter(o => !!o);
+      
       return (
        
       <View style={styles.container}>
@@ -120,8 +153,18 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             <Image style={styles.avatarIconImage as any} source={!this.state.post.anonymous && this.state.post.owner && this.state.post.owner.photoURL? { uri: this.state.post.owner.photoURL }: photoDefault} width={40} height={40}/>
             {this.state.post.anonymous? <Text style={styles.headerText}>{ i18n.t('global.user.anonymousLabel')}</Text>: <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>}
           </TouchableOpacity>
-
-          <Text style={styles.headerText}>{getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
+          <View style={styles.postOptions}>
+            <ActionSheet
+                      tintColor={THEME.colors.primary.default}
+                      ref={o => this.actionSheet = o}
+                      options={actionSheetOptions.map(o => o.title)}
+                      cancelButtonIndex={actionSheetOptions.length - 1}
+                      onPress={(index) => { actionSheetOptions[index].handler && actionSheetOptions[index].handler() }}
+              />
+            <TouchableOpacity onPress={() => this.actionSheet.show()}>
+              <FontAwesome name="ellipsis-h" size={20}/>
+            </TouchableOpacity>
+          </View>
         </View>)
       : null }
         <View style={styles.postBody}>
@@ -152,6 +195,10 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
         </View>
         <View style={styles.bottom}>
+          <Text style={styles.headerText}>{getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
+          <Text style={styles.separator}>
+            •
+          </Text>
           <Text style={styles.bottomText}>{ moment(this.state.post.createdAt).fromNow() }</Text>
           {this.state.post.channel? 
           (<View style={styles.footerItem}>
@@ -171,11 +218,6 @@ export default class PostComponent extends React.Component<PostComponentProps, P
               { this.state.post.commentsCount }
             </Text>
           </View>
-          <View style={styles.followButton} >
-            {this.state.post.owner && this.state.post.owner.uid !== firebase.auth().currentUser.uid && <TouchableOpacity  onPress={() => this.followPost()}>
-                <MaterialIcons name="notifications" size={30} color={profileFollowPost ? THEME.colors.primary.dark: '#000'}/>
-            </TouchableOpacity>}
-          </View>
         </View>
       </View>)
   }
@@ -187,8 +229,9 @@ const styles = StyleSheet.create({
   },
   container: { 
     backgroundColor: '#fff',
-    padding: 12,
-    marginBottom: 2,
+    paddingHorizontal: 12,
+    paddingTop: 12,
+    paddingBottom: 20,
     borderBottomColor: '#F5F5F5',
     borderBottomWidth: 2
   }, 
@@ -246,11 +289,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  followButton: {
+  postOptions: {
     flexGrow: 1,
     alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    marginRight: 1
+    justifyContent: 'center',
+    paddingVertical: 10,
+    marginRight: 12,
+    marginTop: -5
   },
   voteButton: {
     fontSize: 25
@@ -282,7 +327,7 @@ export interface PostComponentProps {
   showPostHeader: boolean;
   onOpenProfile?: (profile) => void;
   onOpenChannel?: (channel) => void;
-  
+  onPostDeleted?: (post) => void;
 }
 
 export interface PostComponentState {
