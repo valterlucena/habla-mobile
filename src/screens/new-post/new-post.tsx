@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator, StatusBar, Dimensions } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Permissions, Location } from 'expo';
 import { client } from '../../services/client';
@@ -9,6 +9,7 @@ import i18n from 'i18n-js';
 import { CheckBox } from 'react-native-elements';
 
 import ChangePhotoComponent from '../../components/change-photo/change-photo'
+import AutoHeightImage from 'react-native-auto-height-image';
 
 export default class NewPostScreen extends React.Component<NewPostScreenProps, NewPostScreenState> {
   constructor(props: NewPostScreenProps) {
@@ -112,15 +113,26 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
     return (
       <View style={styles.newPost.container}>
         <StatusBar hidden={true}></StatusBar>
+        <View style={styles.header.container}>
+          <TouchableOpacity onPress={this.dismiss}>
+            <FontAwesome name="chevron-left" size={35} color={THEME.colors.primary.default}></FontAwesome>
+          </TouchableOpacity>
+        </View>
         {this.state.errorMessage &&
           <View style={styles.newPost.errorView}>
             <Ionicons name="ios-sad" size={100} color="white" />
             <Text style={styles.newPost.errorText}>{this.state.errorMessage}</Text>
           </View>}
-        <View style={styles.header.container}>
-          <TouchableOpacity onPress={this.dismiss}>
-            <FontAwesome name="chevron-left" size={35} color={THEME.colors.primary.default}></FontAwesome>
-          </TouchableOpacity>
+        <TextInput style={styles.newPost.input}
+          onChangeText={this.handlePostInput}
+          value={this.state.post.body}
+          placeholderTextColor="white"
+          placeholder={i18n.t('screens.newPost.inputPlaceholder')}
+          editable={!this.state.posting}
+          multiline={true}
+          underlineColorAndroid="rgba(0,0,0,0)" />
+        {this.state.photo && this.state.photo.uri && <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.photo.uri}}/>}
+        <View style={styles.footer.container}>
           <CheckBox
             title={i18n.t('screens.newPost.anonymous')}
             checked={this.state.post.anonymous}
@@ -134,14 +146,6 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
             <FontAwesome name="image" size={35} color={THEME.colors.primary.default}></FontAwesome>
           </ChangePhotoComponent>
         </View>
-        <TextInput style={styles.newPost.input}
-          onChangeText={this.handlePostInput}
-          value={this.state.post.body}
-          placeholderTextColor="white"
-          placeholder={i18n.t('screens.newPost.inputPlaceholder')}
-          editable={!this.state.posting}
-          multiline={true}
-          underlineColorAndroid="rgba(0,0,0,0)" />
         <TouchableOpacity style={styles.newPost.sendButton}
           onPress={this.sendPost}
           disabled={this.state.posting || !this.state.post.body || this.state.post.body.trim() == ''}
@@ -155,6 +159,14 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
 
 const styles = {
   header: StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 16,
+      justifyContent: 'space-between'
+    }
+  }),
+  footer: StyleSheet.create({
     container: {
       flexDirection: 'row',
       alignItems: 'center',

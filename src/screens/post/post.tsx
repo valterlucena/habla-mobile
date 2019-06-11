@@ -79,7 +79,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
             profilePostVote {
               type
             }
-            profileFollowPost{
+            profileFollowPost {
               postId
               profileUid
             }
@@ -89,41 +89,32 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
               name
               photoURL
             }
+            profilePostVote {
+              type
+            }
+            owner {
+              uid
+              username
+              name
+              photoURL
+            }
             channels {
               id
+              name
+            }
+            comments {
+              id
+              createdAt
               body
               distance
-              createdAt
-              anonymous
-              commentsCount
-              rate
-              photoURL
-              profilePostVote {
-                type
-              }
               owner {
                 uid
+                name
                 username
-                name
-                photoURL
-              }
-              channels {
-                id
-                name
-              }
-              comments {
-                id
-                createdAt
-                body
-                distance
-                owner {
-                  uid
-                  name
-                  username
-                }
               }
             }
           }
+        }
         `),
         context: {
           location: {
@@ -197,8 +188,20 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
       });
 
       
-      this.setState({ post: { ...this.state.post, comments: [response.data.createComment, ...this.state.post.comments], commentsCount: this.state.post.commentsCount + 1 }});
-      this.setState({ newComment: { body: null }});
+      this.setState({ 
+        post: { 
+          ...this.state.post, 
+          comments: [response.data.createComment, ...this.state.post.comments], 
+          commentsCount: this.state.post.commentsCount + 1,
+          profileFollowPost: {
+            profileUid: firebase.auth().currentUser.uid,
+            postId: this.state.post.id
+          }
+        },
+        newComment: { 
+          body: null 
+        }
+      });
     } catch (error) {
       const errorMessage = error.networkError ? i18n.t('screens.post.errors.commentingPost.connection') : i18n.t('screens.post.errors.commentingPost.unexpected');
       this.setState({ errorMessage });

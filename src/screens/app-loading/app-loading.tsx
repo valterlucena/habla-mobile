@@ -7,7 +7,7 @@ import THEME from "../../theme/theme";
 import { Location, Linking, Permissions, Notifications } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import i18n from 'i18n-js';
-
+import { getReverseLocationFromCoords } from "../../util";
 export default class AppLoadingScreen extends React.Component<any, AppLoadingState> {
   _notificationsSubscription;
 
@@ -71,7 +71,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
 
     // handle timeout
 
-    let location: any = await Location.reverseGeocodeAsync({ latitude: coords.latitude, longitude: coords.longitude });
+    let location = await getReverseLocationFromCoords({ latitude: coords.latitude, longitude: coords.longitude });
 
     console.log(location);
 

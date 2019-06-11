@@ -10,6 +10,7 @@ import { getTranslatedDistanceFromEnum } from '../../util';
 import ParsedText from 'react-native-parsed-text';
 import AutoHeightImage from 'react-native-auto-height-image';
 import THEME from '../../theme/theme';
+import firebase from 'firebase';
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   constructor(props: PostComponentProps) {
