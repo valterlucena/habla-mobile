@@ -238,6 +238,14 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     this.props.navigation.push('PostScreen', { post: post });
   }
 
+  onPostDeleted = (post) => {
+    this.state.posts.splice(this.state.posts.indexOf(post), 1);
+
+    this.setState({
+      posts: this.state.posts
+    }); // force update
+  }
+
   newPost = () => {
     this.setState({ showNewPostModal: true });
   }
@@ -314,7 +322,8 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                       <PostComponent post={item}
                                     showPostHeader={true}
                                     onOpenProfile={this.openProfile}
-                                    onOpenChannel={this.openChannel}/>
+                                    onOpenChannel={this.openChannel}
+                                    onPostDeleted={this.onPostDeleted}/>
                     </TouchableOpacity>
           )}/>
         </View>

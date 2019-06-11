@@ -139,6 +139,14 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
     this.props.navigation.push('PostScreen', { post: post });
   }
 
+  onPostDeleted = (post) => {
+    this.state.profile.posts.splice(this.state.profile.posts.indexOf(post), 1);
+
+    this.setState({
+      profile: this.state.profile
+    }); // force update
+  }
+
   openProfileEdition = () => {
     this.props.navigation.push('ProfileEditionScreen', {
       profile: this.state.profile, onProfileEdition: profile => {
@@ -200,7 +208,8 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
           <TouchableOpacity key={item.id} onPress={() => this.openPost(item)}>
             <PostComponent post={item}
               showPostHeader={true}
-              onOpenChannel={this.openChannel} />
+              onOpenChannel={this.openChannel}
+              onPostDeleted={this.onPostDeleted}/>
           </TouchableOpacity>)
         )}
       </ScrollView>
