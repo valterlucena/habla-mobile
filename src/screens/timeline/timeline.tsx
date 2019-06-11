@@ -103,7 +103,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
       const locationHasChanged = options.setLocation || options.resetCurrentLocation;
 
-      const availableLocations = cachedProfile.home ? [currentLocation, cachedProfile.home] : [currentLocation];
+      const availableLocations = cachedProfile && cachedProfile.home ? [currentLocation, cachedProfile.home] : [currentLocation];
 
       this.props.navigation.setParams({ availableLocations });
 
