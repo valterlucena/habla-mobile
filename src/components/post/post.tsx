@@ -188,16 +188,16 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           <View style={styles.postOptions}>
             <MenuProvider skipInstanceCheck={true} backHandler={true}>
               <Menu>
-                <MenuTrigger customStyles={{triggerWrapper: {padding: 10, width: 100, height: 50, alignItems: 'flex-end', justifyContent: 'flex-end' }}}>
+                <MenuTrigger customStyles={{triggerWrapper: {padding: 10, height: 50, width: 75, alignItems: 'flex-end', justifyContent: 'flex-end' }}}>
                   <FontAwesome name="ellipsis-h" size={20}/>
                 </MenuTrigger>
 
-                <MenuOptions customStyles={{optionsWrapper: {marginLeft: 10}, optionTouchable: {padding: 10, backgroundColor: THEME.colors.secondary}}}>
-                  <MenuOption onSelect={() => this.followPost()} disableTouchable={profileFollowPost}>
-                    { profileFollowPost ? <Text>following post</Text> : <Text>follow post</Text>}
+                <MenuOptions customStyles={{optionsWrapper: {overflow: 'visible'}}}>
+                  <MenuOption onSelect={() => this.followPost()} disableTouchable={!!profileFollowPost}>
+                    { !!profileFollowPost ? <Text><FontAwesome name="bell" /> following</Text> : <Text><FontAwesome name="bell-o" /> follow</Text>}
                   </MenuOption>
                   <MenuOption onSelect={() => this.deletePost(this.state.post.id)}> 
-                    <Text>delete post</Text>
+                    <Text><FontAwesome name="trash-o" /> delete</Text>
                   </MenuOption>
                 </MenuOptions>
 
@@ -215,8 +215,9 @@ const styles = StyleSheet.create({
   },
   container: { 
     backgroundColor: '#fff',
-    padding: 12,
-    marginBottom: 2,
+    paddingHorizontal: 12,
+    paddingTop: 12,
+    paddingBottom: 20,
     borderBottomColor: '#F5F5F5',
     borderBottomWidth: 2
   }, 
@@ -312,7 +313,6 @@ export interface PostComponentProps {
   showPostHeader: boolean;
   onOpenProfile?: (profile) => void;
   onOpenChannel?: (channel) => void;
-  
 }
 
 export interface PostComponentState {
