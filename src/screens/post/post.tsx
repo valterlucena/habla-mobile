@@ -145,6 +145,10 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   openProfile = (profile) => {
     this.props.navigation.push('ProfileScreen', { profile: profile });
   }
+  
+  onPostDeleted = () => {
+    this.props.navigation.pop();
+  }
 
   handleCommentInput = (text) => {
     this.setState({
@@ -233,7 +237,8 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
           <PostComponent post={this.state.post}
             showPostHeader={true}
             onOpenProfile={this.openProfile}
-            onOpenChannel={this.openChannel} />}
+            onOpenChannel={this.openChannel} 
+            onPostDeleted={this.onPostDeleted}/>}
         {this.state.post &&
           <View style={styles.newComment.container}>
             <TextInput style={styles.newComment.input}
