@@ -49,12 +49,21 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
               body
               distance
               createdAt
+              commentsCount
+              rate
               photoURL
               anonymous
+              profilePostVote {
+                type
+              }
+              profileFollowPost{
+                postId
+                profileUid
+              }
               owner {
                 uid
-                photoURL
                 username
+                photoURL
               }
               channels {
                 id
@@ -131,7 +140,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
           editable={!this.state.posting}
           multiline={true}
           underlineColorAndroid="rgba(0,0,0,0)" />
-        {this.state.photo && this.state.photo.uri && <AutoHeightImage width={Dimensions.get('window').width} source={{ uri: this.state.photo.uri}}/>}
+        {this.state.photo && this.state.photo.uri && <AutoHeightImage width={200} source={{ uri: this.state.photo.uri}}/>}
         <View style={styles.footer.container}>
           <CheckBox
             title={i18n.t('screens.newPost.anonymous')}
@@ -142,7 +151,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
             containerStyle={styles.newPost.anonymousButton}
             onPress={() => this.setState({ post: { ...this.state.post, anonymous: !this.state.post.anonymous } })}
           />
-          <ChangePhotoComponent onPhotoSelected={this.importPhoto} enabled={true}>
+          <ChangePhotoComponent onPhotoSelected={this.importPhoto} enabled={!this.state.posting}>
             <FontAwesome name="image" size={35} color={THEME.colors.primary.default}></FontAwesome>
           </ChangePhotoComponent>
         </View>

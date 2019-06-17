@@ -25,7 +25,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       title: params && params.channel? `#${params.channel.name}`: i18n.t('screens.timeline.title'), 
       headerTitle:(
         <TouchableOpacity style={styles.page.headerTouchable} onPress={changeLocation} disabled={!(availableLocations && availableLocations.length > 1)}>
-          {loadingLocationInfo? 
+          {(loadingLocationInfo || !currentLocationName)? 
             <ActivityIndicator size="small" style={styles.page.locationLoading} color="white"/>:
             <View style={styles.page.headerTouchableLocation}>
               <Ionicons name="md-pin" color="white" size={20}/>
@@ -158,7 +158,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     try {
       let posts = await this.fetchPosts({ limit: 10, ignoreIds: this.state.posts.map(c => c.id)});
       
-      this.setState({ posts: [...this.state.posts, ...posts] });
+      this.setState({ posts: [...this.state.posts, ...posts], errorMessage: null });
     } catch (error) {
       console.log(error);
     } finally {
@@ -297,6 +297,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
             <Ionicons name="ios-sad" size={100} color="white"/>
             <Text style={styles.page.errorText}>{ this.state.errorMessage }</Text>
           </View>}
+          { this.currentChannel && 
+            <View style={styles.page.currentChannelView}>
+              <Text style={styles.page.currentChannelText}>#{ this.currentChannel.name }</Text>
+            </View>}
           <FlatList data={this.state.posts}
                     keyExtractor={(item) => item.id.toString()}
                     onEndReached={this.loadMorePosts}
@@ -317,6 +321,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                       activeTabStyle={styles.page.activeTabStyle}
                       tabTextStyle={styles.page.tabTextStyle}
                     />}
+                    ListFooterComponent={!this.state.refreshing && this.state.posts.length === 0 && <Text style={styles.page.noPosts}>There's nothing here yet. Be the first to create a post!</Text>}
                     renderItem={({item}) =>(
                     <TouchableOpacity onPress={() => this.openPost(item)}>
                       <PostComponent post={item}
@@ -369,7 +374,7 @@ const styles = {
     },
     tabTextStyle: {
       fontSize: 16,
-      fontWeight: "bold",
+      fontWeight: "400",
       color: THEME.colors.secondary.default
     },
     newPostModal: {
@@ -404,6 +409,23 @@ const styles = {
     },
     headerTouchableLocation: {
       flexDirection: 'row'
+    },
+    noPosts: {
+      padding: 20,
+      fontSize: 20,
+      fontWeight: "200",
+      textAlign: 'center'
+    },
+    currentChannelView: {
+      paddingTop: 10,
+      backgroundColor: THEME.colors.primary.default,
+      alignItems: "center",
+      paddingBottom: 20
+    },
+    currentChannelText: {
+      color: "white",
+      fontWeight: "bold",
+      fontSize: 20
     }
   }),
 };

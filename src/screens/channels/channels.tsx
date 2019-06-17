@@ -62,7 +62,7 @@ export default class ChannelsScreen extends React.Component<ChannelsScreenProps,
   loadMoreChannels = async () => {
     if (this.state.refreshing || this.state.loadingMoreChannels) return;
 
-    this.setState({ loadingMoreChannels: true });
+    this.setState({ loadingMoreChannels: true, errorMessage: null });
 
     try {
       let channels = await this.fetchChannels({ limit: 10, ignoreIds: this.state.channels.map(c => c.id), searchString: this.state.searchString });
@@ -213,7 +213,7 @@ const styles = {
     },
     channelTitle: {
       fontSize: 22,
-      fontWeight: 'bold'
+      fontWeight: '500'
     },
     channelBadge: {
       padding: 10,

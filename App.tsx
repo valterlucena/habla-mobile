@@ -88,7 +88,7 @@ const TabsNavigator = createBottomTabNavigator({
       if (routeName === 'TimelineStack') {
         return <FontAwesome name="home" size={size} color={tintColor}/>;
       } else if (routeName === 'ChannelsStack') {
-        return <FontAwesome name="weixin" size={size} color={tintColor}/>;
+        return <FontAwesome name="hashtag" size={size} color={tintColor}/>;
       } else if (routeName === 'ProfileStack') {
         return <FontAwesome name="user" size={size} color={tintColor}/>;
       }

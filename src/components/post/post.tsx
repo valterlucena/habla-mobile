@@ -130,7 +130,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       const photoDefault = require('../../../assets/avatar-placeholder.png');
       const { profileFollowPost } = this.state.post;
       const actionSheetOptions = [
-        { 
+        this.state.post.owner && this.state.post.owner.uid !== firebase.auth().currentUser.uid && { 
           title: !profileFollowPost ? i18n.t('components.post.actionSheet.follow'): i18n.t('components.post.actionSheet.unfollow'),
           handler: this.followPost
         },
@@ -194,7 +194,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
         </View>
         <View style={styles.bottom}>
-          <Text style={styles.headerText}>{getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
+          <Text style={styles.bottomText}>{getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
           <Text style={styles.separator}>
             •
           </Text>
@@ -263,16 +263,16 @@ const styles = StyleSheet.create({
     borderRadius: 20
   },
   headerText: {
-    fontSize: 12, 
-    fontWeight: 'bold'
+    fontSize: 14, 
+    fontWeight: '400'
   },
   channelTitle: {
-    fontSize: 12,
-    fontWeight: 'bold'
+    fontSize: 14,
+    fontWeight: '400'
   },
   bodyText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '300',
     color: '#181818',
     marginVertical: 8
   },
