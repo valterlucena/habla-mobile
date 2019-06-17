@@ -27,13 +27,14 @@ const pt: AppTranslations = {
             locationNotAuthorized: {
                 message: 'Você precisa permitir o acesso à sua localização para usar o Habla.',
                 buttons: {
-                    openSettings: 'Abrir configurações'
+                    openSettings: 'Abrir configurações',
+                    retry: 'Tentar novamente'
                 }
             },
             errors: {
                 fetchingProfile: {
-                    unexpected: 'Um erro inesperado ocorreu ao carregar o perfil salvo no aplicativo.',
-                    connection: 'Houve um erro de conexão ao carregar o perfil salvo no aplicativo. Verifique se está conectado à internet.'
+                    unexpected: 'Um erro inesperado ocorreu ao carregar o seu perfil.',
+                    connection: 'Houve um erro de conexão ao carregar o seu perfil. Verifique se está conectado à internet.'
                 },
                 updateExpoPushToken:{
                     internalServerError: "Erro ao atualizar o token do expo."

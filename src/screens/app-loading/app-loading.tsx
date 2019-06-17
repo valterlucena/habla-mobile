@@ -71,7 +71,7 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
 
     // handle timeout
 
-    let location = await getReverseLocationFromCoords({ latitude: coords.latitude, longitude: coords.longitude });
+    let location: any = await getReverseLocationFromCoords({ latitude: coords.latitude, longitude: coords.longitude });
 
     console.log(location);
 
@@ -140,13 +140,14 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
         `),
         fetchPolicy: 'no-cache'
       });
+      
       const profile = (response.data as any).profile;
 
       return profile;
 
     } catch (error) {
       const errorMessage = error.networkError ? i18n.t('screens.appLoading.errors.fetchingProfile.connection') : i18n.t('screens.appLoading.errors.fetchingProfile.unexpected');
-      this.setState({ errorMessage });
+      this.setState({ errorMessage, loading: false });
       console.log(error);
       throw error;
     }
@@ -229,22 +230,25 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
     return (
       <View style={styles.page.container}>
         <StatusBar barStyle="light-content" />
-        {this.state.errorMessage &&
+        {this.state.errorMessage ? 
           <View style={styles.page.errorView}>
             <Ionicons name="ios-sad" size={100} color="white" />
             <Text style={styles.page.errorText}>{this.state.errorMessage}</Text>
+              <Text style={styles.retry.text} onPress={this.init}>Retry</Text>
+          </View>: 
+          <View>
+          { this.state.loading && <ActivityIndicator color="white" size="large"/>}
+          { this.state.location && !this.state.locationNotAuthorized && <Text style={styles.page.text}>{ i18n.t('screens.appLoading.greeting', { location: this.state.location.city || this.state.location.street }) }</Text> }
+          { this.state.locationNotAuthorized &&
+            <View style={styles.page.locationNotAuthorizedView}>
+              <Ionicons name="ios-sad" size={100} color="white" />
+              <Text style={styles.page.text}>{i18n.t('screens.appLoading.locationNotAuthorized.message')}</Text>
+              <TouchableOpacity style={styles.button.touchable} onPress={() => Linking.openURL('app-settings:')}>
+                <Text style={styles.button.text}>{i18n.t('screens.appLoading.locationNotAuthorized.buttons.openSettings')}</Text>
+              </TouchableOpacity>
+            </View>}
           </View>}
         <StatusBar barStyle="light-content"/>
-        { this.state.loading && <ActivityIndicator color="white" size="large"/>}
-        { this.state.location && !this.state.locationNotAuthorized && <Text style={styles.page.text}>{ i18n.t('screens.appLoading.greeting', { location: this.state.location.city || this.state.location.street }) }</Text> }
-        { this.state.locationNotAuthorized &&
-          <View style={styles.page.locationNotAuthorizedView}>
-            <Ionicons name="ios-sad" size={100} color="white" />
-            <Text style={styles.page.text}>{i18n.t('screens.appLoading.locationNotAuthorized.message')}</Text>
-            <TouchableOpacity style={styles.button.touchable} onPress={() => Linking.openURL('app-settings:')}>
-              <Text style={styles.button.text}>{i18n.t('screens.appLoading.locationNotAuthorized.buttons.openSettings')}</Text>
-            </TouchableOpacity>
-          </View>}
       </View>
     );
   }
@@ -272,7 +276,6 @@ const styles = {
     },
     errorView: {
       padding: 20,
-      backgroundColor: THEME.colors.error.default,
       justifyContent: 'center',
       alignItems: 'center'
     },
@@ -291,6 +294,13 @@ const styles = {
       backgroundColor: THEME.colors.primary.default,
       padding: 12,
       borderRadius: 10
+    },
+  }),
+  retry: StyleSheet.create({
+    text: {
+      color: "white",
+      fontWeight: "bold",
+      padding: 4
     }
   })
 };

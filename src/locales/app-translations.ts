@@ -1,5 +1,3 @@
-import { Notifications } from "expo";
-
 export interface AppTranslations {
     global: {
         user: {
@@ -28,6 +26,7 @@ export interface AppTranslations {
                 message: string;
                 buttons: {
                     openSettings: string;
+                    retry: string;
                 }
             };
             errors: { 

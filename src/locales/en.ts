@@ -27,13 +27,14 @@ const en: AppTranslations = {
             locationNotAuthorized: {
                 message: 'You need to allow access to your location information to use Habla.',
                 buttons: {
-                    openSettings: 'Open settings'
+                    openSettings: 'Open settings',
+                    retry: 'Retry'
                 }
             },
             errors: {
                 fetchingProfile: {
-                    unexpected: 'An unexpected error occurred while loading app profile.',
-                    connection: 'There was a problem loading the app profile. Please check your connection.'
+                    unexpected: 'An unexpected error occurred while loading your profile information.',
+                    connection: 'There was a problem loading your profile information. Please check your connection.'
                 },
                 updateExpoPushToken:{
                     internalServerError: "Error updating expo push token."
