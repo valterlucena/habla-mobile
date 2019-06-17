@@ -170,7 +170,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
           </View>}
         <ScrollView>
           <View style={styles.page.header.avatarContainer}>
-            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving} style={styles.page.header.avatar}>
+            <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving} style={styles.page.header.avatar} squared>
               <Image width={150} height={150} source={this.state.photo || photoDefault} style={styles.page.header.avatar}/>
             </ChangePhotoComponent>
           </View>

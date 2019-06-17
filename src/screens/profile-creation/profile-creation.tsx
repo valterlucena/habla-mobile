@@ -91,7 +91,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
                 </Text>
               </View>
               <View style={styles.page.header.right}>
-                <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving}>
+                <ChangePhotoComponent onPhotoSelected={this.changePhoto} enabled={!this.state.saving} squared>
                   <Image width={100} height={100} source={this.state.photo || photoDefault} style={styles.page.form.photo} />
                 </ChangePhotoComponent>
               </View>

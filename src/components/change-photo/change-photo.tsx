@@ -17,7 +17,7 @@ export default class ChangePhotoComponent extends React.Component<ChangePhotoPro
 
     showActionSheet = () => {
         this.actionSheet.show()
-      }
+    }
 
     choosePhoto = async index => {        
         let image: any;
@@ -29,7 +29,7 @@ export default class ChangePhotoComponent extends React.Component<ChangePhotoPro
             if (Platform.OS === 'ios' ){
                 await Permissions.askAsync(Permissions.CAMERA_ROLL);
             } 
-            image = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'Images', allowsEditing: true, aspect: [4, 4] });
+            image = await ImagePicker.launchImageLibraryAsync({ mediaTypes: 'Images', allowsEditing: true, aspect: this.props.squared? [1,1]: undefined });
         }
         if ((index == 2) || (image.cancelled)) {
             return;
@@ -71,6 +71,7 @@ export interface ChangePhotoProps {
     onPhotoSelected: (photo: string) => void | Promise<void>;
     enabled?: boolean;
     style?: any;
+    squared?: boolean;
 }
 
 export interface ChangePhotoState {
