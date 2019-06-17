@@ -52,11 +52,13 @@ const en: AppTranslations = {
             },
             buttons: {
                 signInWithFacebook: 'Sign in with Facebook',
-                signInWithCredentials: 'Sign in'
+                signInWithCredentials: 'Sign in',
+                signUpWithCredentials: 'Sign up'
             },
             errors:{
                 signInWithFacebook: "An error occurred while logging in with facebook.",
-                signInWithCredentials: "Error occurred while login with credentials. Invalid email or password."
+                signInWithCredentials: "An error occurred while logging in with your credentials.",
+                signUpWithCredentials: "An error occurred while signing up with your credentials."
             }
         },
         profileCreation: {

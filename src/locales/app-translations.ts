@@ -53,10 +53,12 @@ export interface AppTranslations {
             buttons: {
                 signInWithFacebook: string;
                 signInWithCredentials: string;
+                signUpWithCredentials: string;
             }
             errors:{
                 signInWithFacebook: string;
                 signInWithCredentials: string;
+                signUpWithCredentials: string;
             }
         },
         profileCreation: {

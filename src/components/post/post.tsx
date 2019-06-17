@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions} from 'react-native';
-import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger} from 'react-native-popup-menu';
 import moment from 'moment';
 import { FontAwesome } from '@expo/vector-icons';
 import { client } from '../../services/client';

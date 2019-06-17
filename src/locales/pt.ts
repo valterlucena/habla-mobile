@@ -51,11 +51,13 @@ const pt: AppTranslations = {
             },
             buttons: {
                 signInWithFacebook: 'Entrar com o Facebook',
-                signInWithCredentials: 'Entrar'
+                signInWithCredentials: 'Entrar',
+                signUpWithCredentials: 'Cadastrar'
             },
             errors:{
                 signInWithFacebook: "Ocorreu um erro durante o login com o facebook.",
-                signInWithCredentials: "Um erro ocorreu ao logar com as credenciais. Email ou senha inválidos."
+                signInWithCredentials: "Um erro ocorreu ao logar com as credenciais informadas.",
+                signUpWithCredentials: "Um erro ocorreu ao cadastrar com as credenciais informadas."
             }
         },
         profileCreation: {
