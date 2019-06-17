@@ -83,7 +83,7 @@ export default class NotificationsScreen extends React.Component<NotificationsPr
         fetchPolicy: 'no-cache'
       });
 
-      this.setState({ notifications: response.data.notifications });
+      this.setState({ notifications: response.data.notifications, errorMessage: null });
     } catch (error) {
       const errorMessage = error.networkError ? i18n.t('screens.notifications.errors.fetchingNotifications.connection') : i18n.t('screens.notifications.errors.fetchingNotifications.unexpected');
       this.setState({ errorMessage });

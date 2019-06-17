@@ -110,7 +110,7 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
         }
       });
 
-      this.setState({ profile: response.data.profile });
+      this.setState({ profile: response.data.profile, errorMessage: null });
       this.props.navigation.setParams({ profile: response.data.profile });
       await AsyncStorage.setItem('cached-profile', JSON.stringify(this.state.profile));
     } catch (error) {

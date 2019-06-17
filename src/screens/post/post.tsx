@@ -125,7 +125,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
         fetchPolicy: 'no-cache'
       });
 
-      this.setState({ post: response.data.post });
+      this.setState({ post: response.data.post, errorMessage: null });
     } catch (error) {
       const errorMessage = error.networkError ? i18n.t('screens.post.errors.loadingPost.connection') : i18n.t('screens.post.errors.loadingPost.unexpected');
       this.setState({ errorMessage });
