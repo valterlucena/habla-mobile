@@ -366,11 +366,11 @@ const styles = {
       padding: 16
     },
     tabStyle: {
-      borderColor: THEME.colors.secondary.default
+      borderColor: THEME.colors.secondary.light
     },
     activeTabStyle: {
       backgroundColor: THEME.colors.secondary.light,
-      borderColor: THEME.colors.secondary.default
+      borderColor: THEME.colors.secondary.light
     },
     tabTextStyle: {
       fontSize: 16,
