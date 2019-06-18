@@ -60,7 +60,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       currentLocation: [],
       availableLocations: [],
       posts: [],
-      refreshing: false,
+      refreshing: true,
       loadingMorePosts: false,
       showNewPostModal: false,
       canLoadMorePosts: false,
