@@ -99,7 +99,7 @@ export default class ProfileCreationScreen extends React.Component<any, any> {
         `),
         fetchPolicy: 'no-cache',
         context: {
-          location: {
+          location: this.state.home && {
             latitude: this.state.home[0],
             longitude: this.state.home[1]
           }
