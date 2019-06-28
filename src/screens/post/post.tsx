@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
 import firebase from 'firebase';
 import PostComponent from '../../components/post/post';
 import moment from 'moment';
@@ -11,7 +10,6 @@ import { Location } from 'expo';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
 import { getTranslatedDistanceFromEnum } from '../../util';
-import ChangePhotoComponent from '../../components/change-photo/change-photo'
 import { Ionicons } from '@expo/vector-icons';
 
 export default class PostScreen extends React.Component<PostScreenProps, PostScreenState> {
@@ -148,6 +146,8 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
   
   onPostDeleted = () => {
     this.props.navigation.pop();
+
+    this.props.navigation.state.params && this.props.navigation.state.params.onPostDeleted && this.props.navigation.state.params.onPostDeleted(this.state.post);
   }
 
   handleCommentInput = (text) => {

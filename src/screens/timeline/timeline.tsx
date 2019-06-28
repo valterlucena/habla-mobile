@@ -235,11 +235,11 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   }
 
   openPost = (post) => {
-    this.props.navigation.push('PostScreen', { post: post });
+    this.props.navigation.push('PostScreen', { post: post, onPostDeleted: this.onPostDeleted });
   }
 
   onPostDeleted = (post) => {
-    this.state.posts.splice(this.state.posts.indexOf(post), 1);
+    _.remove(this.state.posts, (p: any) => p.id === post.id);
 
     this.setState({
       posts: this.state.posts

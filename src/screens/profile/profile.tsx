@@ -9,6 +9,7 @@ import THEME from '../../theme/theme';
 import PostComponent from '../../components/post/post';
 import i18n from 'i18n-js';
 import { Permissions, Location } from 'expo';
+import _ from 'lodash';
 
 export default class ProfileScreen extends React.Component<ProfileScreenProps, ProfileScreenState> {
 
@@ -136,11 +137,11 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
   }
 
   openPost = (post) => {
-    this.props.navigation.push('PostScreen', { post: post });
+    this.props.navigation.push('PostScreen', { post: post, onPostDeleted: this.onPostDeleted });
   }
 
   onPostDeleted = (post) => {
-    this.state.profile.posts.splice(this.state.profile.posts.indexOf(post), 1);
+    _.remove(this.state.profile.posts, (p: any) => p.id === post.id);
 
     this.setState({
       profile: this.state.profile
