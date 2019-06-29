@@ -293,11 +293,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'center',
     paddingVertical: 10,
-    marginRight: 12,
-    marginTop: -5
+    marginTop: -5,
+    padding: 10
   },
   voteButton: {
-    fontSize: 25
+    fontSize: 25,
+    padding: 10
   },
   postRate: {
     fontSize: 18
