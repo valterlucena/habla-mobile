@@ -160,7 +160,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
                       cancelButtonIndex={actionSheetOptions.length - 1}
                       onPress={(index) => { actionSheetOptions[index].handler && actionSheetOptions[index].handler() }}
               />
-            <TouchableOpacity onPress={() => this.actionSheet.show()}>
+            <TouchableOpacity onPress={() => this.actionSheet.show()} style={styles.clickableArea}>
               <FontAwesome name="ellipsis-h" size={20}/>
             </TouchableOpacity>
           </View>
@@ -182,13 +182,13 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             {this.state.post.photoURL && <AutoHeightImage width={Dimensions.get('window').width - 80} source={{ uri: this.state.post.photoURL}}/>}
           </View>
           <View style={styles.postRight}>
-            <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")}>
+            <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")} style={styles.clickableArea}>
               <FontAwesome style={styles.voteButton} name="chevron-up" color={vote === "UP"? "#777": null}/>
             </TouchableOpacity>
             <Text style={styles.postRate}>
               { this.state.post.rate || 0 }
             </Text>
-            <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")}>
+            <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")} style={styles.clickableArea}>
               <FontAwesome style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
             </TouchableOpacity> 
           </View>
@@ -293,12 +293,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'center',
     paddingVertical: 10,
-    marginTop: -5,
-    padding: 10
+    marginTop: -5
   },
   voteButton: {
-    fontSize: 25,
-    padding: 10
+    fontSize: 25
   },
   postRate: {
     fontSize: 18
@@ -319,6 +317,11 @@ const styles = StyleSheet.create({
   },
   hashTag: {
     color: THEME.colors.primary.default
+  },
+  clickableArea:{
+    paddingVertical: 20,
+    paddingLeft: 10,
+    paddingRight: 10
   }
 });
 
