@@ -160,7 +160,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
                       cancelButtonIndex={actionSheetOptions.length - 1}
                       onPress={(index) => { actionSheetOptions[index].handler && actionSheetOptions[index].handler() }}
               />
-            <TouchableOpacity onPress={() => this.actionSheet.show()}>
+            <TouchableOpacity onPress={() => this.actionSheet.show()} style={styles.clickableArea}>
               <FontAwesome name="ellipsis-h" size={20}/>
             </TouchableOpacity>
           </View>
@@ -286,18 +286,18 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 0,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginTop: -10
   },
   postOptions: {
     flexGrow: 1,
     alignItems: 'flex-end',
     justifyContent: 'center',
     paddingVertical: 10,
-    marginRight: 12,
     marginTop: -5
   },
   voteButton: {
-    fontSize: 25
+    fontSize: 25,
   },
   postRate: {
     fontSize: 18
@@ -318,6 +318,12 @@ const styles = StyleSheet.create({
   },
   hashTag: {
     color: THEME.colors.primary.default
+  },
+  clickableArea:{
+    paddingTop: 15,
+    paddingBottom: 10,
+    paddingLeft: 20, 
+    paddingRight: 13
   }
 });
 
