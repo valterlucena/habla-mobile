@@ -182,13 +182,13 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             {this.state.post.photoURL && <AutoHeightImage width={Dimensions.get('window').width - 80} source={{ uri: this.state.post.photoURL}}/>}
           </View>
           <View style={styles.postRight}>
-            <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")} style={styles.clickableArea}>
+            <TouchableOpacity disabled={vote === "UP"} onPress={() => this.vote("UP")}>
               <FontAwesome style={styles.voteButton} name="chevron-up" color={vote === "UP"? "#777": null}/>
             </TouchableOpacity>
             <Text style={styles.postRate}>
               { this.state.post.rate || 0 }
             </Text>
-            <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")} style={styles.clickableArea}>
+            <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")}>
               <FontAwesome style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
             </TouchableOpacity> 
           </View>
@@ -286,7 +286,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 0,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginTop: -10
   },
   postOptions: {
     flexGrow: 1,
@@ -296,7 +297,7 @@ const styles = StyleSheet.create({
     marginTop: -5
   },
   voteButton: {
-    fontSize: 25
+    fontSize: 25,
   },
   postRate: {
     fontSize: 18
@@ -319,9 +320,10 @@ const styles = StyleSheet.create({
     color: THEME.colors.primary.default
   },
   clickableArea:{
-    paddingVertical: 20,
-    paddingLeft: 10,
-    paddingRight: 10
+    paddingTop: 15,
+    paddingBottom: 10,
+    paddingLeft: 20, 
+    paddingRight: 13
   }
 });
 
