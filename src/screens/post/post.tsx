@@ -1,9 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, ScrollView, Text, View, RefreshControl, TouchableOpacity, FlatList, ActivityIndicator, TextInput } from 'react-native';
 import firebase from 'firebase';
 import PostComponent from '../../components/post/post';
 import moment from 'moment';
-import { TextInput } from 'react-native-gesture-handler';
 import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import { Location } from 'expo';
@@ -248,7 +247,7 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
               placeholder={i18n.t('screens.post.comments.newCommentInputPlaceholder')}
               editable={!this.state.postingComment}
               underlineColorAndroid="rgba(0,0,0,0)" />
-            {(this.state.newComment.body && this.state.newComment.body.trim() !== '') &&
+            {(!!this.state.newComment.body && this.state.newComment.body.trim() !== '') &&
               <TouchableOpacity style={styles.newComment.sendButton}
                 onPress={this.sendComment}
                 disabled={this.state.postingComment}
