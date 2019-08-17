@@ -343,6 +343,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                avoidKeyboard={true}
                style={styles.page.newPostModal}
                animationInTiming={400}
+               onBackButtonPress={() => this.setState({ showNewPostModal: false })}
                animationOutTiming={400}>
           <NewPostScreen navigation={this.props.navigation} 
                          onSuccess={this.onPostSent}
