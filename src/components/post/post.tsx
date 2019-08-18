@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions} from 'react-native';
 import moment from 'moment';
 import { FontAwesome } from '@expo/vector-icons';
 import { client } from '../../services/client';
@@ -9,8 +9,13 @@ import { getTranslatedDistanceFromEnum } from '../../util';
 import ParsedText from 'react-native-parsed-text';
 import AutoHeightImage from 'react-native-auto-height-image';
 import THEME from '../../theme/theme';
+import firebase from 'firebase';
+
+import ActionSheet from 'react-native-actionsheet'
 
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
+  actionSheet;
+
   constructor(props: PostComponentProps) {
     super(props);
 
@@ -21,7 +26,40 @@ export default class PostComponent extends React.Component<PostComponentProps, P
 
   componentWillReceiveProps() {
     this.setState({ post: this.props.post });
+    
   }
+
+  followPost = async() => {
+    this.setState({ post: { ... this.state.post }});
+
+    try {
+      const response = await client.mutate({
+        variables: { 
+          postId: this.state.post.id
+        },
+        mutation: gql(`
+          mutation FollowPost ($postId: ID!) {
+            togglePostFollow(postId: $postId) {
+              postId
+              profileUid
+            }
+          }
+  
+        `),
+        
+      });
+
+      this.setState({
+        post: {
+          ... this.state.post,
+          profileFollowPost: response.data.togglePostFollow,
+        }
+      });
+    } catch (error) {
+     
+    }
+  }
+  
 
   vote = async(type: "UP" | "DOWN") => {
     if (!(type === "UP" || type === "DOWN")) return;
@@ -61,7 +99,9 @@ export default class PostComponent extends React.Component<PostComponentProps, P
         }
       });
     } catch (error) {
-      // handle
+      const errorMessage = error.networkError? i18n.t('screens.post.errors.votingPost.connection'):i18n.t('screens.post.errors.votingPost.unexpected');
+      this.setState({ errorMessage });
+      console.log(error);
     }
   }
 
@@ -70,10 +110,39 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     return this.state.post.channels.find(c => c.name === name);
   }
 
+  deletePost = async() => {
+    await client.mutate({
+      variables: {
+        postId : this.state.post.id
+      },
+      mutation: gql(`
+        mutation deletePost ($postId: ID!) {          
+          deletePost (postId: $postId)
+        }
+      `)
+    });
+
+    this.props.onPostDeleted && await this.props.onPostDeleted(this.state.post);
+  }
+  
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
       const photoDefault = require('../../../assets/avatar-placeholder.png');
-
+      const { profileFollowPost } = this.state.post;
+      const actionSheetOptions = [
+        this.state.post.owner && this.state.post.owner.uid !== firebase.auth().currentUser.uid && { 
+          title: !profileFollowPost ? i18n.t('components.post.actionSheet.follow'): i18n.t('components.post.actionSheet.unfollow'),
+          handler: this.followPost
+        },
+        this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid && {
+          title: i18n.t('components.post.actionSheet.delete'), 
+          handler: this.deletePost
+        },
+        { 
+          title: i18n.t('components.post.actionSheet.cancel')
+        }
+      ].filter(o => !!o);
+      
       return (
        
       <View style={styles.container}>
@@ -83,8 +152,18 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             <Image style={styles.avatarIconImage as any} source={!this.state.post.anonymous && this.state.post.owner && this.state.post.owner.photoURL? { uri: this.state.post.owner.photoURL }: photoDefault} width={40} height={40}/>
             {this.state.post.anonymous? <Text style={styles.headerText}>{ i18n.t('global.user.anonymousLabel')}</Text>: <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>}
           </TouchableOpacity>
-
-          <Text style={styles.headerText}>{getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
+          <View style={styles.postOptions}>
+            <ActionSheet
+                      tintColor={THEME.colors.primary.default}
+                      ref={o => this.actionSheet = o}
+                      options={actionSheetOptions.map(o => o.title)}
+                      cancelButtonIndex={actionSheetOptions.length - 1}
+                      onPress={(index) => { actionSheetOptions[index].handler && actionSheetOptions[index].handler() }}
+              />
+            <TouchableOpacity onPress={() => this.actionSheet.show()} style={styles.clickableArea}>
+              <FontAwesome name="ellipsis-h" size={20}/>
+            </TouchableOpacity>
+          </View>
         </View>)
       : null }
         <View style={styles.postBody}>
@@ -111,10 +190,14 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             </Text>
             <TouchableOpacity disabled={vote === "DOWN"} onPress={() => this.vote("DOWN")}>
               <FontAwesome style={styles.voteButton} name="chevron-down" color={vote === "DOWN"? "#777": null}/>
-            </TouchableOpacity>
+            </TouchableOpacity> 
           </View>
         </View>
         <View style={styles.bottom}>
+          <Text style={styles.bottomText}>{getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
+          <Text style={styles.separator}>
+            •
+          </Text>
           <Text style={styles.bottomText}>{ moment(this.state.post.createdAt).fromNow() }</Text>
           {this.state.post.channel? 
           (<View style={styles.footerItem}>
@@ -145,11 +228,15 @@ const styles = StyleSheet.create({
   },
   container: { 
     backgroundColor: '#fff',
-    padding: 12,
-    marginBottom: 2,
+    paddingHorizontal: 12,
+    paddingTop: 12,
+    paddingBottom: 20,
     borderBottomColor: '#F5F5F5',
     borderBottomWidth: 2
   }, 
+  notificationButton: {
+    marginRight: 10
+  },
   header: {
     flexDirection: 'row',
     marginBottom: 2,
@@ -176,16 +263,16 @@ const styles = StyleSheet.create({
     borderRadius: 20
   },
   headerText: {
-    fontSize: 12, 
-    fontWeight: 'bold'
+    fontSize: 14, 
+    fontWeight: '400'
   },
   channelTitle: {
-    fontSize: 12,
-    fontWeight: 'bold'
+    fontSize: 14,
+    fontWeight: '400'
   },
   bodyText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '300',
     color: '#181818',
     marginVertical: 8
   },
@@ -199,10 +286,18 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 0,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginTop: -10
+  },
+  postOptions: {
+    flexGrow: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    marginTop: -5
   },
   voteButton: {
-    fontSize: 25
+    fontSize: 25,
   },
   postRate: {
     fontSize: 18
@@ -223,6 +318,12 @@ const styles = StyleSheet.create({
   },
   hashTag: {
     color: THEME.colors.primary.default
+  },
+  clickableArea:{
+    paddingTop: 15,
+    paddingBottom: 10,
+    paddingLeft: 20, 
+    paddingRight: 13
   }
 });
 
@@ -231,8 +332,10 @@ export interface PostComponentProps {
   showPostHeader: boolean;
   onOpenProfile?: (profile) => void;
   onOpenChannel?: (channel) => void;
+  onPostDeleted?: (post) => void;
 }
 
 export interface PostComponentState {
   post: any;
+  errorMessage?: string;
 }

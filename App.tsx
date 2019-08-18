@@ -26,7 +26,7 @@ const firebaseConfig = require('./firebase.json');
 firebase.initializeApp(firebaseConfig);
 
 Localization.getLocalizationAsync().then(localization => {
-  const locale = localization.locale
+  const locale = localization.locale;
 
   i18n.fallbacks = true;
   i18n.translations = { en, pt };
@@ -35,7 +35,7 @@ Localization.getLocalizationAsync().then(localization => {
   if (moment.locales().find(l => l === locale.toLowerCase())) {
     moment.locale(locale.toLowerCase());
   } else {
-    moment.locale('en-us');
+    moment.locale('en');
   }
 });
 
@@ -88,7 +88,7 @@ const TabsNavigator = createBottomTabNavigator({
       if (routeName === 'TimelineStack') {
         return <FontAwesome name="home" size={size} color={tintColor}/>;
       } else if (routeName === 'ChannelsStack') {
-        return <FontAwesome name="weixin" size={size} color={tintColor}/>;
+        return <FontAwesome name="hashtag" size={size} color={tintColor}/>;
       } else if (routeName === 'ProfileStack') {
         return <FontAwesome name="user" size={size} color={tintColor}/>;
       }

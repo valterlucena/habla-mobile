@@ -11,6 +11,9 @@ import { client } from '../../services/client';
 import gql from 'graphql-tag';
 import THEME from '../../theme/theme';
 import i18n from 'i18n-js';
+import SegmentedControlTab from 'react-native-segmented-control-tab';
+import { sortPostsByPopularity, getReverseLocationFromCoords } from '../../util';
+import _ from 'lodash';
 
 export default class TimelineScreen extends React.Component<TimelineProps, TimelineState> {
   static navigationOptions = ({navigation}) => {
@@ -22,7 +25,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       title: params && params.channel? `#${params.channel.name}`: i18n.t('screens.timeline.title'), 
       headerTitle:(
         <TouchableOpacity style={styles.page.headerTouchable} onPress={changeLocation} disabled={!(availableLocations && availableLocations.length > 1)}>
-          {loadingLocationInfo? 
+          {(loadingLocationInfo || !currentLocationName)? 
             <ActivityIndicator size="small" style={styles.page.locationLoading} color="white"/>:
             <View style={styles.page.headerTouchableLocation}>
               <Ionicons name="md-pin" color="white" size={20}/>
@@ -57,9 +60,11 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       currentLocation: [],
       availableLocations: [],
       posts: [],
-      refreshing: false,
+      refreshing: true,
       loadingMorePosts: false,
-      showNewPostModal: false
+      showNewPostModal: false,
+      canLoadMorePosts: false,
+      selectedIndex: 0
     };
 
     this.props.navigation.setParams({ changeLocation: this.changeLocation, loadingLocationInfo: true });
@@ -71,7 +76,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
     lastLocation = lastLocation? JSON.parse(lastLocation): null;
 
     if (lastLocation) {
-      this.props.navigation.setParams({ currentLocationName: lastLocation.city || lastLocation.name });
+      this.props.navigation.setParams({ currentLocationName: lastLocation.city || lastLocation.street });
     }
 
     if (!this.hasChannel()) {
@@ -80,10 +85,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       this.setState({ posts: cachedPosts? JSON.parse(cachedPosts): [] });
     }
     
-    await this.refresh();
+    await this.refresh({ resetCurrentLocation: true });
   }
 
-  refresh = (resetCurrentLocation = true) => {
+  refresh = (options: RefreshOptions = {}) => {
     let refreshPromise = new Promise(async(resolve, reject) => {
       this.setState({ refreshing: true });
 
@@ -92,21 +97,32 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       cachedProfile = cachedProfile && JSON.parse(cachedProfile);
 
       await Permissions.askAsync(Permissions.LOCATION);
+
       const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
       const currentLocation = [location.coords.latitude, location.coords.longitude];
-      const availableLocations = cachedProfile.home ? [currentLocation, cachedProfile.home] : [currentLocation];
-      
-      this.props.navigation.setParams({ availableLocations, currentLocation });
+
+      const locationHasChanged = options.setLocation || options.resetCurrentLocation;
+
+      const availableLocations = cachedProfile && cachedProfile.home ? [currentLocation, cachedProfile.home] : [currentLocation];
+
+      this.props.navigation.setParams({ availableLocations });
 
       this.setState({ 
-        currentLocation: resetCurrentLocation? currentLocation: this.state.currentLocation,
-        availableLocations: availableLocations
+        currentLocation: options.resetCurrentLocation? currentLocation: (options.setLocation || this.state.currentLocation),
+        availableLocations: availableLocations,
+        canLoadMorePosts: true
       }, async() => {
-        this.props.navigation.setParams({ loadingLocationInfo: true });
+        if (locationHasChanged) {
+          this.props.navigation.setParams({ loadingLocationInfo: true });
 
-        let currentLocationName = await this.getLocalInfo(this.state.currentLocation);
+          let currentLocationName;
 
-        this.props.navigation.setParams({ currentLocationName, loadingLocationInfo: false });
+          try {
+            currentLocationName = await this.getLocalInfo(this.state.currentLocation);
+          } finally {
+            this.props.navigation.setParams({ currentLocationName, loadingLocationInfo: false });
+          }
+        }
       });
 
       let posts;
@@ -122,7 +138,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
       if (this.currentRefreshPromise == refreshPromise) {
         this.setState({ posts, refreshing: false, errorMessage: null }, async() => {
-          if (!this.hasChannel()) await AsyncStorage.setItem('cached-timeline', JSON.stringify(posts));
+          if (!this.hasChannel() && !this.showHomePosts) await AsyncStorage.setItem('cached-timeline', JSON.stringify(posts));
         });
       }
 
@@ -141,7 +157,8 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
 
     try {
       let posts = await this.fetchPosts({ limit: 10, ignoreIds: this.state.posts.map(c => c.id)});
-      this.setState({ posts: [...this.state.posts, ...posts] });
+      
+      this.setState({ posts: [...this.state.posts, ...posts], errorMessage: null });
     } catch (error) {
       console.log(error);
     } finally {
@@ -173,6 +190,10 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                 profilePostVote {
                   type
                 }
+                profileFollowPost{
+                  postId
+                  profileUid
+                }
                 owner {
                   uid
                   username
@@ -194,7 +215,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
         fetchPolicy: 'no-cache'
       });
       
-      return response.data.posts;
+      return this.state.selectedIndex === 1? sortPostsByPopularity(response.data.posts): response.data.posts;
     } catch (error) {
       const errorMessage = error.networkError? i18n.t('screens.timeline.errors.fetchingPosts.connection'): i18n.t('screens.timeline.errors.fetchingPosts.unexpected');
 
@@ -214,7 +235,15 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   }
 
   openPost = (post) => {
-    this.props.navigation.push('PostScreen', { post: post });
+    this.props.navigation.push('PostScreen', { post: post, onPostDeleted: this.onPostDeleted });
+  }
+
+  onPostDeleted = (post) => {
+    _.remove(this.state.posts, (p: any) => p.id === post.id);
+
+    this.setState({
+      posts: this.state.posts
+    }); // force update
   }
 
   newPost = () => {
@@ -238,18 +267,24 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
   }
 
   getLocalInfo = async (location) => {
-    let local: any = await Location.reverseGeocodeAsync({ latitude: location[0], longitude: location[1] });
-    return local[0].city || local[0].name;
+    let local: any = await getReverseLocationFromCoords({ latitude: location[0], longitude: location[1] });
+    return local[0].city || local[0].street;
   }
 
   changeLocation = () => {
     this.showHomePosts = !this.showHomePosts;
     
     if (this.showHomePosts) {
-      this.setState({ currentLocation: this.state.availableLocations[1]}, () => this.refresh(false));
+      return this.refresh({ resetCurrentLocation: false, setLocation: this.state.availableLocations[1] });
     } else {
-      this.setState({ currentLocation: this.state.availableLocations[0]}, () => this.refresh(false));
+      return this.refresh({ resetCurrentLocation: false, setLocation: this.state.availableLocations[0] });
     }
+  }
+
+  handleSelectedIndex = (index) => {
+    this.setState({ selectedIndex: index });
+
+    return this.refresh({ resetCurrentLocation: false });
   }
 
   render() {
@@ -262,26 +297,42 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
             <Ionicons name="ios-sad" size={100} color="white"/>
             <Text style={styles.page.errorText}>{ this.state.errorMessage }</Text>
           </View>}
+          { this.currentChannel && 
+            <View style={styles.page.currentChannelView}>
+              <Text style={styles.page.currentChannelText}>#{ this.currentChannel.name }</Text>
+            </View>}
           <FlatList data={this.state.posts}
                     keyExtractor={(item) => item.id.toString()}
                     onEndReached={this.loadMorePosts}
                     onEndReachedThreshold={0.5}
+                    refreshing={this.state.refreshing}
                     refreshControl={
                       <RefreshControl
                         refreshing={this.state.refreshing}
-                        onRefresh={() => this.refresh(false)}
+                        onRefresh={() => this.refresh({ resetCurrentLocation: false })}
                       />
                     }
+                    ListHeaderComponent={<SegmentedControlTab
+                      values={[i18n.t("screens.timeline.tabs.recent"), i18n.t("screens.timeline.tabs.trending")]}
+                      selectedIndex={this.state.selectedIndex}
+                      onTabPress={this.handleSelectedIndex}
+                      tabsContainerStyle={styles.page.tabsContainer}
+                      tabStyle={styles.page.tabStyle}
+                      activeTabStyle={styles.page.activeTabStyle}
+                      tabTextStyle={styles.page.tabTextStyle}
+                    />}
+                    ListFooterComponent={!this.state.refreshing && this.state.posts.length === 0 && <Text style={styles.page.noPosts}>There's nothing here yet. Be the first to create a post!</Text>}
                     renderItem={({item}) =>(
                     <TouchableOpacity onPress={() => this.openPost(item)}>
                       <PostComponent post={item}
                                     showPostHeader={true}
                                     onOpenProfile={this.openProfile}
-                                    onOpenChannel={this.openChannel}/>
+                                    onOpenChannel={this.openChannel}
+                                    onPostDeleted={this.onPostDeleted}/>
                     </TouchableOpacity>
           )}/>
         </View>
-        <ActionButton buttonColor={THEME.colors.secondary.default}
+        <ActionButton buttonColor={THEME.colors.secondary.light}
                       position="center"
                       hideShadow={true}
                       offsetY={10}
@@ -292,6 +343,7 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                avoidKeyboard={true}
                style={styles.page.newPostModal}
                animationInTiming={400}
+               onBackButtonPress={() => this.setState({ showNewPostModal: false })}
                animationOutTiming={400}>
           <NewPostScreen navigation={this.props.navigation} 
                          onSuccess={this.onPostSent}
@@ -310,6 +362,21 @@ const styles = {
       flex: 1,
       backgroundColor: '#fff',
       flexGrow: 1
+    },
+    tabsContainer: {
+      padding: 16
+    },
+    tabStyle: {
+      borderColor: THEME.colors.secondary.light
+    },
+    activeTabStyle: {
+      backgroundColor: THEME.colors.secondary.light,
+      borderColor: THEME.colors.secondary.light
+    },
+    tabTextStyle: {
+      fontSize: 16,
+      fontWeight: "400",
+      color: THEME.colors.secondary.default
     },
     newPostModal: {
       width: '100%',
@@ -343,6 +410,23 @@ const styles = {
     },
     headerTouchableLocation: {
       flexDirection: 'row'
+    },
+    noPosts: {
+      padding: 20,
+      fontSize: 20,
+      fontWeight: "200",
+      textAlign: 'center'
+    },
+    currentChannelView: {
+      paddingTop: 10,
+      backgroundColor: THEME.colors.primary.default,
+      alignItems: "center",
+      paddingBottom: 20
+    },
+    currentChannelText: {
+      color: "white",
+      fontWeight: "bold",
+      fontSize: 20
     }
   }),
 };
@@ -354,6 +438,8 @@ interface TimelineState {
   refreshing: boolean;
   loadingMorePosts: boolean;
   showNewPostModal: boolean;
+  canLoadMorePosts: boolean;
+  selectedIndex: number;
   errorMessage?: string;
 }
 
@@ -364,4 +450,9 @@ interface TimelineProps {
 interface FetchPostsOptions {
   limit?: number;
   ignoreIds?: number[]; 
+}
+
+interface RefreshOptions {
+  resetCurrentLocation?: boolean;
+  setLocation?: number[];
 }

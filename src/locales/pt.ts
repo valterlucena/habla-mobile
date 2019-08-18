@@ -23,11 +23,21 @@ const pt: AppTranslations = {
     },
     screens: {
         appLoading: {
-            greeting: 'Saiba o que está em alta em {{location}}!',
+            greeting: 'Saiba o que está em alta perto de {{location}}!',
             locationNotAuthorized: {
                 message: 'Você precisa permitir o acesso à sua localização para usar o Habla.',
                 buttons: {
-                    openSettings: 'Abrir configurações'
+                    openSettings: 'Abrir configurações',
+                    retry: 'Tentar novamente'
+                }
+            },
+            errors: {
+                fetchingProfile: {
+                    unexpected: 'Um erro inesperado ocorreu ao carregar o seu perfil.',
+                    connection: 'Houve um erro de conexão ao carregar o seu perfil. Verifique se está conectado à internet.'
+                },
+                updateExpoPushToken:{
+                    internalServerError: "Erro ao atualizar o token do expo."
                 }
             }
         },
@@ -42,7 +52,13 @@ const pt: AppTranslations = {
             },
             buttons: {
                 signInWithFacebook: 'Entrar com o Facebook',
-                signInWithCredentials: 'Entrar'
+                signInWithCredentials: 'Entrar',
+                signUpWithCredentials: 'Cadastrar'
+            },
+            errors:{
+                signInWithFacebook: "Ocorreu um erro durante o login com o facebook.",
+                signInWithCredentials: "Um erro ocorreu ao logar com as credenciais informadas.",
+                signUpWithCredentials: "Um erro ocorreu ao cadastrar com as credenciais informadas."
             }
         },
         profileCreation: {
@@ -58,6 +74,10 @@ const pt: AppTranslations = {
             },
             buttons: {
                 next: 'Continuar'
+            },
+            errors:{
+                unexpected: 'Um erro inesperado ocorreu ao criar o perfil.',
+                connection: 'Houve um erro de conexão ao criar o perfil. Verifique se está conectado à internet.'
             }
         },
         timeline: {
@@ -67,11 +87,21 @@ const pt: AppTranslations = {
                     unexpected: 'Um erro inesperado ocorreu ao carregar os posts.',
                     connection: 'Houve um erro de conexão ao carregar os posts. Verifique se está conectado à internet.'
                 }
+            },
+            tabs: {
+                recent: 'Recente',
+                trending: 'Em alta'
             }
         },
         channels: {
             title: 'Canais',
-            searchPlaceholder: 'Digite aqui...'
+            searchPlaceholder: 'Digite aqui...',
+            errors: {
+                fetchingChannels: {
+                    unexpected: 'Um erro inesperado ocorreu ao carregar os canais.',
+                    connection: 'Houve um erro de conexão ao carregar os canais. Verifique se está conectado à internet.'
+                }
+            }
         },
         newPost: {
             inputPlaceholder: "O que está acontecendo?",
@@ -79,7 +109,10 @@ const pt: AppTranslations = {
                 submit: 'Enviar'
             },
             errors: {
-                insufficentScore: "Pontuação insuficiente para fazer posts anônimos."
+                insufficentScore: "Pontuação insuficiente para fazer posts anônimos.",
+                internalServerError: "A foto do post não pôde ser salva.",
+                connection: "Houve um erro de conexão ao criar o post. Verifique se está conectado à internet.",
+                unexpected: "Um erro inesperado ocorreu ao criar o post."
             },
             anonymous: "Anônimo"
         },
@@ -90,6 +123,12 @@ const pt: AppTranslations = {
                 voteOnOwnedPost: '{{voteCount}} pessoas votaram na sua publicação',
                 commentOnThirdPartyPost: '{{username}} comentou no post de {{postOwner}}',
                 commentOnThirdPartyPostAnonymous: "{{username}} comentou em um post que você segue"
+            },
+            errors: {
+                fetchingNotifications: {
+                    unexpected: 'Um erro inesperado ocorreu ao carregar as notificações.',
+                    connection: 'Houve um erro de conexão ao carregar as notificações. Verifique se está conectado à internet.'
+                }
             }
         },
         post: {
@@ -98,6 +137,20 @@ const pt: AppTranslations = {
                 newCommentInputPlaceholder: 'Escreva um comentário...',
                 buttons: {
                     submit: 'Enviar'
+                }
+            },
+            errors: {
+                loadingPost: {
+                    unexpected: 'Um erro inesperado ocorreu ao carregar o post.',
+                    connection: 'Houve um erro de conexão ao carregar o post. Verifique se está conectado à internet.'
+                },
+                commentingPost:{
+                    unexpected: 'Um erro inesperado ocorreu ao comentar o post.',
+                    connection: 'Houve um erro de conexão ao comentar o post. Verifique se está conectado à internet.'
+                },
+                votingPost:{
+                    unexpected: 'Um erro inesperado ocorreu ao votar no post.',
+                    connection: 'Houve um erro de conexão ao votar no post. Verifique se está conectado à internet.'
                 }
             }
         },
@@ -116,6 +169,12 @@ const pt: AppTranslations = {
             labels: {
                 score: 'Pontos',
                 scoreBalance: 'Saldo de pontos'
+            },
+            errors: {
+                loadingProfile: {
+                    unexpected: 'Um erro inesperado ocorreu ao carregar o perfil.',
+                    connection: 'Houve um erro de conexão ao carregar o perfil. Verifique se está conectado à internet.'
+                }
             }
         },
         profileEdition: {
@@ -137,6 +196,20 @@ const pt: AppTranslations = {
             alert: {
                 title: 'Definir a localização atual como sua casa?',
                 message: 'Você poderá ver os posts da região definida como casa mesmo quando não estiver nela.'
+            },
+            errors:{
+                unexpected: 'Um erro inesperado ocorreu ao editar o perfil.',
+                connection: 'Houve um erro de conexão ao editar o perfil. Verifique se está conectado à internet.'
+            }
+        }
+    },
+    components: {
+        post: {
+            actionSheet: {
+                follow: 'Seguir',
+                unfollow: 'Deixar de seguir',
+                delete: 'Deletar',
+                cancel: 'Cancelar'
             }
         }
     }

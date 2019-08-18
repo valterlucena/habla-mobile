@@ -1,5 +1,3 @@
-import { Notifications } from "expo";
-
 export interface AppTranslations {
     global: {
         user: {
@@ -28,8 +26,19 @@ export interface AppTranslations {
                 message: string;
                 buttons: {
                     openSettings: string;
+                    retry: string;
                 }
-            }
+            };
+            errors: { 
+                fetchingProfile: {
+                    unexpected: string;
+                    connection: string;
+                };
+                updateExpoPushToken:{
+                    internalServerError: string;
+                }
+            };
+
         },
         login: {
             inputs: {
@@ -43,6 +52,12 @@ export interface AppTranslations {
             buttons: {
                 signInWithFacebook: string;
                 signInWithCredentials: string;
+                signUpWithCredentials: string;
+            }
+            errors:{
+                signInWithFacebook: string;
+                signInWithCredentials: string;
+                signUpWithCredentials: string;
             }
         },
         profileCreation: {
@@ -58,6 +73,10 @@ export interface AppTranslations {
             },
             buttons: {
                 next: string
+            },
+            errors:{
+                unexpected: string;
+                connection: string;
             }
         },
         timeline: {
@@ -67,11 +86,21 @@ export interface AppTranslations {
                     unexpected: string;
                     connection: string;
                 }
+            },
+            tabs: {
+                recent: string;
+                trending: string;
             }
         },
         channels: {
             title: string;
             searchPlaceholder: string;
+            errors: { 
+                fetchingChannels: {
+                    unexpected: string;
+                    connection: string;
+                }
+            }
         },
         newPost: {
             inputPlaceholder: string;
@@ -80,6 +109,9 @@ export interface AppTranslations {
             },
             errors: {
                 insufficentScore: string;
+                internalServerError: string;
+                connection: string;
+                unexpected: string;
             },
             anonymous: string;
             
@@ -91,6 +123,12 @@ export interface AppTranslations {
                 voteOnOwnedPost: string;
                 commentOnThirdPartyPost:string;
                 commentOnThirdPartyPostAnonymous:string;
+            };
+            errors: { 
+                fetchingNotifications: {
+                    unexpected: string;
+                    connection: string;
+                }
             }
         },
         post: {
@@ -99,6 +137,20 @@ export interface AppTranslations {
                 newCommentInputPlaceholder: string;
                 buttons: {
                     submit: string;
+                }
+            },
+            errors: { 
+                loadingPost: {
+                    unexpected: string;
+                    connection: string;
+                },
+                commentingPost:{
+                    unexpected: string;
+                    connection: string;
+                },
+                votingPost:{
+                    unexpected: string;
+                    connection: string;
                 }
             }
         },
@@ -117,6 +169,12 @@ export interface AppTranslations {
             labels: {
                 score: string;
                 scoreBalance: string;
+            },
+            errors: { 
+                loadingProfile: {
+                    unexpected: string;
+                    connection: string;
+                }
             }
         },
         profileEdition: {
@@ -138,6 +196,20 @@ export interface AppTranslations {
             alert: {
                 title: string,
                 message: string
+            },
+            errors:{
+                unexpected: string;
+                connection: string;
+            }
+        }
+    },
+    components: {
+        post: {
+            actionSheet: {
+                follow: string;
+                unfollow: string;
+                delete: string;
+                cancel: string;
             }
         }
     }

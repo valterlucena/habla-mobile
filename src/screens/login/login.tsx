@@ -6,6 +6,7 @@ import { Facebook } from "expo";
 import { FontAwesome } from '@expo/vector-icons';
 import THEME from "../../theme/theme";
 import i18n from 'i18n-js';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class LoginScreen extends React.Component<{}, LoginState> {
     static navigationOptions = {
@@ -15,7 +16,7 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
     constructor(props) {
         super(props);
 
-        this.state = { loadingWithCredentials: false, loadingWithFacebook: false, credentials: {} };
+        this.state = { loggingInWithCredentials: false, loggingInWithFacebook: false, credentials: {} };
     }
 
     render() {
@@ -23,72 +24,105 @@ export default class LoginScreen extends React.Component<{}, LoginState> {
             <View style={styles.page.container}>
                 <Text style={styles.login.headerText}>Habla!</Text>
                 <TextInput placeholder={i18n.t('screens.login.inputs.email.placeholder')}
-                           style={styles.login.input}
-                           editable={!(this.state.loadingWithCredentials || this.state.loadingWithFacebook)}
-                           underlineColorAndroid='rgba(0,0,0,0)'
-                           autoCapitalize="none"
-                           onChangeText={text => this.setState({ credentials: { ...this.state.credentials, email: text }})}></TextInput>
+                    style={styles.login.input}
+                    editable={!(this.state.loggingInWithCredentials || this.state.loggingInWithFacebook)}
+                    underlineColorAndroid='rgba(0,0,0,0)'
+                    autoCapitalize="none"
+                    onChangeText={text => this.setState({ credentials: { ...this.state.credentials, email: text } })}></TextInput>
                 <TextInput placeholder={i18n.t('screens.login.inputs.password.placeholder')}
-                           style={styles.login.input}
-                           editable={!(this.state.loadingWithCredentials || this.state.loadingWithFacebook)}
-                           secureTextEntry={true}
-                           onChangeText={text => this.setState({ credentials: { ...this.state.credentials, password: text }})}></TextInput>
-                <TouchableOpacity style={styles.login.loginButton}
-                                  onPress={this.signInWithEmailAndPassword}
-                                  disabled={this.state.loadingWithCredentials || this.state.loadingWithFacebook}
-                                  activeOpacity={1}>
-                    {this.state.loadingWithCredentials? 
-                          (<ActivityIndicator color="white"
-                                              size="small"/>)
-                        : (<Text style={styles.login.loginButtonText}>{i18n.t('screens.login.buttons.signInWithCredentials')}</Text>) }
-                </TouchableOpacity>
+                    style={styles.login.input}
+                    editable={!(this.state.loggingInWithCredentials || this.state.loggingInWithFacebook || this.state.signingUpWithCredentials)}
+                    secureTextEntry={true}
+                    onChangeText={text => this.setState({ credentials: { ...this.state.credentials, password: text } })}></TextInput>
+                <View style={styles.login.signInSignUpButtonsView}>
+                    <TouchableOpacity style={styles.login.loginButton}
+                        onPress={this.signInWithEmailAndPassword}
+                        disabled={this.state.loggingInWithCredentials || this.state.loggingInWithFacebook || this.state.signingUpWithCredentials}
+                        activeOpacity={1}>
+                        {this.state.loggingInWithCredentials ?
+                            (<ActivityIndicator color="white"
+                                size="small" />)
+                            : (<Text style={styles.login.loginButtonText}>{i18n.t('screens.login.buttons.signInWithCredentials')}</Text>)}
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.login.signUpButton}
+                        onPress={this.signUpWithEmailAndPassword}
+                        disabled={this.state.signingUpWithCredentials || this.state.loggingInWithFacebook || this.state.signingUpWithCredentials}
+                        activeOpacity={1}>
+                        {this.state.signingUpWithCredentials ?
+                            (<ActivityIndicator color="white"
+                                size="small" />)
+                            : (<Text style={styles.login.loginButtonText}>{i18n.t('screens.login.buttons.signUpWithCredentials')}</Text>)}
+                    </TouchableOpacity>
+                </View>
                 <TouchableOpacity style={styles.login.loginButtonFacebook}
-                                  onPress={this.signInWithFacebook}
-                                  disabled={this.state.loadingWithCredentials || this.state.loadingWithFacebook}
-                                  activeOpacity={1}>
-                    {this.state.loadingWithFacebook? 
-                          (<ActivityIndicator color="white"
-                                              size="small"/>)
+                    onPress={this.signInWithFacebook}
+                    disabled={this.state.loggingInWithCredentials || this.state.loggingInWithFacebook || this.state.signingUpWithCredentials}
+                    activeOpacity={1}>
+                    {this.state.loggingInWithFacebook ?
+                        (<ActivityIndicator color="white"
+                            size="small" />)
                         : (<View style={styles.login.loginButtonInnerView}>
-                            <FontAwesome name="facebook" style={styles.login.facebookIcon}/><Text style={styles.login.loginButtonText}>{ i18n.t('screens.login.buttons.signInWithFacebook') }</Text>
-                           </View>) }
+                            <FontAwesome name="facebook" style={styles.login.facebookIcon} /><Text style={styles.login.loginButtonText}>{i18n.t('screens.login.buttons.signInWithFacebook')}</Text>
+                        </View>)}
                 </TouchableOpacity>
-                <KeyboardSpacer/>
+                <View style={styles.page.errorView}>
+                    {this.state.errorMessage && <Text style={styles.page.errorText}>{this.state.errorMessage}</Text>}
+                </View>
+                <KeyboardSpacer />
             </View>
         )
     }
 
-    signInWithEmailAndPassword = async() => {
-        this.setState({ loadingWithCredentials: true });
+    signInWithEmailAndPassword = async () => {
+        this.setState({ loggingInWithCredentials: true });
 
         try {
-          await firebase.auth().signInWithEmailAndPassword(this.state.credentials.email, this.state.credentials.password);
+            await firebase.auth().signInWithEmailAndPassword(this.state.credentials.email, this.state.credentials.password);
         } catch (error) {
-          this.setState({ loadingWithCredentials: false });
-          console.log(error);
+            this.setState({ loggingInWithCredentials: false });
+            const errorMessage = i18n.t('screens.login.errors.signInWithCredentials');
+            this.setState({ errorMessage });
+            console.log(JSON.stringify(error));
         }
     };
 
-    signInWithFacebook = async() => {
-        this.setState({ loadingWithFacebook: true });
-        
+    signUpWithEmailAndPassword = async () => {
+        this.setState({ signingUpWithCredentials: true });
+
+        try {
+            await firebase.auth().createUserWithEmailAndPassword(this.state.credentials.email, this.state.credentials.password);
+        } catch (error) {
+            this.setState({ signingUpWithCredentials: false });
+            const errorMessage = i18n.t('screens.login.errors.signUpWithCredentials');
+            this.setState({ errorMessage });
+            console.log(JSON.stringify(error));
+        }
+    };
+
+    signInWithFacebook = async () => {
+        this.setState({ loggingInWithFacebook: true });
+
         try {
             const result = await Facebook.logInWithReadPermissionsAsync('2136539466408117');
             const credential = firebase.auth.FacebookAuthProvider.credential(result.token);
-            
+
             await firebase.auth().signInAndRetrieveDataWithCredential(credential);
         } catch (error) {
-            console.log(error);
-        } finally { 
-            this.setState({ loadingWithFacebook: false });
+            const errorMessage = i18n.t('screens.login.errors.signInWithFacebook');
+            this.setState({ errorMessage });
+            console.log(JSON.stringify(error));
+        } finally {
+            this.setState({ loggingInWithFacebook: false });
         }
     }
 }
 
 interface LoginState {
-    loadingWithCredentials?: boolean;
-    loadingWithFacebook?: boolean;
+    loggingInWithCredentials?: boolean;
+    loggingInWithFacebook?: boolean;
+    signingUpWithCredentials?: boolean;
     credentials?: { email?: string, password?: string };
+    errorMessage?: string;
 }
 
 const styles = {
@@ -99,7 +133,16 @@ const styles = {
             justifyContent: "center",
             backgroundColor: "#FFFFFF",
             padding: 12
-      }
+        },
+        errorView: {
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 60,
+            width: '100%'
+        },
+        errorText: {
+            textAlign: 'center'
+        }
     }),
     login: StyleSheet.create({
         headerText: {
@@ -119,7 +162,16 @@ const styles = {
             paddingHorizontal: 14,
             paddingVertical: 14,
             backgroundColor: THEME.colors.primary.default,
-            width: '100%',
+            width: '48%',
+            borderRadius: 5,
+            alignItems: "center",
+            marginBottom: 12,
+        },
+        signUpButton: {
+            paddingHorizontal: 14,
+            paddingVertical: 14,
+            backgroundColor: THEME.colors.secondary.default,
+            width: '48%',
             borderRadius: 5,
             alignItems: "center",
             marginBottom: 12
@@ -145,6 +197,11 @@ const styles = {
         },
         loginButtonInnerView: {
             flexDirection: "row"
+        },
+        signInSignUpButtonsView: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "100%"
         }
     })
 }
