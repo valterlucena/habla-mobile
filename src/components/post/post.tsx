@@ -130,7 +130,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       const photoDefault = require('../../../assets/avatar-placeholder.png');
       const { profileFollowPost } = this.state.post;
       const actionSheetOptions = [
-        (!(this.state.post.anonymous && this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid)) && { 
+        (!(this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid)) && { 
           title: !profileFollowPost ? i18n.t('components.post.actionSheet.follow'): i18n.t('components.post.actionSheet.unfollow'),
           handler: this.followPost
         },
