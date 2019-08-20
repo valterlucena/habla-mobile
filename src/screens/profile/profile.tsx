@@ -118,7 +118,6 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
       const errorMessage = error.networkError ? i18n.t('screens.profile.errors.loadingProfile.connection') : i18n.t('screens.profile.errors.loadingProfile.unexpected');
       this.setState({ errorMessage });
       console.log(error);
-      throw error;
     }
 
     this.setState({ refreshing: false });
