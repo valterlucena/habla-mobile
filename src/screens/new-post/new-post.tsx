@@ -119,12 +119,19 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
   }
 
   render() {
+    var {height, width} = Dimensions.get('window');
     return (
       <View style={styles.newPost.container}>
         <StatusBar hidden={true}></StatusBar>
         <View style={styles.header.container}>
           <TouchableOpacity onPress={this.dismiss}>
             <FontAwesome name="chevron-left" size={35} color={THEME.colors.primary.default}></FontAwesome>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={this.sendPost}
+            disabled={this.state.posting || !this.state.post.body || this.state.post.body.trim() == ''}
+            activeOpacity={1}>
+            {this.state.posting ? <ActivityIndicator color="white" /> : <Text style={styles.newPost.sendButtonText}>{i18n.t('screens.newPost.buttons.submit')}</Text>}
           </TouchableOpacity>
         </View>
         {this.state.errorMessage &&
@@ -140,7 +147,7 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
           editable={!this.state.posting}
           multiline={true}
           underlineColorAndroid="rgba(0,0,0,0)" />
-        {this.state.photo && this.state.photo.uri && <AutoHeightImage width={200} source={{ uri: this.state.photo.uri}}/>}
+        {this.state.photo && this.state.photo.uri && <AutoHeightImage width={width} source={{ uri: this.state.photo.uri }} />}
         <View style={styles.footer.container}>
           <CheckBox
             title={i18n.t('screens.newPost.anonymous')}
@@ -151,16 +158,10 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
             containerStyle={styles.newPost.anonymousButton}
             onPress={() => this.setState({ post: { ...this.state.post, anonymous: !this.state.post.anonymous } })}
           />
-          <ChangePhotoComponent onPhotoSelected={this.importPhoto} enabled={!this.state.posting}>
+          <ChangePhotoComponent onPhotoSelected={this.importPhoto} enabled={!this.state.posting} squared={true}>
             <FontAwesome name="image" size={35} color={THEME.colors.primary.default}></FontAwesome>
           </ChangePhotoComponent>
         </View>
-        <TouchableOpacity style={styles.newPost.sendButton}
-          onPress={this.sendPost}
-          disabled={this.state.posting || !this.state.post.body || this.state.post.body.trim() == ''}
-          activeOpacity={1}>
-          {this.state.posting ? <ActivityIndicator color="white" /> : <Text style={styles.newPost.sendButtonText}>{i18n.t('screens.newPost.buttons.submit')}</Text>}
-        </TouchableOpacity>
       </View>
     );
   }
@@ -215,12 +216,6 @@ const styles = {
       flexGrow: 1,
       fontWeight: "bold",
       textAlignVertical: "top"
-    },
-    sendButton: {
-      paddingHorizontal: 16,
-      paddingVertical: 16,
-      backgroundColor: THEME.colors.primary.default,
-      width: '100%',
     },
     sendButtonText: {
       fontSize: 18,
