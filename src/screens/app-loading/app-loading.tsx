@@ -149,7 +149,6 @@ export default class AppLoadingScreen extends React.Component<any, AppLoadingSta
       const errorMessage = error.networkError ? i18n.t('screens.appLoading.errors.fetchingProfile.connection') : i18n.t('screens.appLoading.errors.fetchingProfile.unexpected');
       this.setState({ errorMessage, loading: false });
       console.log(error);
-      throw error;
     }
   }
   

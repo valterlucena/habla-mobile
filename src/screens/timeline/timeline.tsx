@@ -222,7 +222,6 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
       this.setState({ errorMessage });
 
       console.log(error);
-      throw error;
     }
   }
 
