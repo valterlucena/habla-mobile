@@ -23,7 +23,7 @@ export default class ChangePhotoComponent extends React.Component<ChangePhotoPro
         let image: any;
         if (index == 0) {
             await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
-            image = await ImagePicker.launchCameraAsync()
+            image = await ImagePicker.launchCameraAsync({ aspect: this.props.squared? [1,1]: undefined, allowsEditing: true });
         }
         else if (index == 1) {
             if (Platform.OS === 'ios' ){

@@ -127,7 +127,6 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
       const errorMessage = error.networkError ? i18n.t('screens.post.errors.loadingPost.connection') : i18n.t('screens.post.errors.loadingPost.unexpected');
       this.setState({ errorMessage });
       console.log(error);
-      throw error;
     }
   }
 
