@@ -13,6 +13,8 @@ import firebase from 'firebase';
 
 import ActionSheet from 'react-native-actionsheet'
 
+
+
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
   actionSheet;
 
@@ -25,6 +27,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
   }
 
   componentWillReceiveProps() {
+    
     this.setState({ post: this.props.post });
     
   }
@@ -124,6 +127,36 @@ export default class PostComponent extends React.Component<PostComponentProps, P
 
     this.props.onPostDeleted && await this.props.onPostDeleted(this.state.post);
   }
+
+  revealDistance = async(type: "EXACT_DISTANCE") => {
+    if (!(type === "EXACT_DISTANCE")) return;
+
+    this.setState({ post: { ... this.state.post }});
+    try {
+      const response = await client.mutate({
+        variables: {
+          postId : this.state.post.id,
+          type: type
+        },
+        mutation: gql(`
+          mutation revealPost ($postId: ID!, $type: ProfileRevealPostType!) {          
+            revealPost (postId: $postId, type: $type){
+              type
+              postId
+              profileUid
+            }
+          }
+        `)
+      });
+
+     
+
+    } catch (error) {
+      const errorMessage = error.networkError? i18n.t('screens.post.errors.revealDistancePost.connection'):i18n.t('screens.post.errors.revealDistancePost.unexpected');
+      this.setState({ errorMessage });
+      console.log(error);
+    } 
+  }
   
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
@@ -194,7 +227,9 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
         </View>
         <View style={styles.bottom}>
-          <Text style={styles.bottomText}>{getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
+          <TouchableOpacity style={styles.distance} disabled={this.state.post.exactDistance} onPress={() => this.revealDistance("EXACT_DISTANCE")} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
+            <Text style={styles.bottomText}>{this.state.post.exactDistance ? `${this.state.post.exactDistance}  metros` : getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
+          </TouchableOpacity>
           <Text style={styles.separator}>
             •
           </Text>
@@ -324,6 +359,8 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 20, 
     paddingRight: 13
+  },
+  distance:{
   }
 });
 

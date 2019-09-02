@@ -151,6 +151,10 @@ const pt: AppTranslations = {
                 votingPost:{
                     unexpected: 'Um erro inesperado ocorreu ao votar no post.',
                     connection: 'Houve um erro de conexão ao votar no post. Verifique se está conectado à internet.'
+                },
+                revealDistancePost:{
+                    unexpected: 'Um erro inesperado ocorreu ao votar no post.',
+                    connection: 'Houve um erro de conexão ao votar no post. Verifique se está conectado à internet.'
                 }
             }
         },

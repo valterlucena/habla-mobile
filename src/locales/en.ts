@@ -152,6 +152,10 @@ const en: AppTranslations = {
                 votingPost:{
                     unexpected: 'An unexpected error occurred while voting the post.',
                     connection: 'There was a problem voting the post. Please check your connection.'
+                },
+                revealDistancePost:{
+                    unexpected: 'Insufficient score to reveal post information.',
+                    connection: 'There was a problem voting the post. Please check your connection.'
                 }
             }
         },

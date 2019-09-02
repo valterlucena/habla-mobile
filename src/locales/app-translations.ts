@@ -151,7 +151,11 @@ export interface AppTranslations {
                 votingPost:{
                     unexpected: string;
                     connection: string;
-                }
+                },
+                revealDistancePost:{
+                    unexpected: string;
+                    connection: string;
+                },
             }
         },
         profile: {
