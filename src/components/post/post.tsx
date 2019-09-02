@@ -11,11 +11,8 @@ import AutoHeightImage from 'react-native-auto-height-image';
 import THEME from '../../theme/theme';
 import firebase from 'firebase';
 
-import ActionSheet from 'react-native-actionsheet'
-
 export default class PostComponent extends React.Component<PostComponentProps, PostComponentState> {
-  actionSheet;
-
+  
   constructor(props: PostComponentProps) {
     super(props);
 
@@ -129,19 +126,6 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
       const photoDefault = require('../../../assets/avatar-placeholder.png');
       const { profileFollowPost } = this.state.post;
-      const actionSheetOptions = [
-        (!(this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid)) && { 
-          title: !profileFollowPost ? i18n.t('components.post.actionSheet.follow'): i18n.t('components.post.actionSheet.unfollow'),
-          handler: this.followPost
-        },
-        this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid && {
-          title: i18n.t('components.post.actionSheet.delete'), 
-          handler: this.deletePost
-        },
-        { 
-          title: i18n.t('components.post.actionSheet.cancel')
-        }
-      ].filter(o => !!o);
       
       return (
        
@@ -153,16 +137,15 @@ export default class PostComponent extends React.Component<PostComponentProps, P
             {this.state.post.anonymous? <Text style={styles.headerText}>{ i18n.t('global.user.anonymousLabel')}</Text>: <Text style={styles.headerText}>{ this.state.post.owner.username }</Text>}
           </TouchableOpacity>
           <View style={styles.postOptions}>
-            <ActionSheet
-                      tintColor={THEME.colors.primary.default}
-                      ref={o => this.actionSheet = o}
-                      options={actionSheetOptions.map(o => o.title)}
-                      cancelButtonIndex={actionSheetOptions.length - 1}
-                      onPress={(index) => { actionSheetOptions[index].handler && actionSheetOptions[index].handler() }}
-              />
-            <TouchableOpacity onPress={() => this.actionSheet.show()} style={styles.clickableArea}>
-              <FontAwesome name="ellipsis-h" size={20}/>
-            </TouchableOpacity>
+            { !(this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid) ?
+              <TouchableOpacity style={styles.clickableArea} onPress={this.followPost}>
+                <FontAwesome name={!profileFollowPost ? "bell-o" : "bell-slash-o"} size={20}/>
+              </TouchableOpacity>
+            :
+              <TouchableOpacity style={styles.clickableArea} onPress={this.deletePost}>
+                <FontAwesome name="trash-o" size={20}/>
+              </TouchableOpacity>
+            } 
           </View>
         </View>)
       : null }
@@ -323,7 +306,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 10,
     paddingLeft: 20, 
-    paddingRight: 13
+    paddingRight: 11
   }
 });
 
