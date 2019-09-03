@@ -85,6 +85,9 @@ export default class PostScreen extends React.Component<PostScreenProps, PostScr
               profileUid
               postId
               type
+              post {
+                exactDistance
+              }
             }
             owner {
               uid

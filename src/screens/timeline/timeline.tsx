@@ -199,6 +199,9 @@ export default class TimelineScreen extends React.Component<TimelineProps, Timel
                   profileUid
                   postId
                   type
+                  post {
+                    exactDistance
+                  }
                 }
                 owner {
                   uid

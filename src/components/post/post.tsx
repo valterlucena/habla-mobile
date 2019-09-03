@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions} from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Image, Dimensions, Alert} from 'react-native';
 import moment from 'moment';
 import { FontAwesome } from '@expo/vector-icons';
 import { client } from '../../services/client';
@@ -132,6 +132,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     if (!(type === "EXACT_DISTANCE")) return;
 
     this.setState({ post: { ... this.state.post }});
+
     try {
       const response = await client.mutate({
         variables: {
@@ -144,18 +145,38 @@ export default class PostComponent extends React.Component<PostComponentProps, P
               type
               postId
               profileUid
+              post {
+                exactDistance
+              }
             }
           }
         `)
       });
 
-     
+      this.setState({
+        post: {
+          ... this.state.post, 
+          exactDistance: response.revealPost.post.exactDistance,
+        }
+      });
 
     } catch (error) {
       const errorMessage = error.networkError? i18n.t('screens.post.errors.revealDistancePost.connection'):i18n.t('screens.post.errors.revealDistancePost.unexpected');
       this.setState({ errorMessage });
       console.log(error);
     } 
+  }
+
+  showAlert = () => {
+    Alert.alert(
+      i18n.t('screens.post.alert.title'),
+      i18n.t('screens.post.alert.message'),
+      [
+        {text: i18n.t('screens.post.buttons.cancel'), onPress: () => {}},
+        {text: i18n.t('screens.post.buttons.show'), onPress: () => this.revealDistance("EXACT_DISTANCE")}
+      ],
+      { cancelable: false}
+    )
   }
   
   render() {
@@ -227,8 +248,8 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           </View>
         </View>
         <View style={styles.bottom}>
-          <TouchableOpacity style={styles.distance} disabled={this.state.post.exactDistance} onPress={() => this.revealDistance("EXACT_DISTANCE")} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
-            <Text style={styles.bottomText}>{this.state.post.exactDistance ? `${this.state.post.exactDistance}  metros` : getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
+          <TouchableOpacity style={styles.distance} disabled={this.state.post.exactDistance} onPress={this.showAlert} hitSlop={{top: 10, bottom: 10, left: 20, right: 20}}>
+            <Text style={styles.bottomText}>{this.state.post.exactDistance ? i18n.t('screens.post.exactDistance', { meters: `${this.state.post.exactDistance}` }) : getTranslatedDistanceFromEnum(this.state.post.distance)}</Text>
           </TouchableOpacity>
           <Text style={styles.separator}>
             •

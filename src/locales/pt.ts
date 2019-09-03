@@ -133,11 +133,21 @@ const pt: AppTranslations = {
         },
         post: {
             title: 'Publicação',
+            exactDistance: '{{meters}} metros', 
             comments: {
                 newCommentInputPlaceholder: 'Escreva um comentário...',
                 buttons: {
                     submit: 'Enviar'
                 }
+            },
+            buttons: {
+                show: 'Mostrar',
+                cancel: 'Cancelar',
+                define: 'Definir'
+            },
+            alert: {
+                title: 'Revelar a localização exata desse post?',
+                message: 'Isso irá custar 10 pontos.'
             },
             errors: {
                 loadingPost: {
@@ -153,7 +163,7 @@ const pt: AppTranslations = {
                     connection: 'Houve um erro de conexão ao votar no post. Verifique se está conectado à internet.'
                 },
                 revealDistancePost:{
-                    unexpected: 'Um erro inesperado ocorreu ao votar no post.',
+                    unexpected: 'Pontos insuficientes para revelar distância exata.',
                     connection: 'Houve um erro de conexão ao votar no post. Verifique se está conectado à internet.'
                 }
             }

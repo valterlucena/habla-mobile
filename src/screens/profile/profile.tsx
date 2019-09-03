@@ -95,6 +95,9 @@ export default class ProfileScreen extends React.Component<ProfileScreenProps, P
                   profileUid
                   postId
                   type
+                  post {
+                    exactDistance
+                  }
                 }
                 owner {
                   uid

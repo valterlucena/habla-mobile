@@ -65,6 +65,9 @@ export default class NewPostScreen extends React.Component<NewPostScreenProps, N
                 profileUid
                 postId
                 type
+                post {
+                  exactDistance
+                }
               }
               owner {
                 uid

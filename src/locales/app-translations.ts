@@ -133,11 +133,21 @@ export interface AppTranslations {
         },
         post: {
             title: string;
+            exactDistance: string; 
             comments: {
                 newCommentInputPlaceholder: string;
                 buttons: {
                     submit: string;
                 }
+            },
+            buttons: {
+                show: string;
+                cancel: string;
+                define: string;
+            },
+            alert: {
+                title: string;
+                message: string;
             },
             errors: { 
                 loadingPost: {
