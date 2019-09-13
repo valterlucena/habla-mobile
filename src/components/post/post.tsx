@@ -174,6 +174,18 @@ export default class PostComponent extends React.Component<PostComponentProps, P
     )
   }
   
+  showAlertDelete = () => {
+    Alert.alert(
+      i18n.t('screens.post.alertDelete.title'),
+      i18n.t('screens.post.alertDelete.message'),
+      [
+        {text: i18n.t('screens.post.buttons.cancel'), onPress: () => {}},
+        {text: i18n.t('screens.post.buttons.delete'), onPress: () => this.deletePost}
+      ],
+      { cancelable: false}
+    )
+  }
+
   render() {
       const vote = this.state.post.profilePostVote && this.state.post.profilePostVote.type;
       const photoDefault = require('../../../assets/avatar-placeholder.png');
@@ -191,10 +203,10 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           <View style={styles.postOptions}>
             { !(this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid) ?
               <TouchableOpacity style={styles.clickableArea} onPress={this.followPost}>
-                <FontAwesome name={!profileFollowPost ? "bell-o" : "bell-slash-o"} size={20}/>
+                <FontAwesome name={!profileFollowPost ? "bell-o" : "bell-slash-o"} size={18}/>
               </TouchableOpacity>
             :
-              <TouchableOpacity style={styles.clickableArea} onPress={this.deletePost}>
+              <TouchableOpacity style={styles.clickableArea} onPress={this.showAlertDelete}>
                 <FontAwesome name="trash-o" size={20}/>
               </TouchableOpacity>
             } 
@@ -331,7 +343,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'center',
     paddingVertical: 10,
-    marginTop: -5
+    marginTop: -5,
   },
   voteButton: {
     fontSize: 25,
@@ -360,7 +372,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 10,
     paddingLeft: 20, 
-    paddingRight: 13
+    paddingRight: 12.5
   },
   distance:{
     paddingRight: 11

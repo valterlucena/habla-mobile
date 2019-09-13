@@ -144,8 +144,13 @@ export interface AppTranslations {
                 show: string;
                 cancel: string;
                 define: string;
+                delete: string;
             },
             alert: {
+                title: string;
+                message: string;
+            },
+            alertDelete: {
                 title: string;
                 message: string;
             },
