@@ -187,7 +187,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
       i18n.t('screens.post.alertDelete.message'),
       [
         {text: i18n.t('screens.post.buttons.cancel'), onPress: () => {}},
-        {text: i18n.t('screens.post.buttons.delete'), onPress: () => this.deletePost}
+        {text: i18n.t('screens.post.buttons.delete'), onPress: () => this.deletePost()}
       ],
       { cancelable: false}
     )
