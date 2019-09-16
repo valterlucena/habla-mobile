@@ -210,7 +210,7 @@ export default class PostComponent extends React.Component<PostComponentProps, P
           <View style={styles.postOptions}>
             { !(this.state.post.owner && this.state.post.owner.uid === firebase.auth().currentUser.uid) ?
               <TouchableOpacity style={styles.clickableArea} onPress={this.followPost}>
-                <FontAwesome name={!profileFollowPost ? "bell-o" : "bell-slash-o"} size={18}/>
+                <FontAwesome name={profileFollowPost ? "bell-o" : "bell-slash-o"} size={18}/>
               </TouchableOpacity>
             :
               <TouchableOpacity style={styles.clickableArea} onPress={this.showAlertDelete}>
